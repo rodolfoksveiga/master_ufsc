@@ -1,0 +1,342 @@
+{
+    "AirflowNetwork:MultiZone:Surface": {
+        "AirflowNetwork:MultiZone:Surface 1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 12,
+            "idf_order": 552,
+            "leakage_component_name": "abertura_janela",
+            "surface_name": "hive_e_e",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_comp_janela",
+            "venting_availability_schedule_name": "sch_vent_sala",
+            "window_door_opening_factor_or_crack_factor": 1
+        }
+    },
+    "AirflowNetwork:MultiZone:Zone": {
+        "AirflowNetwork:MultiZone:Zone 2": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 8,
+            "idf_order": 523,
+            "zone_name": "hive_e"
+        }
+    },
+    "BuildingSurface:Detailed": {
+        "hive_e_floor": {
+            "construction_name": "floor",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 292,
+            "number_of_vertices": 4,
+            "outside_boundary_condition": "Adiabatic",
+            "sun_exposure": "NoSun",
+            "surface_type": "Floor",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 0
+                }
+            ],
+            "wind_exposure": "NoWind",
+            "zone_name": "hive_e"
+        },
+        "hive_e_roof": {
+            "construction_name": "floor",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 293,
+            "number_of_vertices": 4,
+            "outside_boundary_condition": "Adiabatic",
+            "sun_exposure": "NoSun",
+            "surface_type": "Ceiling",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 2.7
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.7
+                },
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.7
+                },
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 2.7
+                }
+            ],
+            "wind_exposure": "NoWind",
+            "zone_name": "hive_e"
+        },
+        "hive_e_wall_s": {
+            "construction_name": "par_int",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 294,
+            "number_of_vertices": 4,
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "adj_sw_wall_n",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.7
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.7
+                }
+            ],
+            "wind_exposure": "NoWind",
+            "zone_name": "hive_e"
+        },
+        "hive_e_wall_e": {
+            "construction_name": "int_wall",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 295,
+            "number_of_vertices": 4,
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "adj_se_wall_w",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.7
+                },
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 2.7
+                }
+            ],
+            "wind_exposure": "NoWind",
+            "zone_name": "hive_e"
+        },
+        "hive_e_wall_n": {
+            "construction_name": "par_int",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 294,
+            "number_of_vertices": 4,
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "adj_ne_wall_s",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 2.7
+                },
+                {
+                    "vertex_x_coordinate": 3,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 2.7
+                }
+            ],
+            "wind_exposure": "NoWind",
+            "zone_name": "hive_e"
+        },
+        "hive_e_wall_w": {
+            "construction_name": "par_int",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 297,
+            "number_of_vertices": 4,
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "adj_nw_wall_e",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 2.7
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 3,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.7
+                }
+            ],
+            "wind_exposure": "NoWind",
+            "zone_name": "hive_e"
+        }
+    },
+    "ElectricEquipment": {
+        "ig_equip_sala": {
+            "design_level": 120,
+            "design_level_calculation_method": "EquipmentLevel",
+            "end_use_subcategory": "General",
+            "fraction_latent": 0,
+            "fraction_lost": 0,
+            "fraction_radiant": 0.3,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 11,
+            "idf_order": 507,
+            "schedule_name": "sch_equip_sala",
+            "zone_or_zonelist_name": "core"
+        }
+    },
+    "EnergyManagementSystem:Actuator": {
+        "core_hvac_control": {
+            "actuated_component_control_type": "Schedule Value",
+            "actuated_component_type": "Schedule:Constant",
+            "actuated_component_unique_name": "hvac_hive_e",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "idf_order": 141
+        },
+    },
+    "EnergyManagementSystem:Program": {
+        "program_hive_e": {
+            "idf_max_extensible_fields": 22,
+            "idf_max_fields": 23,
+            "idf_order": 149,
+            "lines": [
+                {
+                    "program_line": "SET Temp_Conf = ((Temp_Sala >= 26) || (Temp_Sala <= 16))"
+                },
+                {
+                    "program_line": "IF ((Ocup_Sala > 0) && (Temp_Conf == 1))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 1"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 0"
+                },
+                {
+                    "program_line": "ELSEIF ((Ocup_Sala > 0) && (Sensor_HVACSALA > 0))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 1"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 0"
+                },
+                {
+                    "program_line": "ELSEIF (Ocup_Sala > 0)"
+                },
+                {
+                    "program_line": "IF ((Temp_Ext<Tar_Sala) && (Temp_Ext>19))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 0"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 1"
+                },
+                {
+                    "program_line": "ELSEIF ((Temp_Ext>Tar_Sala) && (Temp_Ext>19))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 0"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 0"
+                },
+                {
+                    "program_line": "ELSEIF (Temp_Ext<19)"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 0"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 0"
+                },
+                {
+                    "program_line": "ENDIF"
+                },
+                {
+                    "program_line": "ELSEIF (Ocup_Sala == 0)"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 0"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 0"
+                },
+                {
+                    "program_line": "ENDIF"
+                }
+            ]
+        }
+    },
+    "EnergyManagementSystem:ProgramCallingManager": {
+        "program_hvac": {
+            "programs": [
+                {
+                    "program_name": "program_hive_e"
+                }
+            ]
+        }
+    },
+}
