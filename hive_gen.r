@@ -260,11 +260,13 @@ hive_gen = function(seed, lx, ly, lz, alt, room, bounds, output_dir, model_name)
   
   # internal loads (people, lights, electric equipment)
   if (room == 'living') {
+    seed[['People']][['people_core']][['number_of_people']] = 4
     seed[['People']][['people_core']][['activity_level_schedule_name']] = 'sch_activ_living'
     seed[['People']][['people_core']][['number_of_people_schedule_name']] = 'sch_occup_living'
     seed[['Lights']][['lights_core']][['schedule_name']] = 'sch_ilum_living'
     seed[['ElectricEquipment']][['equip_core']][['schedule_name']] = 'sch_equip_living'
   } else {
+    seed[['People']][['people_core']][['number_of_people']] = 2
     seed[['People']][['people_core']][['activity_level_schedule_name']] = 'sch_activ_dorm'
     seed[['People']][['people_core']][['number_of_people_schedule_name']] = 'sch_occup_dorm'
     seed[['Lights']][['lights_core']][['schedule_name']] = 'sch_ilum_dorm'
@@ -313,11 +315,13 @@ hive_gen = function(seed, lx, ly, lz, alt, room, bounds, output_dir, model_name)
                    ifelse(side[1] == 's' | side[1] == 'n', lx, ly))[i]
       }
       if (side[2] == 'living') {
+        seed[['People']][[paste0('people_hive_', side[1])]][['number_of_people']] = 4
         seed[['People']][[paste0('people_hive_', side[1])]][['activity_level_schedule_name']] = 'sch_activ_living'
         seed[['People']][[paste0('people_hive_', side[1])]][['number_of_people_schedule_name']] = 'sch_occup_living'
         seed[['Lights']][[paste0('lights_hive_', side[1])]][['schedule_name']] = 'sch_ilum_living'
         seed[['ElectricEquipment']][[paste0('equip_hive_', side[1])]][['schedule_name']] = 'sch_equip_living'
       } else if (side[2] == 'dorm') {
+        seed[['People']][[paste0('people_hive_', side[1])]][['number_of_people']] = 2
         seed[['People']][[paste0('people_hive_', side[1])]][['activity_level_schedule_name']] = 'sch_activ_dorm'
         seed[['People']][[paste0('people_hive_', side[1])]][['number_of_people_schedule_name']] = 'sch_occup_dorm'
         seed[['Lights']][[paste0('lights_hive_', side[1])]][['schedule_name']] = 'sch_ilum_dorm'
@@ -415,10 +419,11 @@ prop = list(
                     list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'living', 0), c('w', 'outdoors', 0)))
 )
 
+# application
 for (i in 1:length(prop)) {
-  hive_gen(seed = '/home/rodox/Dropbox/TEMP/00.single_zone/01.seed/00.sz/seed_inter.epJSON',
+  hive_gen(seed = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/00.seed/00.sz/seed_inter.epJSON',
            lx = prop[[i]][[1]][1], ly = prop[[i]][[1]][2], lz = prop[[i]][[1]][3], alt = prop[[i]][[1]][4],
            names(prop[[i]])[1], bounds = prop[[i]][[2]],
-           output_dir = '/home/rodox/Dropbox/TEMP/00.single_zone/03.validation/00.sz/00.model/',
+           output_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/00.model/',
            model_name = names(prop)[i])
 }
