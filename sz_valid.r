@@ -1,11 +1,56 @@
 # load libraries
 library(ggplot2)
 
-# functions
+# functions ####
+# diff()
+  # calculate difference of results from simplified simulations (single zone) to full simulations
+df_diff = function(df_sz, df_full) {
+  # df_sz - data frame with single zone results
+  # df_full - data frame with full simulation results
+  
+  # calculate absolute difference
+    # formula: diff_abs = val_sz - val_full
+  df_diff_abs = df_sz[, is_label(df_sz)[[2]]] - df_full[, is_label(df_full)[[2]]]
+  # calculate relative difference
+    # formula: diff_rel = (val_sz - val_full) / val_full
+  df_diff_rel = df_diff_abs / df_full[, is_label(df_sz)[[2]]]
+  # add labels to the data frame
+  df_diff_abs = cbind(df_diff_abs, df_sz[, is_label(df_sz)[[1]]])
+  df_diff_rel = cbind(df_diff_rel, df_sz[, is_label(df_sz)[[1]]])
+  return(list('abs' = df_diff_abs, 'rel' = df_diff_rel))
+}
+# isnt_label()
+is_label = function(df) {
+  # df - data frame with the columns to destinguish
+  
+  # yes, it is!
+  yes_label = grepl('dwel', colnames(df)) | grepl('room', colnames(df)) |
+    grepl('weather', colnames(df))
+  # no, it is not!
+  no_label = !grepl('sim', colnames(df)) & !grepl('dwel', colnames(df)) &
+    !grepl('room', colnames(df)) & !grepl('weather', colnames(df))
+  return(list(yes_label, no_label))
+}
+# label_df()
+  # label data frames according to dweling, room, front and weather
+label_df = function(df, file_name) {
+    df$dwel = ifelse(grepl('_sw_', file_name), 'SW',
+                     ifelse(grepl('_se_', file_name), 'SE',
+                            ifelse(grepl('_e_', file_name), 'E',
+                                   ifelse(grepl('_ne_', file_name), 'NE',
+                                          ifelse(grepl('_nw_', file_name), 'NW', 'W')))))
+    side = ifelse(grepl('rm_s', file_name), 'S',
+                  ifelse(grepl('rm_e', file_name), 'E',
+                         ifelse(grepl('rm_n', file_name), 'N', 'W')))
+    df$room = ifelse(grepl('living', file_name), 'Living', paste('Dorm.', side))
+    df$weather = ifelse(grepl('rio_de_janeiro', file_name), 'Rio de Janeiro', 'Sao Paulo')
+  return(df)
+}
 # month_timestep()
   # define interval of timesteps for each month
 month_timestep = function(timestep) {
   # timestep - number of timesteps per hour in the 'csv' (simulation) file
+
   # number of timesteps for each month
   end_month = c(31*24*timestep, (28+31)*24*timestep, (31+28+31)*24*timestep,
                 (30+31+28+31)*24*timestep, (31+30+31+28+31)*24*timestep,
@@ -23,9 +68,76 @@ month_timestep = function(timestep) {
               'nov' = (end_month[10] + 1):end_month[11], 'dec' = (end_month[11] + 1):end_month[12])
   return(year)
 }
+# report()
+# splits the 'csv' simulation report into data frames for each thermal fenom. and other metrics
+  # and calculates thermal balance and other metrics monthly and annual
+report = function(csv, timestep = 6, unit = 'kwh') {
+  # csv - 'csv' simulation file from energyplus simulation
+  # timestep - number of timesteps per hour in the 'csv' simulation file
+  # unit - output's units
+  # possible values: 'kwh' or 'kj'
+  
+  # define unites
+  div = ifelse(unit == 'kwh', 3600000, 1000)
+  # define months
+  year = month_timestep(timestep)
+  # thermal balance vectors
+  int_conv_he = csv$int_conv_he/div
+  conv_hge_floor = -csv[, grepl('floor', colnames(csv)) & grepl('conv_hge', colnames(csv))]/div
+  conv_hge_roof = -csv[, grepl('roof', colnames(csv)) & grepl('conv_hge', colnames(csv))]/div
+  conv_hge_walls = -csv[, grepl('wall', colnames(csv)) & grepl('conv_hge', colnames(csv))]/div
+  conv_hge_windows = -csv[, grepl('window', colnames(csv)) & grepl('conv_hge', colnames(csv))]/div
+  conv_hge_doors = -csv[, grepl('door', colnames(csv)) & grepl('conv_hge', colnames(csv))]/div
+  hvac_sens_he = csv$hvac_sens_he/div
+  hvac_sens_ce = -csv$hvac_sens_ce/div
+  afn_inf_sens_hge = csv$afn_inf_sens_hge/div
+  afn_inf_sens_hle = -csv$afn_inf_sens_hle/div
+  # other evaluation metrics vectors
+  afn_inf_air_change = csv[, c('afn_inf_air_change', 'sch_afn')]
+  hvac_total_he = csv$hvac_total_he/div
+  hvac_total_ce = csv$hvac_total_ce/div
+  # throw all the vectors inside the report list
+  report = list('int_conv_he' = int_conv_he, 'conv_hge_floor' = conv_hge_floor,
+                'conv_hge_roof' = conv_hge_roof, 'conv_hge_walls' = conv_hge_walls,
+                'conv_hge_windows' = conv_hge_windows, 'conv_hge_doors' = conv_hge_doors,
+                'hvac_sens_he' = hvac_sens_he, 'hvac_sens_ce' = hvac_sens_ce,
+                'afn_inf_sens_hge' = afn_inf_sens_hge, 'afn_inf_sens_hle' = afn_inf_sens_hle,
+                'afn_inf_air_change' = afn_inf_air_change, 'hvac_total_he' = hvac_total_he,
+                'hvac_total_ce' = hvac_total_ce, 'df' = NULL)
+  # create data frame
+    # the data frame number of columns is 1 size smaller than the length of report because 1 item of
+      # report's list correspond to 'df'
+  report[['df']] = as.data.frame(matrix(NA, 12, length(report) - 1))
+  colnames(report[['df']]) = c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_walls',
+                               'conv_hge_windows', 'conv_hge_doors', 'hvac_sens_he', 'hvac_sens_ce',
+                               'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change',
+                               'hvac_total_he', 'hvac_total_ce')
+  rownames(report[['df']]) = names(year)
+  isnt_air_change = colnames(report[['df']]) != 'afn_inf_air_change'
+  for (month in names(year)) {
+    afn_month = afn_inf_air_change[year[[month]], ]
+    report[['df']][month, 'afn_inf_air_change'] =
+      mean(subset(afn_month, sch_afn != 0)$afn_inf_air_change)
+    for (col in colnames(report[['df']])[isnt_air_change]) {
+      report[['df']][month, col] = ifelse(is.null(dim(report[[col]])),
+                                          sum(report[[col]][year[[month]]]),
+                                          sum(apply(report[[col]][year[[month]], ], 2, sum)))
+    }
+  }
+  report[['df']]['year', isnt_air_change] = apply(report[['df']][1:12, isnt_air_change], 2, sum)
+  report[['df']]['year', 'afn_inf_air_change'] = mean(report[['df']][1:12, 'afn_inf_air_change'])
+  report[['df']]$hvac_total_he = ifelse(report[['df']]$hvac_total_he < 0.01, 0,
+                                        report[['df']]$hvac_total_he)
+  report[['df']] = apply(report[['df']], 2, round, 1)
+  report[['df']] = cbind(report[['df']], data.frame('sim' = NA, 'dwel' = NA, 'room' = NA,
+                                                    'weather' = NA))
+  return(report)
+}
 # surf_rename()
   # rename the surfaces removing zone name and unecessary information
 surf_rename = function(col_name) {
+  # col_name - name of the surface column name to rename
+
   surf = ifelse(grepl('FLOOR', col_name), '_floor',
                 ifelse(grepl('ROOF', col_name), '_roof',
                        ifelse(grepl('WALL', col_name), '_wall',
@@ -40,89 +152,23 @@ surf_rename = function(col_name) {
   return(surf_rename)
 }
 
-# report()
-  # splits the 'csv' simulation report into data frames for each thermal fenom. and other metrics
-    # and calculates thermal balance and other metrics monthly and annual
-report = function(csv, timestep = 6, unit = 'kwh') {
-  # csv - 'csv' simulation file from energyplus simulation
-  # timestep - number of timesteps per hour in the 'csv' simulation file
-  # unit - output's units
-    # possible values: 'kwh' or 'kj'
-
-  # test
-  # csv = csv_files[[1]][[1]]
-  # timestep = 6
-  # unit = 'kwh'
-  
-  # define unites
-  div = ifelse(unit == 'kwh', 3600000, 1000)
-  # define months
-  year = month_timestep(timestep)
-  # thermal balance vectors
-  int_conv_he = csv$int_conv_he/div
-  conv_hge_floor = csv[, grepl('floor', colnames(csv)) & grepl('conv_hge', colnames(csv))]/div
-  conv_hge_roof = csv[, grepl('roof', colnames(csv)) & grepl('conv_hge', colnames(csv))]/div
-  conv_hge_walls = csv[, grepl('wall', colnames(csv)) & grepl('conv_hge', colnames(csv))]/div
-  conv_hge_windows = csv[, grepl('window', colnames(csv)) & grepl('conv_hge', colnames(csv))]/div
-  conv_hge_doors = csv[, grepl('door', colnames(csv)) & grepl('conv_hge', colnames(csv))]/div
-  hvac_sens_he = csv$hvac_sens_he/div
-  hvac_sens_ce = csv$hvac_sens_ce/div
-  afn_inf_sens_hge = csv$afn_inf_sens_hge/div
-  afn_inf_sens_hle = csv$afn_inf_sens_hle/div
-  # other evaluation metrics vectors
-  afn_inf_air_change = csv[, c('afn_inf_air_change', 'sch_afn')]
-  hvac_total_he = csv$hvac_total_he/div
-  hvac_total_ce = csv$hvac_total_ce/div
-  # throw all the vectors inside the report list
-  report = list('int_conv_he' = int_conv_he, 'conv_hge_floor' = conv_hge_floor,
-                'conv_hge_roof' = conv_hge_roof, 'conv_hge_walls' = conv_hge_walls,
-                'conv_hge_windows' = conv_hge_windows, 'conv_hge_doors' = conv_hge_doors,
-                'hvac_sens_he' = hvac_sens_he, 'hvac_sens_ce' = hvac_sens_ce,
-                'afn_inf_sens_hge' = afn_inf_sens_hge, 'afn_inf_sens_hle' = afn_inf_sens_hle,
-                'afn_inf_air_change' = afn_inf_air_change, 'hvac_total_he' = hvac_total_he,
-                'hvac_total_ce' = hvac_total_ce, 'df' = NULL)
-  report[['df']] = as.data.frame(matrix(NA, 12, length(report) - 1))
-  colnames(report[['df']]) = c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_walls',
-                               'conv_hge_windows', 'conv_hge_doors', 'hvac_sens_he', 'hvac_sens_ce',
-                               'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change',
-                               'hvac_total_he', 'hvac_total_ce')
-  rownames(report[['df']]) = names(year)
-  no_air_change = colnames(report[['df']]) != 'afn_inf_air_change'
-  for (month in names(year)) {
-    afn_month = afn_inf_air_change[year[[month]], ]
-    report[['df']][month, 'afn_inf_air_change'] =
-      mean(subset(afn_month, sch_afn != 0)$afn_inf_air_change)
-    for (col in colnames(report[['df']])[no_air_change]) {
-      report[['df']][month, col] = ifelse(is.null(dim(report[[col]])),
-                                             sum(report[[col]][year[[month]]]),
-                                             sum(apply(report[[col]][year[[month]], ], 2, sum)))
-    }
-  }
-  report[['df']]['year', no_air_change] = apply(report[['df']][1:12, no_air_change], 2, sum)
-  report[['df']]['year', 'afn_inf_air_change'] = mean(report[['df']][1:12, 'afn_inf_air_change'])
-  report[['df']]$hvac_total_he = ifelse(report[['df']]$hvac_total_he < 0.01, 0,
-                                        report[['df']]$hvac_total_he)
-  report[['df']] = apply(report[['df']], 2, round, 1)
-  return(report)
-}
-
+# pre-process ####
 # with single zone results directory (first) and the directories of the real cases
 input_dirs = list('sz' = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/01.result/',
                   'multi' = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/01.result/00.1st_multi/')
-
 # create empty lists to be filled with 'csv' files
 csv_names = csv_files = results = vector('list', length = length(input_dirs))
 # name the lists
 names(csv_names) = names(csv_files) = names(results) = names(input_dirs)
 
+# load files ####
 # pick 'csv' names inside input directory
 for (i in 1:length(csv_names)) {
   csv_names[[i]] = dir(input_dirs[[i]], '.csv')
   # extend results
   results[[i]] = vector('list', length(csv_names[[i]]))
 }
-
-# load files
+# read files
 for (i in 1:length(csv_names)) {
   for (j in 1:length(csv_names[[i]])) {
     # count the files while they're loaded
@@ -134,12 +180,12 @@ for (i in 1:length(csv_names)) {
   names(csv_files[[i]]) = names(results[[i]]) = sub('.csv', '', csv_names[[i]])
 }
 
+# rename columns ####
 # delete columns related to the hives
 csv_files$sz = lapply(csv_files$sz, function(x) x[, grepl('CORE', colnames(x)) |
                                                     grepl('Date.Time', colnames(x)) |
                                                     grepl('Drybulb', colnames(x))])
-
-# rename column names
+# define new column names
 sz_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count', rep('conv_hge', 9),
           'mean_temp', 'op_temp', rep('afn_open_fac', 3), 'afn_inf_sens_hge', 'afn_inf_sens_hle',
           'afn_inf_air_change', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce',
@@ -156,8 +202,7 @@ multi_sn_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_coun
                     rep('conv_hge', 10), 'mean_temp', 'op_temp', rep('afn_open_fac', 3),
                     'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he',
                     'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
-
-# rename columns
+# rename 'csv' simulation files
 for (i in 1:length(csv_files$sz)) {
   # remove first column related to an x variable created when multi 'csv' files were splitted
   csv_files$multi[[i]][, 1] = NULL
@@ -184,7 +229,7 @@ for (i in 1:length(csv_files$sz)) {
   }
 }
 
-# configure 'date_time' colum
+# configure 'date_time' column ####
 for (i in 1:length(csv_files)) {
   for (j in 1:length(csv_files[[i]])) {
     csv_files[[i]][[j]]$date_time = seq(ISOdate(19, 1, 1, 0, 10, 0), by = '10 min',
@@ -192,10 +237,131 @@ for (i in 1:length(csv_files)) {
   }
 }
 
-# compile the results
+# compile results ####
 for (i in 1:length(csv_files)) {
+  results[[i]] = lapply(csv_files[[i]], report)
   for (j in 1:length(csv_files[[i]])) {
-
+    results[[i]][[j]][['df']]$sim = ifelse(grepl('sz', names(results)[i]), 'SZ', 'Multi.')
+    results[[i]][[j]][['df']] = label_df(results[[i]][[j]][['df']], names(results[[i]])[j])
+    results[['combo']] = rbind(results[['combo']], results[[i]][[j]][['df']])
   }
 }
 
+# compile differences
+for (i in 1:length(results[['sz']])) {
+  for (type in c('abs', 'rel')) {
+    results[['diff']][[type]][[i]] = df_diff(results[['sz']][[i]][['df']],
+                                             results[['multi']][[i]][['df']])[[type]]
+    results[['diff']][['combo']][[type]] = rbind(results[['diff']][['combo']][[type]],
+                                       df_diff(results[['sz']][[i]][['df']],
+                                               results[['multi']][[i]][['df']])[[type]]['year', ])
+  }
+}
+
+# plot graphs ####
+
+# plot_diff_cgtr()
+# plot_diff_cgtr = function(df, rel = F, plot_dir) {
+  rel = T
+  plot_title = ifelse(rel == F, 'diff_cgtr_abs', 'diff_cgtr_rel')
+  # png(filename = paste0(plot_dir, plot_title), width = 33.8, height = 19, units = 'cm',
+  #     res = 500)
+  ggplot(data = results$diff$combo$rel,
+         aes(x = dwel, y = hvac_total_ce)) +
+    facet_grid(. ~ weather) +
+    geom_bar(stat = 'identity', position = 'dodge', aes(x = dwel, y = hvac_total_ce, fill = room)) +
+    labs(title = paste0('Diferença ', ifelse(rel == F, 'Absoluta', 'Relativa'),
+                        ' de CgTR - SZ x Multi.'),
+         x = NULL,
+         y = ifelse(rel == F, 'Diff. Abs. CgTR (kWh)', 'Diff. Rel. CgTR (Adim.)'),
+         fill = 'Room:') +
+    theme(legend.text = element_text(size = 14),
+          legend.title = element_text(size = 15),
+          legend.position = 'bottom',
+          plot.title = element_text(size = 20, hjust = 0.4),
+          axis.title.y = element_text(size=15),
+          axis.text.x = element_text(size = 14),
+          axis.text.y = element_text(size=14),
+          strip.text.x = element_text(size = 17),
+          strip.text.y = element_text(size = 17))
+#   dev.off()
+# }
+
+# thermal balance
+# sao_paulo_w_dorm_s
+# sao_paulo_w_dorm_n
+# rio_de_janeiro_se_living
+  # here the problem is exclusively on the living room
+# rio_de_janeiro_sw_living
+  # here the problem is exclusively on the living room
+
+# sao_paulo_w_dorm_s
+
+# plot_therm_bal()
+# plot_therm_bal = function(df, Dwel, Room) {
+  
+  Dwel = 'W'
+  Room = 'Dorm. S'
+  
+  # create data frame 
+  vars = c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_walls', 'conv_hge_windows',
+           'conv_hge_doors', 'hvac_sens_ce', 'afn_inf_sens_hle')
+  diff_bal = data.frame('val' = NA, 'var' = NA, 'dwel' = NA, 'room' = NA, 'weather' = NA)
+  for (var in vars) {
+    df = data.frame('val' = results[['diff']][['combo']][['abs']][, var],
+                    'var' = var, 'dwel' = results[['diff']][['combo']][['abs']]$dwel,
+                    'room' = results[['diff']][['combo']][['abs']]$room,
+                    'weather' = results[['diff']][['combo']][['abs']]$weather)
+    diff_bal = rbind(diff_bal, df)
+  }
+  diff_bal = subset(diff_bal, !is.na(val))
+  diff_bal = subset(subset(diff_bal, dwel == Dwel), room == Room)
+  
+  # plot
+  plot_title = paste0('therm_bal_', tolower(Dwel), '_', tolower(sub('. ', '_', Room)))
+  # png(filename = paste0(plot_dir, plot_title), width = 33.8, height = 19, units = 'cm',
+  #     res = 500)
+  ggplot(data = diff_bal, aes(x = var, y = val, fill = var)) +
+    facet_grid(. ~ weather) +
+    geom_bar(stat = 'identity', position = 'dodge') +
+    labs(title = 'Diferenças no Balanço Térmico - SZ x Multi.',
+         subtitle = paste('Apto.', Dwel, Room),
+         x = NULL,
+         y = 'Diff. Bal. Térm. (kWh)') +
+    scale_fill_discrete(name = 'Troca\nde Calor:',
+                        labels = c('VN', 'Portas', 'Piso', 'Cobertura', 'Paredes', 'Janelas',
+                                   'HVAC', 'Cargas Internas')) +
+    theme(legend.text = element_text(size = 14),
+          legend.title = element_text(size = 15),
+          legend.position = 'bottom',
+          plot.title = element_text(size = 20, hjust = 0.4),
+          plot.subtitle = element_text(size = 18, hjust = 0.4),
+          axis.title.y = element_text(size=15),
+          axis.text.x = element_blank(),
+          axis.text.y = element_text(size=14),
+          strip.text.x = element_text(size = 17),
+          strip.text.y = element_text(size = 17))
+  # dev.off()
+# }
+
+
+  ggplot(data = diff_bal, aes(x = var, y = val, fill = var)) +
+    facet_grid(. ~ weather) +
+    geom_bar(stat = 'identity', position = 'dodge') +
+    labs(title = 'Diferenças no Balanço Térmico - SZ x Multi.',
+         subtitle = paste('Apto.', Dwel, Room),
+         x = NULL,
+         y = 'Diff. Bal. Térm. (kWh)') +
+    scale_fill_discrete(name = 'Troca\nde Calor:',
+                        labels = c('VN', 'Portas', 'Piso', 'Cobertura', 'Paredes', 'Janelas',
+                                   'HVAC', 'Cargas Internas')) +
+    theme(legend.text = element_text(size = 14),
+          legend.title = element_text(size = 15),
+          legend.position = 'bottom',
+          plot.title = element_text(size = 20, hjust = 0.4),
+          plot.subtitle = element_text(size = 18, hjust = 0.4),
+          axis.title.y = element_text(size=15),
+          axis.text.x = element_blank(),
+          axis.text.y = element_text(size=14),
+          strip.text.x = element_text(size = 17),
+          strip.text.y = element_text(size = 17))
