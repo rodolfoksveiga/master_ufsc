@@ -13,7 +13,7 @@ df_diff = function(df_sz, df_full) {
   df_diff_abs = df_sz[, is_label(df_sz)[[2]]] - df_full[, is_label(df_full)[[2]]]
   # calculate relative difference
     # formula: diff_rel = (val_sz - val_full) / val_full
-  df_diff_rel = df_diff_abs / df_full[, is_label(df_sz)[[2]]]
+  df_diff_rel = df_diff_abs*100 / df_full[, is_label(df_sz)[[2]]]
   # add labels to the data frame
   df_diff_abs = cbind(df_diff_abs, df_sz[, is_label(df_sz)[[1]]])
   df_diff_rel = cbind(df_diff_rel, df_sz[, is_label(df_sz)[[1]]])
@@ -43,7 +43,7 @@ label_df = function(df, file_name) {
                   ifelse(grepl('rm_e', file_name), 'E',
                          ifelse(grepl('rm_n', file_name), 'N', 'W')))
     df$room = ifelse(grepl('living', file_name), 'Living', paste('Dorm.', side))
-    df$weather = ifelse(grepl('rio_de_janeiro', file_name), 'Rio de Janeiro', 'Sao Paulo')
+    df$weather = ifelse(grepl('rio_de_janeiro', file_name), 'Rio de Janeiro', 'São Paulo')
   return(df)
 }
 # month_timestep()
@@ -154,8 +154,10 @@ surf_rename = function(col_name) {
 
 # pre-process ####
 # with single zone results directory (first) and the directories of the real cases
-input_dirs = list('sz' = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/01.result/',
-                  'multi' = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/01.result/00.1st_multi/')
+input_dirs = list('sz' = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/
+                  01.result/',
+                  'multi' = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/
+                  01.multi/01.result/00.1st_multi/')
 # create empty lists to be filled with 'csv' files
 csv_names = csv_files = results = vector('list', length = length(input_dirs))
 # name the lists
@@ -243,9 +245,26 @@ for (i in 1:length(csv_files)) {
   for (j in 1:length(csv_files[[i]])) {
     results[[i]][[j]][['df']]$sim = ifelse(grepl('sz', names(results)[i]), 'SZ', 'Multi.')
     results[[i]][[j]][['df']] = label_df(results[[i]][[j]][['df']], names(results[[i]])[j])
-    results[['combo']] = rbind(results[['combo']], results[[i]][[j]][['df']])
+    results[['combo']][['raw']] = rbind(results[['combo']][['raw']],
+                                        results[[i]][[j]][['df']]['year', ])
   }
 }
+
+vars = c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_walls', 'conv_hge_windows',
+         'conv_hge_doors', 'hvac_sens_ce', 'afn_inf_sens_hle')
+results[['combo']][['tb']] = data.frame('val' = NA, 'var' = NA, 'sim' = NA, 'dwel' = NA,
+                                        'room' = NA, 'weather' = NA)
+for (var in vars) {
+  df = data.frame('val' = results[['combo']][['raw']][, var],
+                  'var' = var, 'dwel' = results[['combo']][['raw']]$dwel,
+                  'sim' = results[['combo']][['raw']]$sim,
+                  'room' = results[['combo']][['raw']]$room,
+                  'weather' = results[['combo']][['raw']]$weather)
+  results[['combo']][['tb']] = rbind(results[['combo']][['tb']], df)
+}
+results[['combo']][['tb']] = subset(results[['combo']][['tb']], !is.na(val))
+# remove unuseful variables
+rm(var, vars, df)
 
 # compile differences
 for (i in 1:length(results[['sz']])) {
@@ -258,110 +277,144 @@ for (i in 1:length(results[['sz']])) {
   }
 }
 
-# plot graphs ####
-
+# plot ####
 # plot_diff_cgtr()
-# plot_diff_cgtr = function(df, rel = F, plot_dir) {
-  rel = T
-  plot_title = ifelse(rel == F, 'diff_cgtr_abs', 'diff_cgtr_rel')
-  # png(filename = paste0(plot_dir, plot_title), width = 33.8, height = 19, units = 'cm',
-  #     res = 500)
-  ggplot(data = results$diff$combo$rel,
-         aes(x = dwel, y = hvac_total_ce)) +
-    facet_grid(. ~ weather) +
-    geom_bar(stat = 'identity', position = 'dodge', aes(x = dwel, y = hvac_total_ce, fill = room)) +
-    labs(title = paste0('Diferença ', ifelse(rel == F, 'Absoluta', 'Relativa'),
-                        ' de CgTR - SZ x Multi.'),
+  # plot cooling thermal load
+plot_diff_cgtr = function(df, rel = F, plot_dir) {
+  # df - 
+  # rel - 
+  # plot_dir - 
+  
+  # associate conditions to plot
+  plot_name = ifelse(rel == F, 'diff_cgtr_abs.png', 'diff_cgtr_rel.png')
+  png(filename = paste0(plot_dir, plot_name), width = 33.8, height = 19, units = 'cm', res = 500)
+  plot(
+    # define main data frame used in the plot
+    ggplot(data = df, aes(x = dwel, y = hvac_total_ce)) +
+      # create one grid for each weather
+      facet_grid(. ~ weather) +
+      # insert a bar geometry plot using 'total cooling load x dweling'
+      geom_bar(stat = 'identity', position = 'dodge', aes(x = dwel, y = hvac_total_ce, fill = room)) +
+      # define labs (title, x and y labs)
+      labs(title = paste0('Diferença ', ifelse(rel == F, 'Absoluta', 'Relativa'),
+                          ' de Carga Térmica de Refrigeração'),
+           subtitle = 'Diff = SZ - Multi.',
+           x = NULL,
+           y = ifelse(rel == F, 'Diff. Abs. CgTR (kWh)', 'Diff. Rel. CgTR (%)'),
+           fill = 'Room:') +
+      # edit all kind of text in the plot
+      theme(legend.text = element_text(size = 14),
+            legend.title = element_text(size = 15),
+            legend.position = 'bottom',
+            plot.title = element_text(size = 20, hjust = 0.5),
+            plot.subtitle = element_text(size = 18, hjust = 0.5),
+            axis.title.y = element_text(size=15),
+            axis.text.x = element_text(size = 14),
+            axis.text.y = element_text(size=14),
+            strip.text.x = element_text(size = 17),
+            strip.text.y = element_text(size = 17))
+  )
+  # finish plotting
+  dev.off()
+}
+# plot_cgtr()
+  # plot difference of cooling thermal load between simplified model and 'original' model
+plot_cgtr = function(df, plot_dir) {
+  # df - 
+  # plot_dir - 
+  
+  # associate conditions to plot
+  png(filename = paste0(plot_dir, 'cgtr.png'),
+      width = 33.8, height = 19, units = 'cm', res = 500)
+  plot(
+    # define main data frame used in the plot
+    ggplot(data = df, aes(x = dwel, y = hvac_total_ce)) +
+      # create one grid for each weather
+      facet_grid(sim ~ weather) +
+      # insert a bar geometry plot using 'total cooling load x dweling'
+      geom_bar(stat = 'identity', position = 'dodge', aes(x = dwel, y = hvac_total_ce, fill = room)) +
+      # define labs (title, x and y labs)
+      labs(title = 'Carga Térmica de Refrigeração',
+           x = NULL,
+           y = 'CgTR (kWh)',
+           fill = 'Room:') +
+      # edit all kind of text in the plot
+      theme(legend.text = element_text(size = 14),
+            legend.title = element_text(size = 15),
+            legend.position = 'bottom',
+            plot.title = element_text(size = 20, hjust = 0.5),
+            axis.title.y = element_text(size=15),
+            axis.text.x = element_text(size = 14),
+            axis.text.y = element_text(size=14),
+            strip.text.x = element_text(size = 17),
+            strip.text.y = element_text(size = 17))
+    )
+  # fininish the plot
+  dev.off()
+}
+# plot_tb()
+  # plot thermal balance
+plot_tb = function(df, Dwel, Room) {
+  # df - 
+  # Dwel - 
+  # Room - 
+
+  # associate conditions to plot
+  plot_name = paste0('therm_bal_', tolower(Dwel), '_', tolower(sub('. ', '_', Room)), '.png')
+  png(filename = paste0(plot_dir, plot_name), width = 33.8, height = 19, units = 'cm', res = 500)
+  plot(
+    ggplot(data = df, aes(x = var, y = val, fill = var)) +
+    facet_grid(sim ~ weather) +
+    geom_bar(stat = 'identity', position = 'dodge') +
+    labs(title = 'Balanço Térmico',
+         subtitle = paste('Apto.', Dwel, Room),
          x = NULL,
-         y = ifelse(rel == F, 'Diff. Abs. CgTR (kWh)', 'Diff. Rel. CgTR (Adim.)'),
-         fill = 'Room:') +
+         y = 'Carga Térmica (kWh)') +
+    scale_fill_discrete(name = 'Troca\nde Calor:',
+                        labels = c('VN', 'Portas', 'Piso', 'Cobertura', 'Paredes', 'Janelas',
+                                   'HVAC', 'Cargas Internas')) +
+    theme(legend.text = element_text(size = 14),
+          legend.title = element_text(size = 15),
+          legend.position = 'bottom',
+          plot.title = element_text(size = 20, hjust = 0.5),
+          plot.subtitle = element_text(size = 18, hjust = 0.5),
+          axis.title.y = element_text(size=15),
+          axis.text.x = element_blank(),
+          axis.text.y = element_text(size=14),
+          strip.text.x = element_text(size = 17),
+          strip.text.y = element_text(size = 17)))
+  dev.off()
+}
+
+
+  ggplot(data = diff_bal, aes(x = var, y = val, fill = var)) +
+    facet_grid(. ~ weather) +
+    geom_bar(stat = 'identity', position = 'dodge') +
+    labs(title = 'Diferenças no Balanço Térmico - SZ x Multi.',
+         subtitle = paste('Apto.', Dwel, Room),
+         x = NULL,
+         y = 'Diff. Bal. Térm. (kWh)') +
+    scale_fill_discrete(name = 'Troca\nde Calor:',
+                        labels = c('VN', 'Portas', 'Piso', 'Cobertura', 'Paredes', 'Janelas',
+                                   'HVAC', 'Cargas Internas')) +
     theme(legend.text = element_text(size = 14),
           legend.title = element_text(size = 15),
           legend.position = 'bottom',
           plot.title = element_text(size = 20, hjust = 0.4),
+          plot.subtitle = element_text(size = 18, hjust = 0.4),
           axis.title.y = element_text(size=15),
-          axis.text.x = element_text(size = 14),
+          axis.text.x = element_blank(),
           axis.text.y = element_text(size=14),
           strip.text.x = element_text(size = 17),
           strip.text.y = element_text(size = 17))
-#   dev.off()
-# }
 
-# thermal balance
-# sao_paulo_w_dorm_s
-# sao_paulo_w_dorm_n
-# rio_de_janeiro_se_living
-  # here the problem is exclusively on the living room
-# rio_de_janeiro_sw_living
-  # here the problem is exclusively on the living room
-
-# sao_paulo_w_dorm_s
-
-# plot_therm_bal()
-# plot_therm_bal = function(df, Dwel, Room) {
   
-  Dwel = 'W'
-  Room = 'Dorm. S'
   
-  # create data frame 
-  vars = c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_walls', 'conv_hge_windows',
-           'conv_hge_doors', 'hvac_sens_ce', 'afn_inf_sens_hle')
-  diff_bal = data.frame('val' = NA, 'var' = NA, 'dwel' = NA, 'room' = NA, 'weather' = NA)
-  for (var in vars) {
-    df = data.frame('val' = results[['diff']][['combo']][['abs']][, var],
-                    'var' = var, 'dwel' = results[['diff']][['combo']][['abs']]$dwel,
-                    'room' = results[['diff']][['combo']][['abs']]$room,
-                    'weather' = results[['diff']][['combo']][['abs']]$weather)
-    diff_bal = rbind(diff_bal, df)
+# application ####
+for (type in c('abs', 'rel')) {
+  plot_diff_cgtr(df = results$diff$combo[[type]], rel = ifelse(type == 'rel', T, F),
+                 plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/')
   }
-  diff_bal = subset(diff_bal, !is.na(val))
-  diff_bal = subset(subset(diff_bal, dwel == Dwel), room == Room)
-  
-  # plot
-  plot_title = paste0('therm_bal_', tolower(Dwel), '_', tolower(sub('. ', '_', Room)))
-  # png(filename = paste0(plot_dir, plot_title), width = 33.8, height = 19, units = 'cm',
-  #     res = 500)
-  ggplot(data = diff_bal, aes(x = var, y = val, fill = var)) +
-    facet_grid(. ~ weather) +
-    geom_bar(stat = 'identity', position = 'dodge') +
-    labs(title = 'Diferenças no Balanço Térmico - SZ x Multi.',
-         subtitle = paste('Apto.', Dwel, Room),
-         x = NULL,
-         y = 'Diff. Bal. Térm. (kWh)') +
-    scale_fill_discrete(name = 'Troca\nde Calor:',
-                        labels = c('VN', 'Portas', 'Piso', 'Cobertura', 'Paredes', 'Janelas',
-                                   'HVAC', 'Cargas Internas')) +
-    theme(legend.text = element_text(size = 14),
-          legend.title = element_text(size = 15),
-          legend.position = 'bottom',
-          plot.title = element_text(size = 20, hjust = 0.4),
-          plot.subtitle = element_text(size = 18, hjust = 0.4),
-          axis.title.y = element_text(size=15),
-          axis.text.x = element_blank(),
-          axis.text.y = element_text(size=14),
-          strip.text.x = element_text(size = 17),
-          strip.text.y = element_text(size = 17))
-  # dev.off()
-# }
-
-
-  ggplot(data = diff_bal, aes(x = var, y = val, fill = var)) +
-    facet_grid(. ~ weather) +
-    geom_bar(stat = 'identity', position = 'dodge') +
-    labs(title = 'Diferenças no Balanço Térmico - SZ x Multi.',
-         subtitle = paste('Apto.', Dwel, Room),
-         x = NULL,
-         y = 'Diff. Bal. Térm. (kWh)') +
-    scale_fill_discrete(name = 'Troca\nde Calor:',
-                        labels = c('VN', 'Portas', 'Piso', 'Cobertura', 'Paredes', 'Janelas',
-                                   'HVAC', 'Cargas Internas')) +
-    theme(legend.text = element_text(size = 14),
-          legend.title = element_text(size = 15),
-          legend.position = 'bottom',
-          plot.title = element_text(size = 20, hjust = 0.4),
-          plot.subtitle = element_text(size = 18, hjust = 0.4),
-          axis.title.y = element_text(size=15),
-          axis.text.x = element_blank(),
-          axis.text.y = element_text(size=14),
-          strip.text.x = element_text(size = 17),
-          strip.text.y = element_text(size = 17))
+plot_cgtr(df = results[['combo']],
+          plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/')
+plot_tb(df = results[['combo']][['tb']], Dwel = 'W', Room = 'Dorm. N')
