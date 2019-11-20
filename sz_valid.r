@@ -517,17 +517,23 @@ plot_diff_tb = function(df, Dwel, Room, rel = F, plot_dir) {
   dev.off()
 }
 
-# plot_detail()
+# plot_detail_tb()
 # plot daily detailed analysis
 # plot differences in thermal balance between simplified model and 'original' model
 plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
   # plot_name - 
   # day - 
   # plot_dir - 
+  # unit - 
+  
+  # test
+  plot_name = 'rio_de_janeiro_se_dorm_e'
+  day = '19-06-20'
+  unit = 'kj'
   
   # pre-process
   # define season
-  season = ifelse(day == '19-12-22', 'verao', 'inverno')
+  season = ifelse(day == '19-04-03', 'niver', ifelse(day == '19-06-20', 'inverno', 'verao'))
   # define unites
   div = ifelse(unit == 'kj', 1000, 3600000)
   # define variables in analysis
@@ -585,22 +591,32 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
   df = subset(df, !is.na(val))
   df = cbind('date_time' = csv$date_time, 'site_drybulb_temp' = csv$site_drybulb_temp,
              'sim' = csv$sim, 'afn_inf_air_change' = csv$afn_inf_air_change, df)
+  # calculate max and min of val variable to plot second axis
+  max_val = max(df$val)
+  min_val = min(df$val)
+  max_afn = max(df$afn_inf_air_change)
+  min_afn = min(df$afn_inf_air_change)
   
   # start plotting
   # associate conditions to plot and name plot
-  png(filename = paste0(plot_dir, 'detail_', plot_name, '_', season, '.png'), width = 33.8,
+  png(filename = paste0(plot_dir, 'detail_tb_', plot_name, '_', season, '.png'), width = 33.8,
       height = 19, units = 'cm', res = 500)
   plot(
     # define main data frame used in the plot
     ggplot(data = df) +
       # create one grid for each kind of simulation
       facet_grid(. ~ sim) +
-      # insert a bar geometry for schedules hvac and afn
+      # insert lines geometries for each kind of heat flow
       geom_line(data = df, aes(x = date_time, y = val, color = var)) +
+      # insert a black dotted line to airflow network
+      geom_line(data = df, aes(x = date_time,
+                               y = afn_inf_air_change*(max_val-0)/(max_afn-0)),
+                linetype = 'dotted', color = 'black') +
       # define labs (title, x and y labs)
       labs(title = 'Analise diaria detalhada',
-           subtitle = paste(sub('De', 'de', cap_str(gsub('_', ' ', plot_name))),
-                            '\n', 'Dia', day, '(', cap_str(season), ')'),
+           subtitle = paste0(sub('De', 'de', cap_str(gsub('_', ' ', plot_name))),
+                            '\n', 'Dia ', day, ' (', ifelse(season != 'niver', cap_str(season),
+                                                          paste0(cap_str(season), ' :)')), ')'),
            x = 'Hora',
            y = 'KJ') +
       # edit legend
@@ -609,7 +625,10 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
                                       'Janelas', 'HVAC', 'Cg. Int.'),
                          values = c('chartreuse3', 'darkslategray3', 'darkgoldenrod2', 'firebrick2',
                                     'mediumpurple2', 'peachpuff4', 'royalblue3', 'lightcyan4')) +
-      scale_x_datetime(date_breaks = '2 hour', date_labels = '%Hh')) +
+      scale_x_datetime(date_breaks = '2 hour', date_labels = '%Hh') +
+      scale_y_continuous(limits = c(min, max),
+                         sec.axis = sec_axis(~ . *(max_afn-0)/(max_val-0),
+                                             name = 'Trocas de ar por hora\n')) +
     # edit all kind of text in the plot
     theme(legend.text = element_text(size = 13),
           legend.title = element_text(size = 14),
@@ -622,11 +641,12 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
           axis.text.y = element_text(size=13),
           strip.text.x = element_text(size = 16),
           strip.text.y = element_text(size = 16))
+  )
   # finish plotting
-  dev.off()
+dev.off()
 }
 
-
+    
 # plot application ####
 # cgtr
 plot_cgtr(df = results[['combo']][['raw']],
@@ -679,13 +699,18 @@ for (type in c('abs', 'rel')) {
 rm(type, D, R)
 
 # detailed thermal balance
-casos = c()
-days = c('19-12-22', '19-06-20')
+casos = c('rio_de_janeiro_e_dorm_s', 'rio_de_janeiro_w_dorm_n', 'rio_de_janeiro_ne_dorm_e',
+          'rio_de_janeiro_nw_dorm_e', 'rio_de_janeiro_se_dorm_w', 'rio_de_janeiro_sw_dorm_w',
+          'rio_de_janeiro_se_living', 'sao_paulo_e_dorm_s', 'sao_paulo_w_dorm_n',
+          'sao_paulo_ne_dorm_e', 'sao_paulo_nw_dorm_e', 'sao_paulo_se_dorm_w',
+          'sao_paulo_sw_dorm_w', 'sao_paulo_se_living')
+days = c('19-04-03', '19-06-20', '19-12-22')
 for (caso in casos) {
   for (day in days) {
     plot_detail_tb(plot_name = caso, day = day, unit = 'kj',
-                   plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/')
+                   plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                                     '00.detail/'))
   }
 }
-
-
+# remove unuseful variables
+rm(casos, days, caso, day)
