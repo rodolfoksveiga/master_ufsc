@@ -6,7 +6,7 @@ library(ggplot2)
 # capitalize all the words in a string
 cap_str = function(str) {
   # str - string to capitalize
-
+  
   spl = strsplit(str, ' ')[[1]]
   cap_spl = Hmisc::capitalize(spl)
   cap_str = cap_spl[1]
@@ -405,7 +405,7 @@ plot_diff_cgtr = function(df, rel = F, plot_dir) {
       geom_bar(stat = 'identity', position = 'dodge', aes(x = dwel, y = hvac_total_ce, fill = room)) +
       # define labs (title, x and y labs)
       labs(title = paste('Diferença', ifelse(rel == F, 'Absoluta', 'Relativa'),
-                          'de Carga Térmica de Refrigeração'),
+                         'de Carga Térmica de Refrigeração'),
            subtitle = 'Diff = SZ - "Original"',
            x = NULL,
            y = ifelse(rel == F, 'Diff. CgTR (kWh)', 'Diff. CgTR (%)'),
@@ -548,7 +548,7 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
   # compile convection for each type of surface
   # surface: 'floor', 'roof', 'wall', 'window', 'door'
   # also bind cooling and heating thermal loads in one variable and afn sensible heat
-    # gain and loss in another variable
+  # gain and loss in another variable
   for (i in 1:length(csv)) {
     csv[[i]] = csv[[i]][interval, ]
     # bind cooling and heating thermal loads
@@ -592,8 +592,8 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
   max_afn = max(df$afn_inf_air_change)
   min_afn = min(df$afn_inf_air_change)
   
-  # start plotting
-  # associate conditions to plot and name plot
+  # # start plotting
+  # # associate conditions to plot and name plot
   png(filename = paste0(plot_dir, 'detail_tb_', plot_name, '_', season, '.png'), width = 33.8,
       height = 19, units = 'cm', res = 500)
   plot(
@@ -610,38 +610,40 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
       # define labs (title, x and y labs)
       labs(title = 'Analise diaria detalhada',
            subtitle = paste0(sub('De', 'de', cap_str(gsub('_', ' ', plot_name))),
-                            '\n', 'Dia ', day, ' (', ifelse(season != 'niver', cap_str(season),
-                                                          paste0(cap_str(season), ' :)')), ')'),
+                             '\n', 'Dia ', day, ' (', ifelse(season != 'niver', cap_str(season),
+                                                             paste0(cap_str(season), ' :)')), ')'),
            x = 'Hora',
            y = 'KJ') +
       # edit legend
       scale_color_manual(name = 'Troca\nde Calor:',
                          labels = c('VN', 'Portas', 'Piso', 'Cob.', 'Paredes',
-                                      'Janelas', 'HVAC', 'Cg. Int.'),
+                                    'Janelas', 'HVAC', 'Cg. Int.'),
                          values = c('chartreuse3', 'darkslategray3', 'darkgoldenrod2', 'firebrick2',
                                     'mediumpurple2', 'peachpuff4', 'royalblue3', 'lightcyan4')) +
+      # breaks for date and time
       scale_x_datetime(date_breaks = '2 hour', date_labels = '%Hh') +
-      scale_y_continuous(limits = c(min, max),
+      # limits of primary and secondary axis
+      scale_y_continuous(limits = c(min_val, max_val),
                          sec.axis = sec_axis(~ . *(max_afn-0)/(max_val-0),
                                              name = 'Trocas de ar por hora\n')) +
-    # edit all kind of text in the plot
-    theme(legend.text = element_text(size = 13),
-          legend.title = element_text(size = 14),
-          legend.position = 'right',
-          plot.title = element_text(size = 19, hjust = 0.5),
-          plot.subtitle = element_text(size = 17, hjust = 0.5),
-          axis.title.x = element_text(size=14),
-          axis.title.y = element_text(size=14),
-          axis.text.x = element_text(size=13),
-          axis.text.y = element_text(size=13),
-          strip.text.x = element_text(size = 16),
-          strip.text.y = element_text(size = 16))
+      # edit all kind of text in the plot
+      theme(legend.text = element_text(size = 13),
+            legend.title = element_text(size = 14),
+            legend.position = 'right',
+            plot.title = element_text(size = 19, hjust = 0.5),
+            plot.subtitle = element_text(size = 17, hjust = 0.5),
+            axis.title.x = element_text(size=14),
+            axis.title.y = element_text(size=14),
+            axis.text.x = element_text(size=13),
+            axis.text.y = element_text(size=13),
+            strip.text.x = element_text(size = 16),
+            strip.text.y = element_text(size = 16))
   )
   # finish plotting
-dev.off()
+  dev.off()
 }
 
-    
+
 # plot application ####
 # cgtr
 plot_cgtr(df = results[['combo']][['raw']],
