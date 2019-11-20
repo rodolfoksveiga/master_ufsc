@@ -27,7 +27,7 @@ df_diff = function(df_sz, df_multi) {
   df_diff_abs = df_sz[, is_label(df_sz)[[2]]] - df_multi[, is_label(df_multi)[[2]]]
   # calculate relative difference
   # formula: diff_rel = (val_sz - val_multi) / val_multi
-  df_diff_rel = df_diff_abs*100 / df_multi[, is_label(df_sz)[[2]]]
+  df_diff_rel = df_diff_abs*100 / abs(df_multi[, is_label(df_sz)[[2]]])
   # add labels to the data frame
   df_diff_abs = cbind(df_diff_abs, df_sz[, is_label(df_sz)[[1]]])
   df_diff_rel = cbind(df_diff_rel, df_sz[, is_label(df_sz)[[1]]])
@@ -694,13 +694,10 @@ for (type in c('abs', 'rel')) {
 }
 # remove unuseful variables
 rm(type, D, R)
-
+  
 # detailed thermal balance
-casos = c('rio_de_janeiro_e_dorm_s', 'rio_de_janeiro_w_dorm_n', 'rio_de_janeiro_ne_dorm_e',
-          'rio_de_janeiro_nw_dorm_e', 'rio_de_janeiro_se_dorm_w', 'rio_de_janeiro_sw_dorm_w',
-          'rio_de_janeiro_se_living', 'sao_paulo_e_dorm_s', 'sao_paulo_w_dorm_n',
-          'sao_paulo_ne_dorm_e', 'sao_paulo_nw_dorm_e', 'sao_paulo_se_dorm_w',
-          'sao_paulo_sw_dorm_w', 'sao_paulo_se_living')
+casos = c('sao_paulo_w_living', 'rio_de_janeiro_ne_dorm_e', 'sao_paulo_w_dorm_n',
+          'rio_de_janeiro_se_living')
 days = c('19-04-03', '19-06-20', '19-12-22')
 for (caso in casos) {
   for (day in days) {
