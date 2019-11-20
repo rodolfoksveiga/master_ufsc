@@ -2,18 +2,32 @@
 library(ggplot2)
 
 # functions ####
+# cap_str()
+# capitalize all the words in a string
+cap_str = function(str) {
+  # str - string to capitalize
+
+  spl = strsplit(str, ' ')[[1]]
+  cap_spl = Hmisc::capitalize(spl)
+  cap_str = cap_spl[1]
+  for (s in cap_spl[-1]) {
+    cap_str = paste(cap_str, s)
+  }
+  return(cap_str)
+}
+
 # diff()
 # calculate difference of results from simplified simulations (single zone) to full simulations
-df_diff = function(df_sz, df_full) {
+df_diff = function(df_sz, df_multi) {
   # df_sz - data frame with single zone results
-  # df_full - data frame with full simulation results
+  # df_multi - data frame with full simulation results
   
   # calculate absolute difference
-  # formula: diff_abs = val_sz - val_full
-  df_diff_abs = df_sz[, is_label(df_sz)[[2]]] - df_full[, is_label(df_full)[[2]]]
+  # formula: diff_abs = val_sz - val_multi
+  df_diff_abs = df_sz[, is_label(df_sz)[[2]]] - df_multi[, is_label(df_multi)[[2]]]
   # calculate relative difference
-  # formula: diff_rel = (val_sz - val_full) / val_full
-  df_diff_rel = df_diff_abs*100 / df_full[, is_label(df_sz)[[2]]]
+  # formula: diff_rel = (val_sz - val_multi) / val_multi
+  df_diff_rel = df_diff_abs*100 / df_multi[, is_label(df_sz)[[2]]]
   # add labels to the data frame
   df_diff_abs = cbind(df_diff_abs, df_sz[, is_label(df_sz)[[1]]])
   df_diff_rel = cbind(df_diff_rel, df_sz[, is_label(df_sz)[[1]]])
@@ -159,8 +173,8 @@ surf_rename = function(col_name) {
 
 # variables to run the code ####
 # with single zone results directory (first) and the directories of the real cases
-input_dirs = list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                '00.sz/01.result/'),
+input_dirs = list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                '01.validation/00.sz/01.result/'),
                   'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
                                    '01.validation/01.multi/01.result/00.1st_multi/'))
 
@@ -188,7 +202,8 @@ for (i in 1:length(csv_names)) {
     csv_files[[i]][[j]] = read.csv(paste0(input_dirs[[i]], csv_names[[i]][[j]]))
   }
   # define proper names to the list
-  names(csv_files[[i]]) = names(results[[i]]) = sub('.csv', '', csv_names[[i]])
+  names(csv_files[[i]]) = names(results[[i]]) = gsub('1st_multi_tv_', '',
+                                                     sub('.csv', '', csv_names[[i]]))
 }
 # remove unuseful variables
 rm(input_dirs, i, j)
@@ -199,12 +214,12 @@ csv_files[['sz']] = lapply(csv_files$sz, function(x) x[, grepl('CORE', colnames(
                                                          grepl('Date.Time', colnames(x)) |
                                                          grepl('Drybulb', colnames(x))])
 # define new column names
-sz_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count', rep('conv_hge', 9),
-          'mean_temp', 'op_temp', rep('afn_open_fac', 3), 'afn_inf_sens_hge', 'afn_inf_sens_hle',
-          'afn_inf_air_change', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce',
-          'sch_afn', 'sch_hvac')
+sz_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
+          rep('conv_hge', 9), 'mean_temp', 'op_temp', rep('afn_open_fac', 3),
+          'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he',
+          'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
 multi_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
-                  rep('conv_hge', 8), 'mean_temp', 'op_temp', 'afn_open_fac', 'afn_inf_sens_hge',
+                  rep('conv_hge', 8), 'mean_temp', 'op_temp', 'afn_open_fac','afn_inf_sens_hge',
                   'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he', 'hvac_sens_ce',
                   'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
 multi_ew_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
@@ -438,8 +453,8 @@ plot_tb = function(df, Dwel, Room, plot_dir) {
            y = 'Carga (kWh)') +
       # edit legend
       scale_fill_discrete(name = 'Troca\nde Calor:',
-                          labels = c('VN', 'Portas', 'Piso', 'Cobertura', 'Paredes', 'Janelas',
-                                     'HVAC', 'Cargas Internas')) +
+                          labels = c('VN', 'Portas', 'Piso', 'Cobertura', 'Paredes',
+                                     'Janelas', 'HVAC', 'Cargas Internas')) +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 14),
             legend.title = element_text(size = 15),
@@ -462,7 +477,7 @@ plot_diff_tb = function(df, Dwel, Room, rel = F, plot_dir) {
   # Dwel - 
   # Room - 
   # plot_dir - 
-
+  
   # pre-process
   df = subset(subset(df, dwel == Dwel), room == Room)
   # start plotting
@@ -485,8 +500,8 @@ plot_diff_tb = function(df, Dwel, Room, rel = F, plot_dir) {
            y = ifelse(rel == F, 'Diff. Carga (kWh)', 'Diff. Carga (%)')) +
       # edit legend
       scale_fill_discrete(name = 'Troca\nde Calor:',
-                          labels = c('VN', 'Portas', 'Piso', 'Cobertura', 'Paredes', 'Janelas',
-                                     'HVAC', 'Cargas Internas')) +
+                          labels = c('VN', 'Portas', 'Piso', 'Cobertura', 'Paredes',
+                                     'Janelas', 'HVAC', 'Cargas Internas')) +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 14),
             legend.title = element_text(size = 15),
@@ -502,38 +517,48 @@ plot_diff_tb = function(df, Dwel, Room, rel = F, plot_dir) {
   dev.off()
 }
 
+# plot_detail()
 # plot daily detailed analysis
-# plot_detail = function(csv, day, plot_name, plot_dir) {
-  # csv - 
+# plot differences in thermal balance between simplified model and 'original' model
+plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
+  # plot_name - 
   # day - 
-  # file_name - 
   # plot_dir - 
   
-  # test
-  csv_sz = csv_files[[1]][[1]]
-  csv_full = csv_files[[2]][[1]]
-  day = '19-01-02'
-  plot_name = 'detail_rio_de_janeiro_e_dorm_n.png'
-  plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/'
-  unit = 'kj'
-  
   # pre-process
+  # define season
+  season = ifelse(day == '19-12-22', 'verao', 'inverno')
   # define unites
-  div = ifelse(unit == 'kwh', 3600000, 1000)
-  # define columns in analysis
-  cols = c('date_time', 'site_drybulb_temp', 'hvac_sens_ce', 'afn_inf_sens_hge', 'afn_inf_sens_hle') 
-  
+  div = ifelse(unit == 'kj', 1000, 3600000)
+  # define variables in analysis
+  therm_vars = c('int_conv_he', 'hvac_sens_load', 'afn_inf_sens_load', 'conv_floor',
+                 'conv_roof', 'conv_wall', 'conv_window', 'conv_door')
+  vars = c('sim', 'date_time', 'site_drybulb_temp', therm_vars, 'afn_inf_air_change')
+  # get files
+  csv_sz = csv_files[['sz']][[plot_name]]
+  csv_multi = csv_files[['multi']][[plot_name]]
+  # add data_frames to a list
   csv_sz$sim = 'SZ'
-  csv_full$sim = 'Multi.'
-  csv = list(csv_sz, csv_full)
-  
+  csv_multi$sim = 'Multi.'
+  csv = list('sz' = csv_sz, 'multi' = csv_multi)
+  # define interval for defined day
+  start_day = which(as.character(csv_sz$date_time) == paste(day, '00:10:00'))
+  interval = c(start_day:(start_day + 24*6 - 1))
+  # compile convection for each type of surface
+  # surface: 'floor', 'roof', 'wall', 'window', 'door'
+  # also bind cooling and heating thermal loads in one variable and afn sensible heat
+    # gain and loss in another variable
   for (i in 1:length(csv)) {
-    csv[[i]] = csv[[i]][c(start_day:(start_day + 24*6 - 1)), ]
-    conv_hge = vector('list', length(surfs))
+    csv[[i]] = csv[[i]][interval, ]
+    # bind cooling and heating thermal loads
+    csv[[i]]$hvac_sens_load = csv[[i]]$hvac_sens_he - csv[[i]]$hvac_sens_ce
+    # bind afn sensible heat gain and loss
+    csv[[i]]$afn_inf_sens_load = csv[[i]]$afn_inf_sens_hge - csv[[i]]$afn_inf_sens_hle
+    conv_hge = vector('list', 5)
     names(conv_hge) = c('floor', 'roof', 'wall', 'window', 'door')
     for (surf in names(conv_hge)) {
       conv_hge[[surf]] = -csv[[i]][, grepl(surf, colnames(csv[[i]])) &
-                                     grepl('conv_hge', colnames(csv[[i]]))]/div
+                                     grepl('conv_hge', colnames(csv[[i]]))]
       if (is.data.frame(conv_hge[[surf]])) {
         fill = conv_hge[[surf]][, 1]
         for (j in 2:length(conv_hge[[surf]])) {
@@ -541,56 +566,66 @@ plot_diff_tb = function(df, Dwel, Room, rel = F, plot_dir) {
         }
         conv_hge[[surf]] = fill
       }
+      # add compiled convections
       csv[[i]][, paste0('conv_', surf)] = conv_hge[[surf]]
     }
+    # remove columns associated to convection for separeted surfaces
     csv[[i]][, grepl('conv_hge', colnames(csv[[i]]))] = NULL
   }
+  # pick only the interested columns and bind the 'csv' together
+  csv = rbind(csv[['sz']][, vars], csv[['multi']][, vars])
+  # transform units
+  csv[, therm_vars] = csv[, therm_vars]/div
+  # adjust one data frame to use 'fill' and 'color' options in ggplot
+  df = data.frame('var' = NA, 'val' = NA)
+  for (var in therm_vars) {
+    fill = data.frame('val' = csv[, var], 'var' = var)
+    df = rbind(df, fill)
+  }
+  df = subset(df, !is.na(val))
+  df = cbind('date_time' = csv$date_time, 'site_drybulb_temp' = csv$site_drybulb_temp,
+             'sim' = csv$sim, 'afn_inf_air_change' = csv$afn_inf_air_change, df)
   
-  # hvac_sens_he = csv$hvac_sens_he/div
-  # hvac_sens_ce = -csv$hvac_sens_ce/div
-  # afn_inf_sens_hge = csv$afn_inf_sens_hge/div
-  # afn_inf_sens_hle = -csv$afn_inf_sens_hle/div
-  
-  
-  start_day = which(as.character(csv_sz$date_time) == paste(day, '00:10:00'))
-  
-  csv = csv[c(start_day:(start_day + 24*6 - 1)), ]
   # start plotting
   # associate conditions to plot and name plot
-  png(filename = paste0(plot_dir, plot_name), width = 33.8, height = 19, units = 'cm', res = 500)
+  png(filename = paste0(plot_dir, 'detail_', plot_name, '_', season, '.png'), width = 33.8,
+      height = 19, units = 'cm', res = 500)
   plot(
     # define main data frame used in the plot
-    ggplot(data = csv) +
+    ggplot(data = df) +
       # create one grid for each kind of simulation
-      facet_grid(sim ~ .) +
+      facet_grid(. ~ sim) +
       # insert a bar geometry for schedules hvac and afn
-      geom_bar(data = csv, aes(x = date_time, y = sch_hvac), stat = 'identity', fill = 'red') +
-      geom_bar(data = csv, aes(x = date_time, y = sch_afn), stat = 'identity', fill = 'blue') +
+      geom_line(data = df, aes(x = date_time, y = val, color = var)) +
       # define labs (title, x and y labs)
-      labs(title = 'Análise diária detalhada',
-           subtitle = paste('Apto.\n Dia', day),
+      labs(title = 'Analise diaria detalhada',
+           subtitle = paste(sub('De', 'de', cap_str(gsub('_', ' ', plot_name))),
+                            '\n', 'Dia', day, '(', cap_str(season), ')'),
            x = 'Hora',
-           y = 'Joules') +
+           y = 'KJ') +
       # edit legend
-      # scale_fill_discrete(name = 'Troca\nde Calor:',
-      #                     labels = c('VN', 'Portas', 'Piso', 'Cobertura', 'Paredes', 'Janelas',
-      #                                'HVAC', 'Cargas Internas')) +
+      scale_color_manual(name = 'Troca\nde Calor:',
+                         labels = c('VN', 'Portas', 'Piso', 'Cob.', 'Paredes',
+                                      'Janelas', 'HVAC', 'Cg. Int.'),
+                         values = c('chartreuse3', 'darkslategray3', 'darkgoldenrod2', 'firebrick2',
+                                    'mediumpurple2', 'peachpuff4', 'royalblue3', 'lightcyan4')) +
       scale_x_datetime(date_breaks = '2 hour', date_labels = '%Hh')) +
-      # edit all kind of text in the plot
-      theme(legend.text = element_text(size = 14),
-            legend.title = element_text(size = 15),
-            legend.position = 'bottom',
-            plot.title = element_text(size = 20, hjust = 0.5),
-            plot.subtitle = element_text(size = 18, hjust = 0.5),
-            axis.title.x = element_text(size=15),
-            axis.title.y = element_text(size=15),
-            axis.text.x = element_text(size=14),
-            axis.text.y = element_text(size=14),
-            strip.text.x = element_text(size = 17),
-            strip.text.y = element_text(size = 17))
+    # edit all kind of text in the plot
+    theme(legend.text = element_text(size = 13),
+          legend.title = element_text(size = 14),
+          legend.position = 'right',
+          plot.title = element_text(size = 19, hjust = 0.5),
+          plot.subtitle = element_text(size = 17, hjust = 0.5),
+          axis.title.x = element_text(size=14),
+          axis.title.y = element_text(size=14),
+          axis.text.x = element_text(size=13),
+          axis.text.y = element_text(size=13),
+          strip.text.x = element_text(size = 16),
+          strip.text.y = element_text(size = 16))
   # finish plotting
   dev.off()
-# }
+}
+
 
 # plot application ####
 # cgtr
@@ -642,4 +677,15 @@ for (type in c('abs', 'rel')) {
 }
 # remove unuseful variables
 rm(type, D, R)
+
+# detailed thermal balance
+casos = c()
+days = c('19-12-22', '19-06-20')
+for (caso in casos) {
+  for (day in days) {
+    plot_detail_tb(plot_name = caso, day = day, unit = 'kj',
+                   plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/')
+  }
+}
+
 
