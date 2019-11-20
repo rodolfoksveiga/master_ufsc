@@ -526,11 +526,6 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
   # plot_dir - 
   # unit - 
   
-  # test
-  plot_name = 'rio_de_janeiro_se_dorm_e'
-  day = '19-06-20'
-  unit = 'kj'
-  
   # pre-process
   # define season
   season = ifelse(day == '19-04-03', 'niver', ifelse(day == '19-06-20', 'inverno', 'verao'))
