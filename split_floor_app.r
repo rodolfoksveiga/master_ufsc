@@ -6,13 +6,15 @@ library('Hmisc')
 library('stringr')
 
 # split_floor()
-# input_dir = directory where the full floor simulation's outputs are located
-# wrap_names = types of possible wraps to be considered
-# zone_names = names of the zones to be splitted (by default it pick up all the zones in the standard model)
-# ignored_zones = names of zones to be ignored (by default it ignores the 'core', 'cor' (corridor) and 'bh' (bathroom))
-# output_dir = directory where the splitted files will be saved
+  # input_dir: directory where the full floor simulation's outputs are located
+  # wrap_names: types of possible wraps to be considered
+  # zone_names: names of the zones to be splitted (by default it pick up all the zones in the
+    # standard model)
+  # ignored_zones: names of zones to be ignored (by default it ignores the 'core', 'cor' (corridor)
+    # and 'bh' (bathroom))
+  # output_dir: directory where the splitted files will be saved
 split_floor = function(input_dir,
-                       wrap_names,
+                       wrap_names = '',
                        zone_names,
                        ignored_zones = NULL,
                        output_dir) {
@@ -43,9 +45,11 @@ split_floor = function(input_dir,
       for (zone in zone_names) {
         # select the columns related to each interested zone
         df = csv_files[[i]][[j]][, grepl('Date.Time', colnames(csv_files[[i]][[j]])) |
-                                   grepl('Environment.Site.Outdoor.Air.Drybulb.Temperature..C..TimeStep.',
+                                   grepl(paste0('Environment.Site.Outdoor.Air.',
+                                                'Drybulb.Temperature..C..TimeStep.'),
                                          colnames(csv_files[[i]][[j]])) |
-                                   grepl(paste0('^', toupper(zone)), colnames(csv_files[[i]][[j]])) |
+                                   grepl(paste0('^', toupper(zone)),
+                                         colnames(csv_files[[i]][[j]])) |
                                    grepl(paste0('_', toupper(zone)), colnames(csv_files[[i]][[j]]))]
         # save '.csv' file for each zone
         write.csv(df, paste0(output_dir, names(csv_files[[i]])[j], '_', zone, '.csv'))
@@ -57,10 +61,10 @@ split_floor = function(input_dir,
 }
 
 # application
-split_floor(input_dir = '/home/rodox/Dropbox/TEMP/00.single_zone/03.validation/01.multi/01.result/',
-            wrap_names = 'tv',
+split_floor(input_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/01.result/',
+            wrap_names = '',
             zone_names = c('sw_dorm_w', 'sw_living', 'sw_dorm_e', 'se_dorm_w', 'se_living',
                            'se_dorm_e', 'e_dorm_s', 'e_living', 'e_dorm_n', 'ne_dorm_e',
                            'ne_living', 'ne_dorm_w', 'nw_dorm_e', 'nw_living', 'nw_dorm_w',
                            'w_dorm_n', 'w_living', 'w_dorm_s'),
-            output_dir = '/home/rodox/Dropbox/TEMP/00.single_zone/03.validation/01.multi/01.result/00.1st_multi/')
+            output_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/01.result/00.1st_model/')

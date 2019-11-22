@@ -27,7 +27,7 @@ df_diff = function(df_sz, df_multi) {
   df_diff_abs = df_sz[, is_label(df_sz)[[2]]] - df_multi[, is_label(df_multi)[[2]]]
   # calculate relative difference
   # formula: diff_rel = (val_sz - val_multi) / val_multi
-  df_diff_rel = df_diff_abs*100 / abs(df_multi[, is_label(df_sz)[[2]]])
+  df_diff_rel = df_diff_abs*100 / abs(df_multi[, is_label(df_multi)[[2]]])
   # add labels to the data frame
   df_diff_abs = cbind(df_diff_abs, df_sz[, is_label(df_sz)[[1]]])
   df_diff_rel = cbind(df_diff_rel, df_sz[, is_label(df_sz)[[1]]])
@@ -173,10 +173,11 @@ surf_rename = function(col_name) {
 
 # variables to run the code ####
 # with single zone results directory (first) and the directories of the real cases
-input_dirs = list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
-                                '01.validation/00.sz/01.result/'),
+input_dirs = list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                                '00.sz/02.3rd_model/01.result/'),
                   'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
-                                   '01.validation/01.multi/01.result/00.1st_multi/'))
+                                   '01.validation/01.multi/01.result/00.1st_model/'))
+version = '1st_model'
 
 # create empty lists to be filled with 'csv' files
 csv_names = csv_files = results = vector('list', length(input_dirs))
@@ -202,7 +203,7 @@ for (i in 1:length(csv_names)) {
     csv_files[[i]][[j]] = read.csv(paste0(input_dirs[[i]], csv_names[[i]][[j]]))
   }
   # define proper names to the list
-  names(csv_files[[i]]) = names(results[[i]]) = gsub('1st_multi_tv_', '',
+  names(csv_files[[i]]) = names(results[[i]]) = gsub(paste0(version, '_'), '',
                                                      sub('.csv', '', csv_names[[i]]))
 }
 # remove unuseful variables
@@ -647,12 +648,14 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
 # plot application ####
 # cgtr
 plot_cgtr(df = results[['combo']][['raw']],
-          plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/')
+          plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                            '02.3rd_sz_1st_multi/'))
 
 # diff cgtr
 for (type in c('abs', 'rel')) {
   plot_diff_cgtr(df = results[['diff']][['combo']][[type]], rel = ifelse(type == 'rel', T, F),
-                 plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/')
+                 plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                                   '02.3rd_sz_1st_multi/'))
 }
 # remove unuseful variables
 rm (type)
@@ -662,12 +665,14 @@ for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
   if (grepl('S', D) | grepl('N', D)) {
     for (R in c('Living', 'Dorm. E', 'Dorm. W')) {
       plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R,
-              plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/')
+              plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                                '02.3rd_sz_1st_multi/'))
     }
   } else {
     for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
       plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R,
-              plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/')
+              plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                                '02.3rd_sz_1st_multi/'))
     }
   }
 }
@@ -681,20 +686,22 @@ for (type in c('abs', 'rel')) {
       for (R in c('Living', 'Dorm. E', 'Dorm. W')) {
         plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
                      ifelse(type == 'rel', T, F),
-                     plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/')
+                     plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                                       '02.3rd_sz_1st_multi/'))
       }
     } else {
       for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
         plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
                      ifelse(type == 'rel', T, F),
-                     plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/')
+                     plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                                       '02.3rd_sz_1st_multi/'))
       }
     }
   }
 }
 # remove unuseful variables
 rm(type, D, R)
-  
+
 # detailed thermal balance
 casos = c('sao_paulo_w_living', 'rio_de_janeiro_ne_dorm_e', 'sao_paulo_w_dorm_n',
           'rio_de_janeiro_se_living')
@@ -703,7 +710,7 @@ for (caso in casos) {
   for (day in days) {
     plot_detail_tb(plot_name = caso, day = day, unit = 'kj',
                    plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                     '00.detail/'))
+                                     '01.3rd_sz_1st_multi/'))
   }
 }
 # remove unuseful variables
