@@ -34,8 +34,8 @@ def epjson_sim_runner(epjson_dir, output_dir, epw_dir, weather_names):
 		for count_2, value_2 in enumerate(epw_files):
 			sim_count += 1
 			print '\nSimulation count: ', sim_count
-			print 'Model file: ' + value_1
-			print 'Weather file: ' + value_2
+			print 'Model file: ' + epjson_names[count_1] + '.epJSON'
+			print 'Weather file: ' + value_2.replace(epw_dir, '')
 			os.system('energyplus -r -w ' + value_2 + ' -d ' + output_dir + ' -p ' +
 					  weather_names[count_2] + '_' + epjson_names[count_1] + '_ ' + value_1)
 
@@ -70,15 +70,15 @@ def epjson_sim_runner(epjson_dir, output_dir, epw_dir, weather_names):
 # application
 
 # sz
-epjson_sim_runner(epjson_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/02.3rd_model/00.model/',
-				  output_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/02.3rd_model/01.result/',
+epjson_sim_runner(epjson_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/02.3rd_model_ac/00.model/',
+				  output_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/02.3rd_model_ac/01.result/',
 				  epw_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/03.source/00.epw/',
 				  weather_names = np.array(['rio_de_janeiro', 'sao_paulo']))
 
 '''
 # 1st multi
-epjson_sim_runner(epjson_dir = '/home/rodox/Dropbox/TEMP/00.single_zone/03.validation/01.multi/00.model/',
-				  output_dir = '/home/rodox/Dropbox/TEMP/00.single_zone/03.validation/01.multi/01.result/',
-				  epw_dir = '/home/rodox/Dropbox/TEMP/00.single_zone/04.source/00.epw/',
+epjson_sim_runner(epjson_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/00.model/',
+				  output_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/01.result/01.2nd_ac_model/',
+				  epw_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/03.source/00.epw/',
 				  weather_names = np.array(['rio_de_janeiro', 'sao_paulo']))
 '''

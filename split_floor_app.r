@@ -13,11 +13,23 @@ library('stringr')
   # ignored_zones: names of zones to be ignored (by default it ignores the 'core', 'cor' (corridor)
     # and 'bh' (bathroom))
   # output_dir: directory where the splitted files will be saved
-split_floor = function(input_dir,
-                       wrap_names = '',
-                       zone_names,
-                       ignored_zones = NULL,
-                       output_dir) {
+# split_floor = function(input_dir,
+                       # wrap_names = '',
+                       # zone_names,
+                       # ignored_zones = NULL,
+                       # output_dir) {
+
+# test
+input_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                   '01.multi/01.result/01.2nd_model/')
+wrap_names = ''
+zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
+               'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
+               'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s')
+ignored_zones = NULL
+output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                    '01.multi/01.result/01.2nd_model/01.ac/')
+
   # create empty lists
   csv_names = csv_files = vector(mode = 'list',
                                  length = length(wrap_names))
@@ -38,8 +50,10 @@ split_floor = function(input_dir,
       # rename the list which contains the '.csv' files (remove '.csv' suffix)
       names(csv_files[[i]])[j] = str_remove(csv_names[[i]][j], '.csv')
       # remove columns related to ignored zones
-      for (ign in ignored_zones) {
-        csv_files[[i]][[j]][, grepl(toupper(ign), colnames(csv_files[[i]][[j]]))] = NULL
+      if (!is.null(ignored_zones)) {
+        for (ign in ignored_zones) {
+          csv_files[[1]][[1]][, grepl(toupper(ign), colnames(csv_files[[1]][[1]]))] = NULL
+        }
       }
       # split the floor in zones
       for (zone in zone_names) {
@@ -58,13 +72,13 @@ split_floor = function(input_dir,
       }
     }
   }
-}
+# }
 
 # application
-split_floor(input_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/01.result/',
-            wrap_names = '',
-            zone_names = c('sw_dorm_w', 'sw_living', 'sw_dorm_e', 'se_dorm_w', 'se_living',
-                           'se_dorm_e', 'e_dorm_s', 'e_living', 'e_dorm_n', 'ne_dorm_e',
-                           'ne_living', 'ne_dorm_w', 'nw_dorm_e', 'nw_living', 'nw_dorm_w',
-                           'w_dorm_n', 'w_living', 'w_dorm_s'),
-            output_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/01.result/00.1st_model/')
+split_floor(input_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                               '01.multi/01.result/01.2nd_model/'),
+            zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
+                           'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
+                           'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
+            output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                                '01.multi/01.result/01.2nd_model/01.ac/'))
