@@ -361,16 +361,16 @@ hive_gen = function(seed, cond, lx, ly, lz, alt, room, bounds, output_dir, model
     # hvac
     if (cond == 'hvac') {
       if(bound[3] == 'living') {
-        seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_hive_', bound[2])]]$
+        seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[1])]]$
           'availability_schedule_name' = 'sch_hvac_living'
       } else if (bound[3] == 'dorm') {
-        seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_hive_', bound[2])]]$
+        seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[1])]]$
           'availability_schedule_name' = 'sch_hvac_dorm'
       } else {
-        seed$'ZoneControl:Thermostat'[[paste0('thermostat_hive_', bound[2])]] = NULL
-        seed$'ZoneHVAC:EquipmentConnections'[[paste0('hvac_equip_connect_hive_', bound[2])]] = NULL
-        seed$'ZoneHVAC:EquipmentList'[[paste0('hvac_equip_hive_', bound[2])]] = NULL
-        seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_hive_', bound[2])]] = NULL
+        seed$'ZoneControl:Thermostat'[[paste0('thermostat_', bound[1])]] = NULL
+        seed$'ZoneHVAC:EquipmentConnections'[[paste0('hvac_equip_connect_', bound[1])]] = NULL
+        seed$'ZoneHVAC:EquipmentList'[[paste0('hvac_equip_', bound[1])]] = NULL
+        seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[1])]] = NULL
       }
     }
   }

@@ -159,6 +159,17 @@ zone_adj = function(side, n, lx, ly) {
   return(c(x_origin, y_origin))
 }
 
+# test
+seed = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/00.seed/00.sz/seed_ac_v02.epJSON'
+cond = 'hvac'
+room = 'dorm'
+lx = 4
+ly = 3
+lz = 2.7
+alt = 0
+bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
+              c('w', 'dorm', 0))
+
 # main function ####  
 # the main function loads a seed file filled with all possible surfaces, fenestrations and
 # conditioning system ('hvac' and 'afn') objects and sorting them out
@@ -186,18 +197,6 @@ zone_adj = function(side, n, lx, ly) {
   #                   c('w', 'living', 0))
   # output_dir = directory where the model is saved
   # model_name =   name of the file (model) to be saved
-  
-
-# test
-seed = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/00.seed/00.sz/seed_ac_v02.epJSON'
-lx = 4
-ly = 3
-lz = 2.7
-alt = 5
-room = 'dorm'
-bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
-              c('w', 'dorm', 0))
-
 
   # some pre-process
   # load seed file
@@ -227,9 +226,9 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
       for (n in 1:2) {
         if (is_room(bound[[1]][3])) {
           # zone 'x' origin vertex [hive]
-          seed$'Zone'[[bound[[n]][1]]]$'x_origin' = zone_adj(bound[[1]][2], 1, lx, ly)[1]
+          seed$'Zone'[[bound[[n]][1]]]$'x_origin' = zone_adj(bound[[1]][2], n, lx, ly)[1]
           # zone 'y' origin vertex [hive]
-          seed$'Zone'[[bound[[n]][1]]]$'y_origin' = zone_adj(bound[[1]][2], 1, lx, ly)[2]
+          seed$'Zone'[[bound[[n]][1]]]$'y_origin' = zone_adj(bound[[1]][2], n, lx, ly)[2]
           # zone 'z' origin vertex (altitude)
           seed$'Zone'[[bound[[n]][1]]]$'z_origin' = alt
         } else {
@@ -237,9 +236,7 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
         }
       }
     }
-  }
-  
-  for (bound in bounds) {
+
     # building surface (boundary condition)
     # this is only necessary for core thermal zone ('hive_c')
     if (bound[[1]][2] == 'c') {
@@ -268,50 +265,48 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
           ifelse(hive[3] == 'outdoors', 'WindExposed', 'NoWind')
       }
     } else {
-      for (n in c('1', '2')) {
         for (i in 1:2) {
-          if (bound[[1]][3] == 'outdoors') {
-            # outside boundary condition [hive]
-            seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i], n,
-                                                    '_wall_', bound[[1]][2])]]$'outside_boundary_condition' =
-              'Outdoors'
-            # construction name [hive]
-            seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i], n,
-                                                    '_wall_', bound[[1]][2])]]$'construction_name' =
-              'ext_wall'
-            # sun exposure [hive]
-            seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i], n,
-                                                    '_wall_', bound[[1]][2])]]$'sun_exposure' =
-              'SunExposed'
-            # wind exposure [hive]
-            seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i], n,
-                                                    '_wall_', bound[[1]][2])]]$'wind_exposure' =
-              'WindExposed'
-          }
-          if (bound[[1]][3] == 'adiabatic') {
-            # outside boundary condition [hive]
-            seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i], n,
-                                                    '_wall_', bound[[1]][2])]]$'outside_boundary_condition' =
-              'Adiabatic'
-            # construction name [hive]
-            seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i], n,
-                                                    '_wall_', bound[[1]][2])]]$'construction_name' =
-              'int_wall'
-            # sun exposure [hive]
-            seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i], n,
-                                                    '_wall_', bound[[1]][2])]]$'sun_exposure' =
-              'NoSun'
-            # wind exposure [hive]
-            seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i], n,
-                                                    '_wall_', bound[[1]][2])]]$'wind_exposure' =
-              'NoWind'
+          if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[i])]][[1]][3])) {
+            if (bound[[1]][3] == 'outdoors') {
+              # outside boundary condition [hive]
+              seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i],
+                                                      '1_wall_', bound[[1]][2])]]$'outside_boundary_condition' =
+                'Outdoors'
+              # construction name [hive]
+              seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i],
+                                                      '1_wall_', bound[[1]][2])]]$'construction_name' =
+                'ext_wall'
+              # sun exposure [hive]
+              seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i],
+                                                      '1_wall_', bound[[1]][2])]]$'sun_exposure' =
+                'SunExposed'
+              # wind exposure [hive]
+              seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i],
+                                                      '1_wall_', bound[[1]][2])]]$'wind_exposure' =
+                'WindExposed'
+            } else {
+              # outside boundary condition [hive]
+              seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i],
+                                                      '1_wall_', bound[[1]][2])]]$'outside_boundary_condition' =
+                'Adiabatic'
+              # construction name [hive]
+              seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i],
+                                                      '1_wall_', bound[[1]][2])]]$'construction_name' =
+                'int_wall'
+              # sun exposure [hive]
+              seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i],
+                                                      '1_wall_', bound[[1]][2])]]$'sun_exposure' =
+                'NoSun'
+              # wind exposure [hive]
+              seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[i],
+                                                      '1_wall_', bound[[1]][2])]]$'wind_exposure' =
+                'NoWind'
+            }
           }
         }
-      }
     }
-  }
-  
-  for (bound in bounds) {
+
+    # building surface (geometry)
     if (bound[[1]][[2]] == 'c') {
       # floor
       seed$'BuildingSurface:Detailed'[[paste0(bound[[1]][1], '_floor')]]$'vertices' =
@@ -324,10 +319,8 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
         seed$'BuildingSurface:Detailed'[[paste0(bound[[1]][1], '_wall_', surf)]]$'vertices' =
           build_surf(bound[[1]][2], surf, lx, ly, lz)
       }
-    }
-    else {
+    } else {
       for (n in 1:2) {
-        # building surface (geometry)
         if (is_room(bound[[1]][3])) {
           # floor
           seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_floor')]]$'vertices' =
@@ -353,9 +346,7 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
         }
       }
     }
-  }
-   
-  for (bound in bounds) { 
+    
     # fenestration geometry
     if (bound[[1]][2] == 'c') {
       for (hive in hives) {
@@ -405,25 +396,22 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
                                                                           '_coordinate')]] =
           fen_surf('door', bound[[1]][2], ifelse(is_csn(bound[[1]][2]), lx, ly),
                    ifelse(is_csn(bound[[1]][2]), lx, ly))[i]
+        seed$
+          'FenestrationSurface:Detailed'[[paste0(bound[[2]][1], '_window_',
+                                                 bound[[1]][2])]][[paste0(vertices[i],
+                                                                          '_coordinate')]] =
+          fen_surf('window', bound[[1]][2], ifelse(is_csn(bound[[1]][2]), lx, ly),
+                   ifelse(is_csn(bound[[1]][2]), lx, ly), lz, 0.17)[i]
       }
-    } else if (bound[[1]][3] == 'adiabatic') {
+    } else if (bound[[1]][3] == 'outdoors') {
       for (n in 1:2) {
         seed$'FenestrationSurface:Detailed'[[paste0(bound[[n]][1], '_door_',
                                                     opos_side(bound[[1]][2]))]] = NULL
+      }
+      seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_door_', bound[[1]][2])]] = NULL
+      for (n in 1:2) {
         seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_window_',
                                                     adj_side(bound[[1]][2]))[n]]] = NULL
-      }
-      seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_door_', bound[[1]][2])]] = NULL
-      seed$'FenestrationSurface:Detailed'[[paste0(bound[[2]][1], '_window_', bound[[1]][2])]] = NULL
-    } else {
-      for (n in 1:2) {
-        seed$'FenestrationSurface:Detailed'[[paste0(bound[[n]][1], '_door_',
-                                                    opos_side(bound[[1]][2]))]] = NULL
-      }
-      seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_door_', bound[[1]][2])]] = NULL
-      for (n in 1:2) {
-        seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_window_',
-                                                 adj_side(bound[[1]][2]))[n]]] = NULL
       }
       seed$'FenestrationSurface:Detailed'[[paste0(bound[[2]][1], '_window_', bound[[1]][2])]] = NULL
       
@@ -446,10 +434,17 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
           }
         }
       }
+    } else {
+      for (n in 1:2) {
+        seed$'FenestrationSurface:Detailed'[[paste0(bound[[n]][1], '_door_',
+                                                    opos_side(bound[[1]][2]))]] = NULL
+        seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_window_',
+                                                    adj_side(bound[[1]][2]))[n]]] = NULL
+      }
+      seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_door_', bound[[1]][2])]] = NULL
+      seed$'FenestrationSurface:Detailed'[[paste0(bound[[2]][1], '_window_', bound[[1]][2])]] = NULL
     }
-  }
   
-  for (bound in bounds) { 
     # airflow network
     if (bound[[1]][2] == 'c') {
       for (hive in hives) {
@@ -465,67 +460,109 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
           }
         }
       }
-    } else if (is_room(bound[[1]][3]) == F) {
+    } else if (is_room(bound[[1]][3])) {
+      for (i in 1:2) {
+        if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[i])]][[1]][3])) {
+          seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[i], '1',
+                                                          '_window_', bound[[1]][2])]] = NULL
+        }
+      }
+    } else  if (bound[[1]][3] == 'outdoors') {
+      # ok
       seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[1]][1], '_door_', bound[[1]][2])]] = NULL
+      # ok
       seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[2]][1], '_window_',
                                                       bound[[1]][2])]] = NULL
       for (i in 1:2) {
+        # ok
         seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[1]][1], '_window_',
                                                         adj_side(bound[[1]][2])[i])]] = NULL
         seed$'AirflowNetwork:MultiZone:Zone'[[paste0('afn_', bound[[i]][1])]] = NULL
       }
-      if (bound[[1]][3] == 'outdoors' & bound[[1]][4] == 0) {
-        for (j in 1:2) {
-            seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[j],
-                                                            '1_window_', bound[[1]][2])]] = NULL
-        }
-      } else if (bound[[1]][3] == 'adiabatic') {
-        for (j in 1:2) {
-          seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[j],
-                                                          '1_window_', bound[[1]][2])]] = NULL
+    } else {
+      for (j in 1:2) {
+        seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[j],
+                                                        '1_window_', bound[[1]][2])]] = NULL
+      }
+    }
+    
+    # internal load (people, lights, electric equipment)
+    # hive int
+    if (bound[[1]][3] == 'living') {
+      seed$'People'[[paste0('people_', bound[[1]][1])]]$'number_of_people' = 4
+      seed$'People'[[paste0('people_', bound[[1]][1])]]$'activity_level_schedule_name' =
+        'sch_activ_living'
+      seed$'People'[[paste0('people_', bound[[1]][1])]]$'number_of_people_schedule_name' =
+        'sch_occup_living'
+      seed$'Lights'[[paste0('lights_', bound[[1]][1])]]$'schedule_name' = 'sch_ilum_living'
+      seed$'ElectricEquipment'[[paste0('equip_', bound[[1]][1])]]$'schedule_name' =
+        'sch_equip_living'
+      if (bound[[1]][2] != 'c') {
+        # hive ext
+        seed$'People'[[paste0('people_', bound[[2]][1])]]$'number_of_people' = 2
+        seed$'People'[[paste0('people_', bound[[2]][1])]]$'activity_level_schedule_name' =
+          'sch_activ_dorm'
+        seed$'People'[[paste0('people_', bound[[2]][1])]]$'number_of_people_schedule_name' =
+          'sch_occup_dorm'
+        seed$'Lights'[[paste0('lights_', bound[[2]][1])]]$'schedule_name' = 'sch_ilum_dorm'
+        seed$'ElectricEquipment'[[paste0('equip_', bound[[2]][1])]] = NULL 
+      }
+    } else if (bound[[1]][3] == 'dorm') {
+      # hive int
+      seed$'People'[[paste0('people_', bound[[1]][1])]]$'number_of_people' = 2
+      seed$'People'[[paste0('people_', bound[[1]][1])]]$'activity_level_schedule_name' =
+        'sch_activ_dorm'
+      seed$'People'[[paste0('people_', bound[[1]][1])]]$'number_of_people_schedule_name' =
+        'sch_occup_dorm'
+      seed$'Lights'[[paste0('lights_', bound[[1]][1])]]$'schedule_name' =
+        'sch_ilum_dorm'
+      seed$'ElectricEquipment'[[paste0('equip_', bound[[1]][1])]] = NULL 
+      # hive ext
+      if (bound[[1]][2] != 'c') {
+        seed$'ElectricEquipment'[[paste0('equip_', bound[[1]][1])]] = NULL
+        seed$'People'[[paste0('people_', bound[[2]][1])]]$'number_of_people' = 4
+        seed$'People'[[paste0('people_', bound[[2]][1])]]$'activity_level_schedule_name' =
+          'sch_activ_living'
+        seed$'People'[[paste0('people_', bound[[2]][1])]]$'number_of_people_schedule_name' =
+          'sch_occup_living'
+        seed$'Lights'[[paste0('lights_', bound[[2]][1])]]$'schedule_name' =
+          'sch_ilum_living'
+        seed$'ElectricEquipment'[[paste0('equip_', bound[[2]][1])]]$'schedule_name' =
+          'sch_equip_living'
+      }
+    } else {
+      if (bound[[1]][2] != 'c') {
+        for (i in 1:2) {
+          seed$'People'[[paste0('people_', bound[[i]][1])]] = NULL
+          seed$'Lights'[[paste0('lights_', bound[[i]][1])]] = NULL
+          seed$'ElectricEquipment'[[paste0('equip_', bound[[i]][1])]] = NULL
         }
       }
     }
-  }
 
-    # internal load (people, lights, electric equipment)
-    if (bound[3] == 'living') {
-      seed$'People'[[paste0('people_', bound[1])]]$'number_of_people' = 4
-      seed$'People'[[paste0('people_', bound[1])]]$'activity_level_schedule_name' =
-        'sch_activ_living'
-      seed$'People'[[paste0('people_', bound[1])]]$'number_of_people_schedule_name' =
-        'sch_occup_living'
-      seed$'Lights'[[paste0('lights_', bound[1])]]$'schedule_name' = 'sch_ilum_living'
-      seed$'ElectricEquipment'[[paste0('equip_', bound[1])]]$'schedule_name' =
-        'sch_equip_living'
-    } else if (bound[3] == 'dorm') {
-      seed$'People'[[paste0('people_', bound[1])]]$'number_of_people' = 2
-      seed$'People'[[paste0('people_', bound[1])]]$'activity_level_schedule_name' =
-        'sch_activ_dorm'
-      seed$'People'[[paste0('people_', bound[1])]]$'number_of_people_schedule_name' =
-        'sch_occup_dorm'
-      seed$'Lights'[[paste0('lights_', bound[1])]]$'schedule_name' =
-        'sch_ilum_dorm'
-      seed$'ElectricEquipment'[[paste0('equip_', bound[1])]] = NULL
-    } else {
-      seed$'People'[[paste0('people_', bound[1])]] = NULL
-      seed$'Lights'[[paste0('lights_', bound[1])]] = NULL
-      seed$'ElectricEquipment'[[paste0('equip_', bound[1])]] = NULL
-    }
-    
     # hvac
     if (cond == 'hvac') {
-      if(bound[3] == 'living') {
-        seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_hive_', bound[2])]]$
+      if(bound[[1]][3] == 'living') {
+        seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[[1]][1])]]$
           'availability_schedule_name' = 'sch_hvac_living'
-      } else if (bound[3] == 'dorm') {
-        seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_hive_', bound[2])]]$
+        if (bound[[1]][2] != 'c') {
+          seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[[2]][1])]]$
+            'availability_schedule_name' = 'sch_hvac_dorm'
+        }
+      } else if (bound[[1]][3] == 'dorm') {
+        seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[[1]][1])]]$
           'availability_schedule_name' = 'sch_hvac_dorm'
+        if (bound[[1]][2] != 'c') {
+          seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[[2]][1])]]$
+            'availability_schedule_name' = 'sch_hvac_living'
+        }
       } else {
-        seed$'ZoneControl:Thermostat'[[paste0('thermostat_hive_', bound[2])]] = NULL
-        seed$'ZoneHVAC:EquipmentConnections'[[paste0('hvac_equip_connect_hive_', bound[2])]] = NULL
-        seed$'ZoneHVAC:EquipmentList'[[paste0('hvac_equip_hive_', bound[2])]] = NULL
-        seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_hive_', bound[2])]] = NULL
+        for (i in 1:2) {
+          seed$'ZoneControl:Thermostat'[[paste0('thermostat_', bound[[i]][1])]] = NULL
+          seed$'ZoneHVAC:EquipmentConnections'[[paste0('hvac_equip_connect_', bound[[i]][1])]] = NULL
+          seed$'ZoneHVAC:EquipmentList'[[paste0('hvac_equip_', bound[[i]][1])]] = NULL
+          seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[[i]][1])]] = NULL
+        }
       }
     }
   }
@@ -597,11 +634,11 @@ prop = list(
 # application ####
 for (i in 1:length(prop)) {
   hive_gen(seed = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/00.seed/00.sz/',
-                         'seed_ac_1st_model.epJSON'),
+                         'seed_ac_v02.epJSON'),
            cond = 'hvac',
            lx = prop[[i]][[1]][1], ly = prop[[i]][[1]][2], lz = prop[[i]][[1]][3],
            alt = prop[[i]][[1]][4], names(prop[[i]])[1], bounds = prop[[i]][[2]],
            output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                               '00.sz/03.4th_model/01.ac/00.model/'),
+                               '00.sz/04.5th_model/01.ac/00.model/'),
            model_name = names(prop)[i])
 }
