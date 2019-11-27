@@ -47,7 +47,7 @@ def epjson_sim_runner(epjson_dir, output_dir, epw_dir, weather_names):
 			  output_dir + 'sqlite.err')
 
 	# bundle the 'err' files
-	os.system('rm ' + output_dir + 'errors.txt & touch ' + output_dir + ' errors.txt')
+	os.system('touch ' + output_dir + ' errors.txt')
 	error_files = glob.glob(output_dir + '*.err')
 	for value in error_files:
 		with open(value) as input_file:

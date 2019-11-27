@@ -167,7 +167,7 @@ surf_rename = function(col_name) {
 # variables to run the code ####
 # with single zone results directory (first) and the directories of the real cases
 input_dirs = list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                '00.sz/03.4th_model/01.ac/01.result/'),
+                                '00.sz/04.5th_model/01.ac/01.result/'),
                   'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
                                    '01.validation/01.multi/01.result/01.2nd_model/01.ac/'))
 version = '2nd_model_ac'
@@ -523,16 +523,16 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
   # day - 
   # plot_dir - 
   # unit - 
-  
+
   # pre-process
   # define season
-  season = ifelse(day == '19-04-03', 'niver', ifelse(day == '19-06-20', 'inverno', 'verao'))
+  season = ifelse(day == '19-06-20', 'inverno', 'verao')
   # define unites
   div = ifelse(unit == 'kj', 1000, 3600000)
   # define variables in analysis
   therm_vars = c('int_conv_he', 'hvac_sens_load', 'afn_inf_sens_load', 'conv_floor',
                  'conv_roof', 'conv_wall', 'conv_window', 'conv_door')
-  vars = c('sim', 'date_time', 'site_drybulb_temp', therm_vars, 'afn_inf_air_change')
+  vars = c('sim', 'date_time', 'site_drybulb_temp', therm_vars)
   # get files
   csv_sz = csv_files[['sz']][[plot_name]]
   csv_multi = csv_files[['multi']][[plot_name]]
@@ -583,15 +583,13 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
   }
   df = subset(df, !is.na(val))
   df = cbind('date_time' = csv$date_time, 'site_drybulb_temp' = csv$site_drybulb_temp,
-             'sim' = csv$sim, 'afn_inf_air_change' = csv$afn_inf_air_change, df)
+             'sim' = csv$sim, df)
   # calculate max and min of val variable to plot second axis
   max_val = max(df$val)
   min_val = min(df$val)
-  max_afn = max(df$afn_inf_air_change)
-  min_afn = min(df$afn_inf_air_change)
   
-  # # start plotting
-  # # associate conditions to plot and name plot
+  # start plotting
+  # associate conditions to plot and name plot
   png(filename = paste0(plot_dir, 'detail_tb_', plot_name, '_', season, '.png'), width = 33.8,
       height = 19, units = 'cm', res = 500)
   plot(
@@ -601,15 +599,10 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
       facet_grid(. ~ sim) +
       # insert lines geometries for each kind of heat flow
       geom_line(data = df, aes(x = date_time, y = val, color = var)) +
-      # insert a black dotted line to airflow network
-      geom_line(data = df, aes(x = date_time,
-                               y = afn_inf_air_change*(max_val-0)/(max_afn-0)),
-                linetype = 'dotted', color = 'black') +
       # define labs (title, x and y labs)
       labs(title = 'Analise diaria detalhada',
            subtitle = paste0(sub('De', 'de', cap_str(gsub('_', ' ', plot_name))),
-                             '\n', 'Dia ', day, ' (', ifelse(season != 'niver', cap_str(season),
-                                                             paste0(cap_str(season), ' :)')), ')'),
+                             '\n', 'Dia ', day, ' (', cap_str(season), ')'),
            x = 'Hora',
            y = 'KJ') +
       # edit legend
@@ -620,10 +613,6 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
                                     'mediumpurple2', 'peachpuff4', 'royalblue3', 'lightcyan4')) +
       # breaks for date and time
       scale_x_datetime(date_breaks = '2 hour', date_labels = '%Hh') +
-      # limits of primary and secondary axis
-      scale_y_continuous(limits = c(min_val, max_val),
-                         sec.axis = sec_axis(~ . *(max_afn-0)/(max_val-0),
-                                             name = 'Trocas de ar por hora\n')) +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 13),
             legend.title = element_text(size = 14),
@@ -643,16 +632,15 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
 
 
 # plot application ####
+plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/04.5th_sz_2nd_multi/01.ac/'
+
 # cgtr
-plot_cgtr(df = results[['combo']][['raw']],
-          plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                            '03.4th_sz_2nd_multi/01.ac/'))
+plot_cgtr(df = results[['combo']][['raw']], plot_dir)
 
 # diff cgtr
 for (type in c('abs', 'rel')) {
   plot_diff_cgtr(df = results[['diff']][['combo']][[type]], rel = ifelse(type == 'rel', T, F),
-                 plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                   '03.4th_sz_2nd_multi/01.ac/'))
+                 plot_dir)
 }
 # remove unuseful variables
 rm (type)
@@ -661,15 +649,11 @@ rm (type)
 for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
   if (grepl('S', D) | grepl('N', D)) {
     for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
-      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R,
-              plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                '03.4th_sz_2nd_multi/01.ac/'))
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
     }
   } else {
     for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
-      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R,
-              plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                '03.4th_sz_2nd_multi/01.ac/'))
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
     }
   }
 }
@@ -680,18 +664,14 @@ rm (D, R)
 for (type in c('abs', 'rel')) {
   for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
     if (grepl('S', D) | grepl('N', D)) {
-      for (R in c('Living', 'Dorm. E', 'Dorm. W')) {
+      for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
         plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
-                     ifelse(type == 'rel', T, F),
-                     plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                       '02.3rd_sz_1st_multi/'))
+                     ifelse(type == 'rel', T, F), plot_dir)
       }
     } else {
       for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
         plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
-                     ifelse(type == 'rel', T, F),
-                     plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                       '02.3rd_sz_1st_multi/'))
+                     ifelse(type == 'rel', T, F), plot_dir)
       }
     }
   }
@@ -700,14 +680,11 @@ for (type in c('abs', 'rel')) {
 rm(type, D, R)
 
 # detailed thermal balance
-casos = c('sao_paulo_w_living', 'rio_de_janeiro_ne_dorm_e', 'sao_paulo_w_dorm_n',
-          'rio_de_janeiro_se_living')
-days = c('19-04-03', '19-06-20', '19-12-22')
+casos = c('sao_paulo_w_liv', 'sao_paulo_ne_dorm_2', 'sao_paulo_e_dorm_n')
+days = c('19-06-20', '19-12-22')
 for (caso in casos) {
   for (day in days) {
-    plot_detail_tb(plot_name = caso, day = day, unit = 'kj',
-                   plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                     '01.3rd_sz_1st_multi/'))
+    plot_detail_tb(plot_name = caso, day = day, unit = 'kj', plot_dir)
   }
 }
 # remove unuseful variables

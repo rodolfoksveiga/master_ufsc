@@ -152,30 +152,30 @@ num = function(value) {
 }
 # zone_adj()
 zone_adj = function(side, n, lx, ly) {
-  x_origin = ifelse(side == 's' | side == 'n', 0,
-                    ifelse(side == 'e', ifelse(n == 1, lx, 2*lx), -ifelse(n == 1, ly, 2*ly)))
+  x_origin = ifelse(is_csn(side), 0,
+                    ifelse(side == 'e', ifelse(n == 1, ly, 2*ly), -ifelse(n == 1, ly, 2*ly)))
   y_origin = ifelse(side == 's', -ifelse(n == 1, lx, 2*lx),
-                    ifelse(side == 'e' | side == 'w', 0, ifelse(n == 1, ly, 2*ly)))
+                    ifelse(is_cew(side), 0, ifelse(n == 1, lx, 2*lx)))
   return(c(x_origin, y_origin))
 }
 
 # test
-seed = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/00.seed/00.sz/seed_ac_v02.epJSON'
-cond = 'hvac'
-room = 'dorm'
-lx = 4
-ly = 3
-lz = 2.7
-alt = 0
-bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
-              c('w', 'dorm', 0))
+# seed = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/00.seed/00.sz/seed_ac_v02.epJSON'
+# cond = 'hvac'
+# room = 'living'
+# lx = 3
+# ly = 5
+# lz = 2.7
+# alt = 0
+# bounds = list(c('s', 'dorm', 0), c('e', 'outdoors', 0.2), c('n', 'dorm', 0),
+#      c('w', 'adiabatic', 0))
 
 # main function ####  
 # the main function loads a seed file filled with all possible surfaces, fenestrations and
 # conditioning system ('hvac' and 'afn') objects and sorting them out
 
 # hive_gen()
-# hive_gen = function(seed, cond, lx, ly, lz, alt, room, bounds, output_dir, model_name) {
+hive_gen = function(seed, cond, lx, ly, lz, alt, room, bounds, output_dir, model_name) {
   # seed = epJSON's file full path filled with constant values
   # cond = air conditioning type
   # possible values: 'hvac' and 'afn'
@@ -378,73 +378,60 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
         }
       }
     } else if (is_room(bound[[1]][3])) {
-      for (i in 1:length(vertices)) {
-        # door [hive]
-        for (n in 1:2) {
-          # doors 'hive x core' and 'hive x hive'
+      for (n in 1:2) {
+        for (i in 1:length(vertices)) {
           seed$
             'FenestrationSurface:Detailed'[[paste0(bound[[n]][1], '_door_',
                                                    opos_side(bound[[1]][2]))]][[paste0(vertices[i],
                                                                                        '_coordinate')]] =
             fen_surf('door', opos_side(bound[[1]][2]), ifelse(is_csn(bound[[1]][2]), lx, ly),
                      ifelse(is_csn(bound[[1]][2]), lx, ly))[i]
+          seed$
+            'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_door_',
+                                                   bound[[1]][2])]][[paste0(vertices[i],
+                                                                            '_coordinate')]] =
+            fen_surf('door', bound[[1]][2], ifelse(is_csn(bound[[1]][2]), lx, ly),
+                     ifelse(is_csn(bound[[1]][2]), lx, ly))[i]
+          seed$
+            'FenestrationSurface:Detailed'[[paste0(bound[[2]][1], '_window_',
+                                                   bound[[1]][2])]][[paste0(vertices[i],
+                                                                            '_coordinate')]] =
+            fen_surf('window', bound[[1]][2], ifelse(is_csn(bound[[1]][2]), lx, ly),
+                     ifelse(is_csn(bound[[1]][2]), lx, ly), lz, 0.17)[i]
         }
-        # door 'hive x hive'
-        seed$
-          'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_door_',
-                                                 bound[[1]][2])]][[paste0(vertices[i],
-                                                                          '_coordinate')]] =
-          fen_surf('door', bound[[1]][2], ifelse(is_csn(bound[[1]][2]), lx, ly),
-                   ifelse(is_csn(bound[[1]][2]), lx, ly))[i]
-        seed$
-          'FenestrationSurface:Detailed'[[paste0(bound[[2]][1], '_window_',
-                                                 bound[[1]][2])]][[paste0(vertices[i],
-                                                                          '_coordinate')]] =
-          fen_surf('window', bound[[1]][2], ifelse(is_csn(bound[[1]][2]), lx, ly),
-                   ifelse(is_csn(bound[[1]][2]), lx, ly), lz, 0.17)[i]
+        seed$'FenestrationSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[n],
+                                                    '1_window_', bound[[1]][2])]] = NULL
       }
-    } else if (bound[[1]][3] == 'outdoors') {
+    } else {
+      # 
+      seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_door_', bound[[1]][2])]] = NULL
+      seed$'FenestrationSurface:Detailed'[[paste0(bound[[2]][1], '_window_', bound[[1]][2])]] = NULL
       for (n in 1:2) {
         seed$'FenestrationSurface:Detailed'[[paste0(bound[[n]][1], '_door_',
                                                     opos_side(bound[[1]][2]))]] = NULL
-      }
-      seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_door_', bound[[1]][2])]] = NULL
-      for (n in 1:2) {
         seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_window_',
                                                     adj_side(bound[[1]][2]))[n]]] = NULL
-      }
-      seed$'FenestrationSurface:Detailed'[[paste0(bound[[2]][1], '_window_', bound[[1]][2])]] = NULL
-      
-      for (i in 1:length(vertices)) {
-        for (j in 1:2) {
-          if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[j])]][[1]][3])) {
-            seed$'FenestrationSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[j], '1',
-                                                        '_window_', bound[[1]][2])]][[paste0(vertices[i],
-                                                                                             '_coordinate')]] =
-              fen_surf('window', bound[[1]][2], ifelse(is_csn(bound[[1]][2]), lx, ly),
-                       ifelse(is_csn(bound[[1]][2]), lx, ly), lz, 0.17)[i]
-            seed$'FenestrationSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[j], '1',
-                                                        '_window_', opos_side(bound[[1]][2]))]] =
-              NULL
+        
+        if (bound[[1]][3] == 'adiabatic' | bound[[1]][4] == 0) {
+          seed$'FenestrationSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[n],
+                                                      '1_window_', bound[[1]][2])]] = NULL
+        } else {
+          if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[n])]][[1]][3])) {
+            for (i in 1:length(vertices)) {
+              seed$'FenestrationSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[n], '1',
+                                                          '_window_', bound[[1]][2])]][[paste0(vertices[i],
+                                                                                               '_coordinate')]] =
+                fen_surf('window', bound[[1]][2], ifelse(is_csn(adj_side(bound[[1]][2])[n]), lx, ly),
+                         ifelse(is_csn(adj_side(bound[[1]][2])[n]), lx, ly), lz, 0.17)[i]
+            }
           } else {
-            seed$'FenestrationSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[j],
+            seed$'FenestrationSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[n],
                                                         '1_window_', bound[[1]][2])]] = NULL
-            seed$'FenestrationSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[j],
-                                                        '1_window_', opos_side(bound[[1]][2]))]] = NULL
           }
         }
       }
-    } else {
-      for (n in 1:2) {
-        seed$'FenestrationSurface:Detailed'[[paste0(bound[[n]][1], '_door_',
-                                                    opos_side(bound[[1]][2]))]] = NULL
-        seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_window_',
-                                                    adj_side(bound[[1]][2]))[n]]] = NULL
-      }
-      seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_door_', bound[[1]][2])]] = NULL
-      seed$'FenestrationSurface:Detailed'[[paste0(bound[[2]][1], '_window_', bound[[1]][2])]] = NULL
     }
-  
+    
     # airflow network
     if (bound[[1]][2] == 'c') {
       for (hive in hives) {
@@ -462,12 +449,10 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
       }
     } else if (is_room(bound[[1]][3])) {
       for (i in 1:2) {
-        if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[i])]][[1]][3])) {
-          seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[i], '1',
-                                                          '_window_', bound[[1]][2])]] = NULL
-        }
+        seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[i], '1',
+                                                        '_window_', bound[[1]][2])]] = NULL
       }
-    } else  if (bound[[1]][3] == 'outdoors') {
+    } else {
       # ok
       seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[1]][1], '_door_', bound[[1]][2])]] = NULL
       # ok
@@ -477,15 +462,17 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
         # ok
         seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[1]][1], '_window_',
                                                         adj_side(bound[[1]][2])[i])]] = NULL
+        # ok
         seed$'AirflowNetwork:MultiZone:Zone'[[paste0('afn_', bound[[i]][1])]] = NULL
       }
-    } else {
-      for (j in 1:2) {
-        seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[j],
-                                                        '1_window_', bound[[1]][2])]] = NULL
+      if (bound[[1]][3] == 'adiabatic' | bound[[1]][4] == 0) {
+        for (i in 1:2) {
+          seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[i], '1',
+                                                          '_window_', bound[[1]][2])]] = NULL
+        }
       }
     }
-    
+
     # internal load (people, lights, electric equipment)
     # hive int
     if (bound[[1]][3] == 'living') {
@@ -571,7 +558,7 @@ bounds = list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.
   jsonlite::write_json(seed, paste0(output_dir, model_name, '.epJSON'), pretty = T, auto_unbox = T)
   # print file name
   print(paste0(model_name, '.epJSON'))
-# }
+}
 
 # application ####
 prop = list(
