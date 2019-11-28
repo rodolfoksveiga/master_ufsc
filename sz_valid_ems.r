@@ -174,10 +174,10 @@ surf_rename = function(col_name) {
 # variables to run the code ####
 # with single zone results directory (first) and the directories of the real cases
 input_dirs = list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                '00.sz/02.3rd_model/01.result/'),
+                                '00.sz/00.ems_v01/01.result/'),
                   'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
-                                   '01.validation/01.multi/01.result/00.1st_model/'))
-version = '1st_model'
+                                   '01.validation/01.multi/00.ems_v01/01.results/'))
+version = 'ems_v01'
 
 # create empty lists to be filled with 'csv' files
 csv_names = csv_files = results = vector('list', length(input_dirs))
@@ -207,18 +207,22 @@ for (i in 1:length(csv_names)) {
                                                      sub('.csv', '', csv_names[[i]]))
 }
 # remove unuseful variables
-rm(input_dirs, i, j)
+rm(input_dirs, i, j, version)
 
-# rename columns ####
+# rename columns #### 
 # delete columns related to the hives
 csv_files[['sz']] = lapply(csv_files$sz, function(x) x[, grepl('CORE', colnames(x)) |
                                                          grepl('Date.Time', colnames(x)) |
                                                          grepl('Drybulb', colnames(x))])
 # define new column names
-sz_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
-          rep('conv_hge', 9), 'mean_temp', 'op_temp', rep('afn_open_fac', 3),
-          'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he',
-          'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
+sz_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
+                 rep('conv_hge', 8), 'mean_temp', 'op_temp', rep('afn_open_fac', 2),
+                 'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he',
+                 'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
+sz_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
+                 rep('conv_hge', 9), 'mean_temp', 'op_temp', rep('afn_open_fac', 3),
+                 'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he',
+                 'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
 multi_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
                   rep('conv_hge', 8), 'mean_temp', 'op_temp', 'afn_open_fac','afn_inf_sens_hge',
                   'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he', 'hvac_sens_ce',
@@ -646,16 +650,15 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
 
 
 # plot application ####
+plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/00.ems_sz_v01_multi_v01/'
+
 # cgtr
-plot_cgtr(df = results[['combo']][['raw']],
-          plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                            '02.3rd_sz_1st_multi/'))
+plot_cgtr(df = results[['combo']][['raw']], plot_dir)
 
 # diff cgtr
 for (type in c('abs', 'rel')) {
   plot_diff_cgtr(df = results[['diff']][['combo']][[type]], rel = ifelse(type == 'rel', T, F),
-                 plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                   '02.3rd_sz_1st_multi/'))
+                 plot_dir)
 }
 # remove unuseful variables
 rm (type)
@@ -664,15 +667,11 @@ rm (type)
 for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
   if (grepl('S', D) | grepl('N', D)) {
     for (R in c('Living', 'Dorm. E', 'Dorm. W')) {
-      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R,
-              plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                '02.3rd_sz_1st_multi/'))
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
     }
   } else {
     for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
-      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R,
-              plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                '02.3rd_sz_1st_multi/'))
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
     }
   }
 }
@@ -685,16 +684,12 @@ for (type in c('abs', 'rel')) {
     if (grepl('S', D) | grepl('N', D)) {
       for (R in c('Living', 'Dorm. E', 'Dorm. W')) {
         plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
-                     ifelse(type == 'rel', T, F),
-                     plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                       '02.3rd_sz_1st_multi/'))
+                     ifelse(type == 'rel', T, F), plot_dir)
       }
     } else {
       for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
         plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
-                     ifelse(type == 'rel', T, F),
-                     plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                       '02.3rd_sz_1st_multi/'))
+                     ifelse(type == 'rel', T, F), plot_dir)
       }
     }
   }

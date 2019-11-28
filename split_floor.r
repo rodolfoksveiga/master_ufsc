@@ -6,6 +6,7 @@ library('Hmisc')
 library('stringr')
 
 # split_floor()
+split_floor = function(input_dir, wrap_names = '', zone_names, ignored_zones = NULL, output_dir) {
   # input_dir: directory where the full floor simulation's outputs are located
   # wrap_names: types of possible wraps to be considered
   # zone_names: names of the zones to be splitted (by default it pick up all the zones in the
@@ -13,22 +14,6 @@ library('stringr')
   # ignored_zones: names of zones to be ignored (by default it ignores the 'core', 'cor' (corridor)
     # and 'bh' (bathroom))
   # output_dir: directory where the splitted files will be saved
-# split_floor = function(input_dir,
-                       # wrap_names = '',
-                       # zone_names,
-                       # ignored_zones = NULL,
-                       # output_dir) {
-
-# test
-input_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                   '01.multi/01.result/01.2nd_model/')
-wrap_names = ''
-zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
-               'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
-               'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s')
-ignored_zones = NULL
-output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                    '01.multi/01.result/01.2nd_model/01.ac/')
 
   # create empty lists
   csv_names = csv_files = vector(mode = 'list',
@@ -44,7 +29,7 @@ output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.valida
   for (i in 1:length(csv_names)) {
     for (j in 1:length(csv_names[[i]])) {
       # count the splitting process
-      print(paste0('i = ', i, ' / j = ', j))
+      print(paste('i =', i, '/ j =', j))
       # load files
       csv_files[[i]][[j]] = read.csv(paste0(input_dir, csv_names[[i]][j]))
       # rename the list which contains the '.csv' files (remove '.csv' suffix)
@@ -72,13 +57,13 @@ output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.valida
       }
     }
   }
-# }
+}
 
 # application
 split_floor(input_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                               '01.multi/01.result/01.2nd_model/'),
+                               '01.multi/00.ems_v01/'),
             zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
                            'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
                            'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
             output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                '01.multi/01.result/01.2nd_model/01.ac/'))
+                                '01.multi/00.ems_v01/01.results/'))

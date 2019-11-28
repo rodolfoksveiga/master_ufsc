@@ -425,7 +425,7 @@ hive_gen = function(seed, lx, ly, lz, alt, room, bounds, output_dir, model_name)
   }
   rm(i, vertices, side)
   
-  # NOVIDADE
+  # NEWS
   for (side in bounds) {
     if (is_room(side[2])) {
       for (s in c('s', 'e', 'n', 'w')) {
