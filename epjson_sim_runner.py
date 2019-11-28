@@ -71,7 +71,7 @@ def epjson_sim_runner(epjson_dir, output_dir, epw_dir, weather_names):
 
 # sz
 epjson_sim_runner(epjson_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/04.5th_model/01.ac/00.model/',
-				  output_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/04.5th_model/01.ac/01.result/',
+				  output_dir = '/home/rodox/Desktop/5th_model/',
 				  epw_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/03.source/00.epw/',
 				  weather_names = np.array(['rio_de_janeiro', 'sao_paulo']))
 

@@ -166,8 +166,7 @@ surf_rename = function(col_name) {
 
 # variables to run the code ####
 # with single zone results directory (first) and the directories of the real cases
-input_dirs = list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                '00.sz/04.5th_model/01.ac/01.result/'),
+input_dirs = list('sz' = paste0('/home/rodox/Desktop/5th_model/'),
                   'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
                                    '01.validation/01.multi/01.result/01.2nd_model/01.ac/'))
 version = '2nd_model_ac'
@@ -637,7 +636,7 @@ plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/04.5th_sz_
 # cgtr
 plot_cgtr(df = results[['combo']][['raw']], plot_dir)
 
-# diff cgtr
+# diff cgtr 
 for (type in c('abs', 'rel')) {
   plot_diff_cgtr(df = results[['diff']][['combo']][[type]], rel = ifelse(type == 'rel', T, F),
                  plot_dir)
