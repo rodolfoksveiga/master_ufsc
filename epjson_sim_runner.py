@@ -70,15 +70,15 @@ def epjson_sim_runner(epjson_dir, output_dir, epw_dir, weather_names):
 # application
 
 # sz
-epjson_sim_runner(epjson_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/06.hvac_v02/00.model/',
-				  output_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/06.hvac_v02/01.result/',
+epjson_sim_runner(epjson_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/07.hvac_v04/00.model/',
+				  output_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/00.sz/07.hvac_v04/01.result/',
 				  epw_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/03.source/00.epw/',
 				  weather_names = np.array(['rio_de_janeiro', 'sao_paulo']))
 
 '''
 # multi
-epjson_sim_runner(epjson_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/00.ems_v01/00.model/',
-				  output_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/00.ems_v01/01.results/',
+epjson_sim_runner(epjson_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/01.hvac_v01/00.model/',
+				  output_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/01.multi/01.hvac_v01/01.result/',
 				  epw_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/03.source/00.epw/',
 				  weather_names = np.array(['rio_de_janeiro', 'sao_paulo']))
 '''

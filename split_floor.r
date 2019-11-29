@@ -61,9 +61,9 @@ split_floor = function(input_dir, wrap_names = '', zone_names, ignored_zones = N
 
 # application
 split_floor(input_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                               '01.multi/00.ems_v01/'),
+                               '01.multi/01.hvac_v01/'),
             zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
                            'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
                            'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
             output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                '01.multi/00.ems_v01/01.results/'))
+                                '01.multi/01.hvac_v01/01.result/'))

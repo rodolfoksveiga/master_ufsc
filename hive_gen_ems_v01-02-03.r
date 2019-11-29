@@ -142,8 +142,8 @@ num = function(value) {
 }
 # zone_adj()
 zone_adj = function(side, lx, ly) {
-  x_origin = ifelse(side == 's' | side == 'n', 0, ifelse(side == 'e', lx, -ly))
-  y_origin = ifelse(side == 's', -lx, ifelse(side == 'e' | side == 'w', 0, ly))
+  x_origin = ifelse(is_csn(side), 0, ifelse(side == 'e', lx, -ly))
+  y_origin = ifelse(side == 's', -lx, ifelse(is_cew(side), 0, ly))
   return(c(x_origin, y_origin))
 }
 
