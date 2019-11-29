@@ -1,7 +1,7 @@
 # load libraries
 library(ggplot2)
 
-# base functions ####
+# functions ####
 # cap_str()
 # capitalize all the words in a string
 cap_str = function(str) {
@@ -111,7 +111,6 @@ report = function(csv, timestep = 6, unit = 'kwh') {
   afn_inf_sens_hge = csv$afn_inf_sens_hge/div
   afn_inf_sens_hle = -csv$afn_inf_sens_hle/div
   # other evaluation metrics vectors
-  afn_inf_air_change = csv[, c('afn_inf_air_change', 'sch_afn')]
   hvac_total_he = csv$hvac_total_he/div
   hvac_total_ce = csv$hvac_total_ce/div
   # throw all the vectors inside the report list
@@ -120,30 +119,24 @@ report = function(csv, timestep = 6, unit = 'kwh') {
                 'conv_hge_windows' = conv_hge_windows, 'conv_hge_doors' = conv_hge_doors,
                 'hvac_sens_he' = hvac_sens_he, 'hvac_sens_ce' = hvac_sens_ce,
                 'afn_inf_sens_hge' = afn_inf_sens_hge, 'afn_inf_sens_hle' = afn_inf_sens_hle,
-                'afn_inf_air_change' = afn_inf_air_change, 'hvac_total_he' = hvac_total_he,
-                'hvac_total_ce' = hvac_total_ce, 'df' = NULL)
+                'hvac_total_he' = hvac_total_he, 'hvac_total_ce' = hvac_total_ce, 'df' = NULL)
   # create data frame
   # the data frame number of columns is 1 size smaller than the length of report because 1 item of
   # report's list correspond to 'df'
   report[['df']] = as.data.frame(matrix(NA, 12, length(report) - 1))
   colnames(report[['df']]) = c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_walls',
                                'conv_hge_windows', 'conv_hge_doors', 'hvac_sens_he', 'hvac_sens_ce',
-                               'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change',
-                               'hvac_total_he', 'hvac_total_ce')
+                               'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_total_he',
+                               'hvac_total_ce')
   rownames(report[['df']]) = names(year)
-  isnt_air_change = colnames(report[['df']]) != 'afn_inf_air_change'
   for (month in names(year)) {
-    afn_month = afn_inf_air_change[year[[month]], ]
-    report[['df']][month, 'afn_inf_air_change'] =
-      mean(subset(afn_month, sch_afn != 0)$afn_inf_air_change)
-    for (col in colnames(report[['df']])[isnt_air_change]) {
+    for (col in colnames(report[['df']])) {
       report[['df']][month, col] = ifelse(is.null(dim(report[[col]])),
                                           sum(report[[col]][year[[month]]]),
                                           sum(apply(report[[col]][year[[month]], ], 2, sum)))
     }
   }
-  report[['df']]['year', isnt_air_change] = apply(report[['df']][1:12, isnt_air_change], 2, sum)
-  report[['df']]['year', 'afn_inf_air_change'] = mean(report[['df']][1:12, 'afn_inf_air_change'])
+  report[['df']]['year', ] = apply(report[['df']][1:12, ], 2, sum)
   report[['df']]$hvac_total_he = ifelse(report[['df']]$hvac_total_he < 0.01, 0,
                                         report[['df']]$hvac_total_he)
   report[['df']] = apply(report[['df']], 2, round, 1)
@@ -162,177 +155,195 @@ surf_rename = function(col_name) {
                        ifelse(grepl('WALL', col_name), '_wall',
                               ifelse(grepl('WINDOW', col_name), '_window',
                                      ifelse(grepl('DOOR', col_name), '_door', '')))))
-  side = ifelse(grepl('_S\\.', col_name) & !grepl('M_S.', col_name), '_s',
+  side = ifelse(grepl('_S\\.', col_name) & !grepl('M_S\\.', col_name), '_s',
                 ifelse(grepl('_E\\.', col_name), '_e',
-                       ifelse(grepl('_N\\.', col_name) & !grepl('M_N.', col_name), '_n',
+                       ifelse(grepl('_N\\.', col_name) & !grepl('M_N\\.', col_name), '_n',
                               ifelse(grepl('_W\\.', col_name), '_w',
                                      ''))))
   surf_rename = paste0(surf, side)
   return(surf_rename)
 }
 
-# main function ####
-# valid()
-# process all the data from simplified and 'original' model and return a list with data frames used
-  # to future plots (e.g. a data frame with the differences in thermal balance)
-valid = function(input_dirs, version_multi) {
-  # input_dirs: 
-  # version_multi:
-  
-# test
-# input_dirs = list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
-#                    '01.validation/00.sz/02.ems_v03/01.result/'),
-#      'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
-#                       '01.validation/01.multi/00.ems_v01/01.results/'))
-# version_multi = '01'
+# variables to run the code ####
+# with single zone results directory (first) and the directories of the real cases
+input_dirs = list('sz' = paste0('/home/rodox/Desktop/5th_model/'),
+                  'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                   '01.validation/01.multi/01.result/01.2nd_model/01.ac/'))
+version = '2nd_model_ac'
+cond = 'hvac'
 
-  # create empty lists to be filled with 'csv' files
-  csv_names = csv_files = results = vector('list', length(input_dirs))
-  # name the lists
-  names(csv_names) = names(csv_files) = names(results) = names(input_dirs)
-  
-  # load files ####
-  # pick 'csv' names inside input directory
-  for (i in 1:length(csv_names)) {
-    csv_names[[i]] = dir(input_dirs[[i]], '.csv')
-    # extend results
-    results[[i]] = vector('list', length(csv_names[[i]]))
+# create empty lists to be filled with 'csv' files
+csv_names = csv_files = results = vector('list', length(input_dirs))
+# name the lists
+names(csv_names) = names(csv_files) = names(results) = names(input_dirs)
+
+# load files ####
+# pick 'csv' names inside input directory
+for (i in 1:length(csv_names)) {
+  csv_names[[i]] = dir(input_dirs[[i]], '.csv')
+  # extend results
+  results[[i]] = vector('list', length(csv_names[[i]]))
+}
+# remove unuseful variables
+rm(i)
+
+# read files
+for (i in 1:length(csv_names)) {
+  for (j in 1:length(csv_names[[i]])) {
+    # count the files while they're loaded
+    print(paste('i =', i, '/ j =', j))
+    # load the files themselves
+    csv_files[[i]][[j]] = read.csv(paste0(input_dirs[[i]], csv_names[[i]][[j]]))
   }
-  
-  # read files
-  for (i in 1:length(csv_names)) {
-    for (j in 1:length(csv_names[[i]])) {
-      # count the files while they're loaded
-      print(paste('i =', i, '/ j =', j))
-      # load the files themselves
-      csv_files[[i]][[j]] = read.csv(paste0(input_dirs[[i]], csv_names[[i]][[j]]))
-    }
-    # define proper names to the list
-    names(csv_files[[i]]) = names(results[[i]]) = gsub(paste0('_ems_v', version_multi), '',
-                                                       sub('.csv', '', csv_names[[i]]))
-  }
-  
-  # rename columns #### 
-  # delete columns related to the hives
-  csv_files[['sz']] = lapply(csv_files$sz, function(x) x[, grepl('CORE', colnames(x)) |
-                                                           grepl('Date.Time', colnames(x)) |
-                                                           grepl('Drybulb', colnames(x))])
-  # define new column names
-  sz_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
-            rep('conv_hge', 9), 'mean_temp', 'op_temp', rep('afn_open_fac', 3),
-            'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he',
-            'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
+  # define proper names to the list
+  names(csv_files[[i]]) = names(results[[i]]) = gsub(paste0(version, '_'), '',
+                                                     sub('.csv', '', csv_names[[i]]))
+}
+# remove unuseful variables
+rm(input_dirs, i, j)
+
+# rename columns ####
+# delete columns related to the hives
+csv_files[['sz']] = lapply(csv_files$sz, function(x) x[, grepl('HIVE_C', colnames(x)) |
+                                                         grepl('Date.Time', colnames(x)) |
+                                                         grepl('Drybulb', colnames(x))])
+# define new column names
+# hvac
+if (cond == 'hvac') {
+  sz_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count', rep('conv_hge', 9),
+            'mean_temp', 'op_temp', 'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_sens_he',
+            'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce')
   multi_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
-                    rep('conv_hge', 8), 'mean_temp', 'op_temp', 'afn_open_fac','afn_inf_sens_hge',
-                    'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he', 'hvac_sens_ce',
-                    'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
+                    rep('conv_hge', 8), 'mean_temp', 'op_temp', 'afn_inf_sens_hge',
+                    'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he',
+                    'hvac_total_ce')
   multi_ew_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
-                      rep('conv_hge', 9), 'mean_temp', 'op_temp', rep('afn_open_fac', 3),
-                      'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he',
-                      'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
+                      rep('conv_hge', 9), 'mean_temp', 'op_temp', 'afn_inf_sens_hge',
+                      'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he',
+                      'hvac_total_ce')
   multi_sn_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
-                      rep('conv_hge', 10), 'mean_temp', 'op_temp', rep('afn_open_fac', 3),
-                      'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he',
-                      'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
-  
-  # rename 'csv' simulation files
-  for (i in 1:length(csv_files$sz)) {
-    # remove first column related to an x variable created when multi 'csv' files were splitted
-    csv_files$multi[[i]][, 1] = NULL
-    # multi
-    for (j in 1:dim(csv_files$multi[[i]])[2]) {
-      col = colnames(csv_files$multi[[i]])[j]
-      col = ifelse(
-        grepl('dorm', names(csv_files$multi)[i]),
-        paste0(multi_dorm_cn[j], surf_rename(col)), 
-        ifelse(
-          grepl('_e_liv',names(csv_files$multi)[i]) | grepl('_w_liv',
-                                                            names(csv_files$multi)[i]),
-          paste0(multi_ew_liv_cn[j], surf_rename(col)),
-          paste0(multi_sn_liv_cn[j], surf_rename(col))
-        )
-      )
-      colnames(csv_files$multi[[i]])[j] = col
-    }
-    # single zone
-    for (j in 1:dim(csv_files$sz[[i]])[2]) {
-      col = colnames(csv_files$sz[[i]])[j]
-      col = paste0(sz_cn[j], surf_rename(col))
-      colnames(csv_files$sz[[i]])[j] = col
-    }
-  }
-  
-  # configure 'date_time' column ####
-  for (i in 1:length(csv_files)) {
-    for (j in 1:length(csv_files[[i]])) {
-      csv_files[[i]][[j]]$date_time = seq(ISOdate(19, 1, 1, 0, 10, 0), by = '10 min',
-                                          length.out = 365*24*6, tz='')
-    }
-  }
-  
-  # compile results ####
-  for (i in 1:length(csv_files)) {
-    results[[i]] = lapply(csv_files[[i]], report)
-    for (j in 1:length(csv_files[[i]])) {
-      results[[i]][[j]][['df']]$sim = ifelse(grepl('sz', names(results)[i]), 'SZ', 'Multi.')
-      results[[i]][[j]][['df']] = label_df(results[[i]][[j]][['df']], names(results[[i]])[j])
-      results[['combo']][['raw']] = rbind(results[['combo']][['raw']],
-                                          results[[i]][[j]][['df']]['year', ])
-    }
-  }
-  
-  # compile differences
-  for (i in 1:length(results[['sz']])) {
-    for (type in c('abs', 'rel')) {
-      results[['diff']][[type]][[i]] = df_diff(results[['sz']][[i]][['df']],
-                                               results[['multi']][[i]][['df']])[[type]]
-      results[['diff']][['combo']][[type]] =
-        rbind(results[['diff']][['combo']][[type]],
-              df_diff(results[['sz']][[i]][['df']],
-                      results[['multi']][[i]][['df']])[[type]]['year', ])
-    }
-  }
-  # name diff list
-  names(results[['diff']][['abs']]) = names(results[['diff']][['rel']]) = names(results[['sz']])
-  
-  # set a data frame for plotting thermal balance
-  vars = c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_walls', 'conv_hge_windows',
-           'conv_hge_doors', 'hvac_sens_ce', 'afn_inf_sens_hle')
-  results[['combo']][['tb']] = data.frame('val' = NA, 'var' = NA, 'sim' = NA, 'dwel' = NA,
-                                          'room' = NA, 'weather' = NA)
-  results[['diff']][['combo']][['tb']][['abs']] = results[['diff']][['combo']][['tb']][['rel']] =
-    data.frame('val' = NA, 'var' = NA, 'dwel' = NA, 'room' = NA, 'weather' = NA)
-  
-  # add data to data frames
-  for (var in vars) {
-    # thermal balance
-    df = data.frame('val' = results[['combo']][['raw']][, var],
-                    'var' = var, 'dwel' = results[['combo']][['raw']]$dwel,
-                    'sim' = results[['combo']][['raw']]$sim,
-                    'room' = results[['combo']][['raw']]$room,
-                    'weather' = results[['combo']][['raw']]$weather)
-    results[['combo']][['tb']] = rbind(results[['combo']][['tb']], df)
-    # absolute difference of thermal balance between simplified and 'original' models
-    df = data.frame('val' = results[['diff']][['combo']][['abs']][, var],
-                    'var' = var, 'dwel' = results[['diff']][['combo']][['abs']]$dwel,
-                    'room' = results[['diff']][['combo']][['abs']]$room,
-                    'weather' = results[['diff']][['combo']][['abs']]$weather)
-    results[['diff']][['combo']][['tb']][['abs']] =
-      rbind(results[['diff']][['combo']][['tb']][['abs']], df)
-    # relative difference of thermal balance between simplified and 'original' models
-    df = data.frame('val' = results[['diff']][['combo']][['rel']][, var],
-                    'var' = var, 'dwel' = results[['diff']][['combo']][['rel']]$dwel,
-                    'room' = results[['diff']][['combo']][['rel']]$room,
-                    'weather' = results[['diff']][['combo']][['rel']]$weather)
-    results[['diff']][['combo']][['tb']][['rel']] =
-      rbind(results[['diff']][['combo']][['tb']][['rel']], df)
-  }
-  results[['combo']][['tb']] = subset(results[['combo']][['tb']], !is.na(val))
-
-  return(results)
+                      rep('conv_hge', 10), 'mean_temp', 'op_temp', 'afn_inf_sens_hge',
+                      'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he',
+                      'hvac_total_ce')
 }
 
-# plot functions ####
+# rename 'csv' simulation files
+for (i in 1:length(csv_files$sz)) {
+  # remove first column related to an x variable created when multi 'csv' files were splitted
+  csv_files$multi[[i]][, 1] = NULL
+  # multi
+  for (j in 1:dim(csv_files$multi[[i]])[2]) {
+    col = colnames(csv_files$multi[[i]])[j]
+    col = ifelse(
+      grepl('dorm', names(csv_files$multi)[i]),
+      paste0(multi_dorm_cn[j], surf_rename(col)), 
+      ifelse(
+        grepl('_e_liv',names(csv_files$multi)[i]) | grepl('_w_liv',
+                                                             names(csv_files$multi)[i]),
+        paste0(multi_ew_liv_cn[j], surf_rename(col)),
+        paste0(multi_sn_liv_cn[j], surf_rename(col))
+      )
+    )
+    colnames(csv_files$multi[[i]])[j] = col
+  }
+  # single zone
+  for (j in 1:dim(csv_files$sz[[i]])[2]) {
+    col = colnames(csv_files$sz[[i]])[j]
+    col = paste0(sz_cn[j], surf_rename(col))
+    colnames(csv_files$sz[[i]])[j] = col
+  }
+}
+# remove unuseful variables
+rm(sz_cn, multi_dorm_cn, multi_ew_liv_cn, multi_sn_liv_cn, i, j, col)
+
+# configure 'date_time' column ####
+for (i in 1:length(csv_files)) {
+  for (j in 1:length(csv_files[[i]])) {
+    csv_files[[i]][[j]]$date_time = seq(ISOdate(19, 1, 1, 0, 10, 0), by = '10 min',
+                                        length.out = 365*24*6, tz='')
+  }
+}
+# remove unuseful variables
+rm(i, j)
+
+# compile results ####
+for (i in 1:length(csv_files)) {
+  results[[i]] = lapply(csv_files[[i]], report)
+  for (j in 1:length(csv_files[[i]])) {
+    results[[i]][[j]][['df']]$sim = ifelse(grepl('sz', names(results)[i]), 'SZ', 'Multi.')
+    results[[i]][[j]][['df']] = label_df(results[[i]][[j]][['df']], names(results[[i]])[j])
+    results[['combo']][['raw']] = rbind(results[['combo']][['raw']],
+                                        results[[i]][[j]][['df']]['year', ])
+  }
+}
+# remove unuseful variables
+rm(i, j)
+
+# compile differences
+for (i in 1:length(results[['sz']])) {
+  for (type in c('abs', 'rel')) {
+    results[['diff']][[type]][[i]] = df_diff(results[['sz']][[i]][['df']],
+                                             results[['multi']][[i]][['df']])[[type]]
+    results[['diff']][['combo']][[type]] =
+      rbind(results[['diff']][['combo']][[type]],
+            df_diff(results[['sz']][[i]][['df']],
+                    results[['multi']][[i]][['df']])[[type]]['year', ])
+  }
+}
+# remove unuseful variables
+rm(i, type)
+# name diff list
+names(results[['diff']][['abs']]) = names(results[['diff']][['rel']]) = names(results[['sz']])
+
+# set a data frame for plotting thermal balance
+vars = c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_walls', 'conv_hge_windows',
+         'conv_hge_doors', 'hvac_sens_ce', 'afn_inf_sens_hle')
+results[['combo']][['tb']] = data.frame('val' = NA, 'var' = NA, 'sim' = NA, 'dwel' = NA,
+                                        'room' = NA, 'weather' = NA)
+results[['diff']][['combo']][['tb']][['abs']] = results[['diff']][['combo']][['tb']][['rel']] =
+  data.frame('val' = NA, 'var' = NA, 'dwel' = NA, 'room' = NA, 'weather' = NA)
+
+# add data to data frames
+for (var in vars) {
+  # thermal balance
+  df = data.frame('val' = results[['combo']][['raw']][, var],
+                  'var' = var, 'dwel' = results[['combo']][['raw']]$dwel,
+                  'sim' = results[['combo']][['raw']]$sim,
+                  'room' = results[['combo']][['raw']]$room,
+                  'weather' = results[['combo']][['raw']]$weather)
+  results[['combo']][['tb']] = rbind(results[['combo']][['tb']], df)
+  # absolute difference of thermal balance between simplified and 'original' models
+  df = data.frame('val' = results[['diff']][['combo']][['abs']][, var],
+                  'var' = var, 'dwel' = results[['diff']][['combo']][['abs']]$dwel,
+                  'room' = results[['diff']][['combo']][['abs']]$room,
+                  'weather' = results[['diff']][['combo']][['abs']]$weather)
+  results[['diff']][['combo']][['tb']][['abs']] =
+    rbind(results[['diff']][['combo']][['tb']][['abs']], df)
+  # relative difference of thermal balance between simplified and 'original' models
+  df = data.frame('val' = results[['diff']][['combo']][['rel']][, var],
+                  'var' = var, 'dwel' = results[['diff']][['combo']][['rel']]$dwel,
+                  'room' = results[['diff']][['combo']][['rel']]$room,
+                  'weather' = results[['diff']][['combo']][['rel']]$weather)
+  results[['diff']][['combo']][['tb']][['rel']] =
+    rbind(results[['diff']][['combo']][['tb']][['rel']], df)
+}
+results[['combo']][['tb']] = subset(results[['combo']][['tb']], !is.na(val))
+# remove unuseful variables
+rm(var, vars, df)
+
+# detailed anaylis
+details = list('max' = NULL)
+for (i in 1:length(results[['diff']][['abs']])) {
+  details[['max']][[i]] =
+    apply(results[['diff']][['abs']][[i]][1:12, is_label(results[['diff']][['abs']][[i]])[[2]]], 2,
+          function(x) which(x == max(x)))
+}
+# remove unuseful variables
+rm(i)
+# name details
+names(details[['max']]) = names(results[['sz']])
+
+# plot ####
 # plot_cgtr()
 # plot cooling thermal load
 plot_cgtr = function(df, plot_dir) {
@@ -344,6 +355,7 @@ plot_cgtr = function(df, plot_dir) {
   png(filename = paste0(plot_dir, 'cgtr.png'),
       width = 33.8, height = 19, units = 'cm', res = 500)
   plot(
+    
     # define main data frame used in the plot
     ggplot(data = df, aes(x = dwel, y = hvac_total_ce)) +
       # create one grid for each weather
@@ -510,16 +522,16 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
   # day - 
   # plot_dir - 
   # unit - 
-  
+
   # pre-process
   # define season
-  season = ifelse(day == '19-04-03', 'niver', ifelse(day == '19-06-20', 'inverno', 'verao'))
+  season = ifelse(day == '19-06-20', 'inverno', 'verao')
   # define unites
   div = ifelse(unit == 'kj', 1000, 3600000)
   # define variables in analysis
   therm_vars = c('int_conv_he', 'hvac_sens_load', 'afn_inf_sens_load', 'conv_floor',
                  'conv_roof', 'conv_wall', 'conv_window', 'conv_door')
-  vars = c('sim', 'date_time', 'site_drybulb_temp', therm_vars, 'afn_inf_air_change')
+  vars = c('sim', 'date_time', 'site_drybulb_temp', therm_vars)
   # get files
   csv_sz = csv_files[['sz']][[plot_name]]
   csv_multi = csv_files[['multi']][[plot_name]]
@@ -570,15 +582,13 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
   }
   df = subset(df, !is.na(val))
   df = cbind('date_time' = csv$date_time, 'site_drybulb_temp' = csv$site_drybulb_temp,
-             'sim' = csv$sim, 'afn_inf_air_change' = csv$afn_inf_air_change, df)
+             'sim' = csv$sim, df)
   # calculate max and min of val variable to plot second axis
   max_val = max(df$val)
   min_val = min(df$val)
-  max_afn = max(df$afn_inf_air_change)
-  min_afn = min(df$afn_inf_air_change)
   
-  # # start plotting
-  # # associate conditions to plot and name plot
+  # start plotting
+  # associate conditions to plot and name plot
   png(filename = paste0(plot_dir, 'detail_tb_', plot_name, '_', season, '.png'), width = 33.8,
       height = 19, units = 'cm', res = 500)
   plot(
@@ -588,15 +598,10 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
       facet_grid(. ~ sim) +
       # insert lines geometries for each kind of heat flow
       geom_line(data = df, aes(x = date_time, y = val, color = var)) +
-      # insert a black dotted line to airflow network
-      geom_line(data = df, aes(x = date_time,
-                               y = afn_inf_air_change*(max_val-0)/(max_afn-0)),
-                linetype = 'dotted', color = 'black') +
       # define labs (title, x and y labs)
       labs(title = 'Analise diaria detalhada',
            subtitle = paste0(sub('De', 'de', cap_str(gsub('_', ' ', plot_name))),
-                             '\n', 'Dia ', day, ' (', ifelse(season != 'niver', cap_str(season),
-                                                             paste0(cap_str(season), ' :)')), ')'),
+                             '\n', 'Dia ', day, ' (', cap_str(season), ')'),
            x = 'Hora',
            y = 'KJ') +
       # edit legend
@@ -607,10 +612,6 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
                                     'mediumpurple2', 'peachpuff4', 'royalblue3', 'lightcyan4')) +
       # breaks for date and time
       scale_x_datetime(date_breaks = '2 hour', date_labels = '%Hh') +
-      # limits of primary and secondary axis
-      scale_y_continuous(limits = c(min_val, max_val),
-                         sec.axis = sec_axis(~ . *(max_afn-0)/(max_val-0),
-                                             name = 'Trocas de ar por hora\n')) +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 13),
             legend.title = element_text(size = 14),
@@ -629,32 +630,13 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
 }
 
 
-# application ####
-
-# validation
-# # v02
-# valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-#                          '00.sz/01.ems_v02/01.result/'),
-#            'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
-#                             '01.validation/01.multi/00.ems_v01/01.results/')),
-#       version_multi = '01')
-# v03
-results = valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
-                                   '01.validation/00.sz/02.ems_v03/01.result/'),
-                     'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
-                                      '01.validation/01.multi/00.ems_v01/01.results/')),
-                version_multi = '01')
-
-# plot
-# # v02
-# plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/01.ems_sz_v02_m_v01/'
-# v03
-plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/02.ems_sz_v03_m_v01/'
+# plot application ####
+plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/04.5th_sz_2nd_multi/01.ac/'
 
 # cgtr
 plot_cgtr(df = results[['combo']][['raw']], plot_dir)
 
-# diff cgtr
+# diff cgtr 
 for (type in c('abs', 'rel')) {
   plot_diff_cgtr(df = results[['diff']][['combo']][[type]], rel = ifelse(type == 'rel', T, F),
                  plot_dir)
@@ -697,14 +679,11 @@ for (type in c('abs', 'rel')) {
 rm(type, D, R)
 
 # detailed thermal balance
-casos = c('sao_paulo_w_living', 'rio_de_janeiro_ne_dorm_e', 'sao_paulo_w_dorm_n',
-          'rio_de_janeiro_se_living')
-days = c('19-04-03', '19-06-20', '19-12-22')
+casos = c('sao_paulo_w_liv', 'sao_paulo_ne_dorm_2', 'sao_paulo_e_dorm_n')
+days = c('19-06-20', '19-12-22')
 for (caso in casos) {
   for (day in days) {
-    plot_detail_tb(plot_name = caso, day = day, unit = 'kj',
-                   plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
-                                     '01.3rd_sz_1st_multi/'))
+    plot_detail_tb(plot_name = caso, day = day, unit = 'kj', plot_dir)
   }
 }
 # remove unuseful variables

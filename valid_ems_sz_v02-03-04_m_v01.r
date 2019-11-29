@@ -1,7 +1,7 @@
 # load libraries
 library(ggplot2)
 
-# base functionsfunctions ####
+# base functions ####
 # cap_str()
 # capitalize all the words in a string
 cap_str = function(str) {
@@ -174,11 +174,18 @@ surf_rename = function(col_name) {
 # main function ####
 # valid()
 # process all the data from simplified and 'original' model and return a list with data frames used
-# to future plots (e.g. a data frame with the differences in thermal balance)
+  # to future plots (e.g. a data frame with the differences in thermal balance)
 valid = function(input_dirs, version_multi) {
-  # input_dirs:
+  # input_dirs: 
   # version_multi:
   
+# test
+# input_dirs = list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+#                    '01.validation/00.sz/02.ems_v03/01.result/'),
+#      'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+#                       '01.validation/01.multi/00.ems_v01/01.results/'))
+# version_multi = '01'
+
   # create empty lists to be filled with 'csv' files
   csv_names = csv_files = results = vector('list', length(input_dirs))
   # name the lists
@@ -191,8 +198,6 @@ valid = function(input_dirs, version_multi) {
     # extend results
     results[[i]] = vector('list', length(csv_names[[i]]))
   }
-  # remove unuseful variables
-  rm(i)
   
   # read files
   for (i in 1:length(csv_names)) {
@@ -206,8 +211,6 @@ valid = function(input_dirs, version_multi) {
     names(csv_files[[i]]) = names(results[[i]]) = gsub(paste0('_ems_v', version_multi), '',
                                                        sub('.csv', '', csv_names[[i]]))
   }
-  # remove unuseful variables
-  rm(input_dirs, i, j, version)
   
   # rename columns #### 
   # delete columns related to the hives
@@ -215,14 +218,10 @@ valid = function(input_dirs, version_multi) {
                                                            grepl('Date.Time', colnames(x)) |
                                                            grepl('Drybulb', colnames(x))])
   # define new column names
-  sz_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
-                 rep('conv_hge', 8), 'mean_temp', 'op_temp', rep('afn_open_fac', 2),
-                 'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he',
-                 'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
-  sz_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
-                rep('conv_hge', 9), 'mean_temp', 'op_temp', rep('afn_open_fac', 3),
-                'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he',
-                'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
+  sz_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
+            rep('conv_hge', 9), 'mean_temp', 'op_temp', rep('afn_open_fac', 3),
+            'afn_inf_sens_hge', 'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he',
+            'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce', 'sch_afn', 'sch_hvac')
   multi_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
                     rep('conv_hge', 8), 'mean_temp', 'op_temp', 'afn_open_fac','afn_inf_sens_hge',
                     'afn_inf_sens_hle', 'afn_inf_air_change', 'hvac_sens_he', 'hvac_sens_ce',
@@ -258,13 +257,10 @@ valid = function(input_dirs, version_multi) {
     # single zone
     for (j in 1:dim(csv_files$sz[[i]])[2]) {
       col = colnames(csv_files$sz[[i]])[j]
-      col = ifelse(grepl('dorm', names(csv_files$sz)[i]), paste0(sz_dorm_cn[j], surf_rename(col)), 
-                   paste0(sz_liv_cn[j], surf_rename(col)))
+      col = paste0(sz_cn[j], surf_rename(col))
       colnames(csv_files$sz[[i]])[j] = col
     }
   }
-  # remove unuseful variables
-  rm(sz_dorm_cn, sz_liv_cn, multi_dorm_cn, multi_ew_liv_cn, multi_sn_liv_cn, i, j, col)
   
   # configure 'date_time' column ####
   for (i in 1:length(csv_files)) {
@@ -273,8 +269,6 @@ valid = function(input_dirs, version_multi) {
                                           length.out = 365*24*6, tz='')
     }
   }
-  # remove unuseful variables
-  rm(i, j)
   
   # compile results ####
   for (i in 1:length(csv_files)) {
@@ -286,8 +280,6 @@ valid = function(input_dirs, version_multi) {
                                           results[[i]][[j]][['df']]['year', ])
     }
   }
-  # remove unuseful variables
-  rm(i, j)
   
   # compile differences
   for (i in 1:length(results[['sz']])) {
@@ -300,8 +292,6 @@ valid = function(input_dirs, version_multi) {
                       results[['multi']][[i]][['df']])[[type]]['year', ])
     }
   }
-  # remove unuseful variables
-  rm(i, type)
   # name diff list
   names(results[['diff']][['abs']]) = names(results[['diff']][['rel']]) = names(results[['sz']])
   
@@ -338,9 +328,7 @@ valid = function(input_dirs, version_multi) {
       rbind(results[['diff']][['combo']][['tb']][['rel']], df)
   }
   results[['combo']][['tb']] = subset(results[['combo']][['tb']], !is.na(val))
-  # remove unuseful variables
-  rm(var, vars, df)
-  
+
   return(results)
 }
 
@@ -644,15 +632,32 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
 # application ####
 
 # validation
-results = valid
-input_dirs = list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                '00.sz/00.ems_v01/01.result/'),
-                  'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
-                                   '01.validation/01.multi/00.ems_v01/01.results/'))
-version = '01'
+# # v02
+# valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+#                          '00.sz/01.ems_v02/01.result/'),
+#            'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+#                             '01.validation/01.multi/00.ems_v01/01.results/')),
+#       version_multi = '01')
+# # v03
+# results = valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+#                                    '01.validation/00.sz/02.ems_v03/01.result/'),
+#                      'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+#                                       '01.validation/01.multi/00.ems_v01/01.results/')),
+#                 version_multi = '01')
+# v04
+results = valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                   '01.validation/00.sz/03.ems_v04/01.result/'),
+                     'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                      '01.validation/01.multi/00.ems_v01/01.results/')),
+                version_multi = '01')
 
 # plot
-plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/00.ems_sz_v01_multi_v01/'
+# # v02
+# plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/01.ems_sz_v02_m_v01/'
+# # v03
+# plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/02.ems_sz_v03_m_v01/'
+# va04
+plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/03.ems_sz_v04_m_v01/'
 
 # cgtr
 plot_cgtr(df = results[['combo']][['raw']], plot_dir)
