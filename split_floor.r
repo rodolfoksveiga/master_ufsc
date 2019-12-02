@@ -59,11 +59,28 @@ split_floor = function(input_dir, wrap_names = '', zone_names, ignored_zones = N
   }
 }
 
-# application
+# application ####
+# concreto_10cm
 split_floor(input_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                               '01.multi/01.hvac_v01/'),
+                               '01.multi/01.hvac_v01/00.concreto_10cm/'),
             zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
                            'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
                            'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
             output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                '01.multi/01.hvac_v01/01.result/'))
+                                '01.multi/01.hvac_v01/00.concreto_10cm/01.result/'))
+# tijolo_vazado
+split_floor(input_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                               '01.multi/01.hvac_v01/01.tijolo_vazado/'),
+            zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
+                           'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
+                           'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
+            output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                                '01.multi/01.hvac_v01/01.tijolo_vazado/01.result/'))
+# steal_frame
+split_floor(input_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                               '01.multi/01.hvac_v01/02.steal_frame/'),
+            zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
+                           'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
+                           'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
+            output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                                '01.multi/01.hvac_v01/02.steal_frame/01.result/'))
