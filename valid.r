@@ -1,4 +1,4 @@
-# load libraries
+# load libraries ####
 library(ggplot2)
 
 # base functions ####
@@ -18,12 +18,12 @@ cap_str = function(str) {
 
 # diff()
 # calculate difference of results from simplified simulations (single zone) to full simulations
-df_diff = function(df_sz, df_multi) {
+df_diff = function(df_sz, df_multi, df_area) {
   # df_sz - data frame with single zone results
   # df_multi - data frame with full simulation results
   
   # calculate absolute difference
-  # formula: diff_abs = val_sz - val_multi
+  # formula: diff_abs = (val_sz - val_multi) / floor_area
   df_diff_abs = df_sz[, is_label(df_sz)[[2]]] - df_multi[, is_label(df_multi)[[2]]]
   # calculate relative difference
   # formula: diff_rel = (val_sz - val_multi) / val_multi
@@ -165,10 +165,13 @@ surf_rename = function(col_name) {
 }
 
 # main function ####
-valid = function(input_dirs, cond, version_multi) {
-  # input_dirs: 
-  # version_multi:
-  
+valid = function(input_dirs, cond, version_sz, version_multi, df_area) {
+  # input_dirs = 
+  # cond = 
+  # version_sz = 
+  # version_multi = 
+  # df_area = 
+
   # create empty lists to be filled with 'csv' files
   csv_names = csv_files = results = vector('list', length(input_dirs))
   # name the lists
@@ -185,6 +188,11 @@ valid = function(input_dirs, cond, version_multi) {
   rm(i)
   
   # read files
+  # data frame with zone areas
+  df_area = read.csv(df_area)
+  # multiply data frace twice, because there is two weathers
+  df_area = rbind(df_area, df_area)
+  # 'csv' files from simulations
   for (i in 1:length(csv_names)) {
     for (j in 1:length(csv_names[[i]])) {
       # count the files while they're loaded
@@ -193,8 +201,11 @@ valid = function(input_dirs, cond, version_multi) {
       csv_files[[i]][[j]] = read.csv(paste0(input_dirs[[i]], csv_names[[i]][[j]]))
     }
     # define proper names to the list
-    names(csv_files[[i]]) = names(results[[i]]) = gsub(paste0('_hvac_v', version_multi), '',
-                                                       sub('.csv', '', csv_names[[i]]))
+    names(csv_files[[i]]) = names(results[[i]]) = ifelse(cond == 'hvac',
+                                                         gsub(paste0('_hvac_v', version_multi), '',
+                                                              sub('.csv', '', csv_names[[i]])),
+                                                         gsub(paste0('_afn_v', version_multi), '',
+                                                              sub('.csv', '', csv_names[[i]])))
   }
   # remove unuseful variables
   rm(input_dirs, i, j)
@@ -207,6 +218,9 @@ valid = function(input_dirs, cond, version_multi) {
   # define new column names
   # hvac
   if (cond == 'hvac') {
+    sz_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count', rep('conv_hge', 9),
+              'mean_temp', 'op_temp', 'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_sens_he',
+              'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce')
     sz_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count', rep('conv_hge', 8),
                    'mean_temp', 'op_temp', 'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_sens_he',
                    'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce')
@@ -249,13 +263,17 @@ valid = function(input_dirs, cond, version_multi) {
     # single zone
     for (j in 1:dim(csv_files$sz[[i]])[2]) {
       col = colnames(csv_files$sz[[i]])[j]
-      col = ifelse(grepl('dorm', names(csv_files$sz)[i]), paste0(sz_dorm_cn[j], surf_rename(col)), 
-                   paste0(sz_liv_cn[j], surf_rename(col)))
+      if (version_sz == '01' | version_sz == '03' ) {
+        col = ifelse(grepl('dorm', names(csv_files$sz)[i]), paste0(sz_dorm_cn[j], surf_rename(col)), 
+                     paste0(sz_liv_cn[j], surf_rename(col)))
+      } else {
+        col = paste0(sz_cn[j], surf_rename(col))
+      }
       colnames(csv_files$sz[[i]])[j] = col
     }
   }
   # remove unuseful variables
-  rm(sz_dorm_cn, sz_liv_cn, multi_dorm_cn, multi_ew_liv_cn, multi_sn_liv_cn, i, j, col)
+  rm(sz_cn, sz_dorm_cn, sz_liv_cn, multi_dorm_cn, multi_ew_liv_cn, multi_sn_liv_cn, i, j, col)
   
   # configure 'date_time' column ####
   for (i in 1:length(csv_files)) {
@@ -272,9 +290,12 @@ valid = function(input_dirs, cond, version_multi) {
     results[[i]] = lapply(csv_files[[i]], report)
     for (j in 1:length(csv_files[[i]])) {
       results[[i]][[j]][['df']]$sim = ifelse(grepl('sz', names(results)[i]), 'SZ', 'Multi.')
+      results[[i]][[j]][['df']]$hvac_total_ce =
+        results[[i]][[j]][['df']]$hvac_total_ce / df_area[j, 2]
       results[[i]][[j]][['df']] = label_df(results[[i]][[j]][['df']], names(results[[i]])[j])
       results[['combo']][['raw']] = rbind(results[['combo']][['raw']],
                                           results[[i]][[j]][['df']]['year', ])
+      results[[i]][j]
     }
   }
   # remove unuseful variables
@@ -283,12 +304,12 @@ valid = function(input_dirs, cond, version_multi) {
   # compile differences
   for (i in 1:length(results[['sz']])) {
     for (type in c('abs', 'rel')) {
-      results[['diff']][[type]][[i]] = df_diff(results[['sz']][[i]][['df']],
-                                               results[['multi']][[i]][['df']])[[type]]
+      results[['diff']][[type]][[i]] =
+        df_diff(results[['sz']][[i]][['df']], results[['multi']][[i]][['df']])[[type]]
+      # results[['diff']][[type]][[i]]$hvac_total_ce =
+      #   results[['diff']][[type]][[i]]$hvac_total_ce / df_area[i, 2]
       results[['diff']][['combo']][[type]] =
-        rbind(results[['diff']][['combo']][[type]],
-              df_diff(results[['sz']][[i]][['df']],
-                      results[['multi']][[i]][['df']])[[type]]['year', ])
+        rbind(results[['diff']][['combo']][[type]], results[['diff']][[type]][[i]]['year', ])
     }
   }
   # remove unuseful variables
@@ -357,7 +378,7 @@ plot_cgtr = function(df, plot_dir) {
       # define labs (title, x and y labs)
       labs(title = 'Carga Térmica de Refrigeração',
            x = NULL,
-           y = 'CgTR (kWh)',
+           y = 'CgTR (kWh/m²)',
            fill = 'Room:') +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 14),
@@ -397,7 +418,7 @@ plot_diff_cgtr = function(df, rel = F, plot_dir) {
                          'de Carga Térmica de Refrigeração'),
            subtitle = 'Diff = SZ - "Original"',
            x = NULL,
-           y = ifelse(rel == F, 'Diff. CgTR (kWh)', 'Diff. CgTR (%)'),
+           y = ifelse(rel == F, 'Diff. CgTR (kWh/m²)', 'Diff. CgTR (%)'),
            fill = 'Room:') +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 14),
@@ -624,23 +645,20 @@ plot_detail_tb = function(plot_name, day, plot_dir, unit = 'kj') {
 
 # application ####
 # validation
-# # v 01
-# results = valid(list('sz' = paste0('/home/rodox/Desktop/05.hvac_v01/01.result/'),
-#                      'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
-#                                       '01.validation/01.multi/01.hvac_v01/01.result/')),
-#                 cond = 'hvac', version_multi = '02')
-# v 03
-results = valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                   '00.sz/07.hvac_v03/01.result/'),
+# sz v03 + multi v01 -> concreto_10cm
+results = valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                   '01.validation/00.sz/07.hvac_v03/00.concreto_10cm/01.result/'),
                      'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
-                                      '01.validation/01.multi/01.hvac_v01/01.result/')),
-                cond = 'hvac', version_multi = '02')
+                                      '01.validation/01.multi/01.hvac_v01/00.concreto_10cm/',
+                                      '01.result/')),
+                cond = 'hvac', version_sz = '03', version_multi = '01',
+                df_area = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                                 '03.area/area_v01.csv'))
 
 # plot
-# # v01
-# plot_dir = '/home/rodox/Dropbox/99.temp/05.hvac_sz_v01_m_v01/'
-# v03
-plot_dir = '/home/rodox/Dropbox/99.temp/07.hvac_sz_v03_m_v01/'
+# sz v03 - multi v01
+plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                  '07.hvac_sz_v03_m_v01/00.concreto_10cm/')
 
 # cgtr
 plot_cgtr(df = results[['combo']][['raw']], plot_dir)
@@ -685,6 +703,361 @@ for (type in c('abs', 'rel')) {
   }
 }
 # remove unuseful variables
+rm(type, D, R)
+
+# # detailed thermal balance
+# casos = c('sao_paulo_w_liv', 'sao_paulo_ne_dorm_2', 'sao_paulo_e_dorm_n')
+# days = c('19-06-20', '19-12-22')
+# for (caso in casos) {
+#   for (day in days) {
+#     plot_detail_tb(plot_name = caso, day = day, unit = 'kj', plot_dir)
+#   }
+# }
+# # remove unuseful variables
+# rm(casos, days, caso, day)
+
+# sz v03 + multi v01 -> tijolo_vazado
+# validation
+results = valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                   '01.validation/00.sz/07.hvac_v03/01.tijolo_vazado/01.result/'),
+                     'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                      '01.validation/01.multi/01.hvac_v01/01.tijolo_vazado/',
+                                      '01.result/')),
+                cond = 'hvac', version_sz = '03', version_multi = '01',
+                df_area = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                                 '03.area/area_v01.csv'))
+
+# plot
+plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                  '07.hvac_sz_v03_m_v01/01.tijolo_vazado/')
+
+# cgtr
+plot_cgtr(df = results[['combo']][['raw']], plot_dir)
+
+# diff cgtr 
+for (type in c('abs', 'rel')) {
+  plot_diff_cgtr(df = results[['diff']][['combo']][[type]], rel = ifelse(type == 'rel', T, F),
+                 plot_dir)
+}
+# remove unuseful variables
+rm (type)
+
+# thermal balance
+for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
+  if (grepl('S', D) | grepl('N', D)) {
+    for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
+    }
+  } else {
+    for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
+    }
+  }
+}
+# remove unuseful variables
+rm (D, R)
+
+# diff thermal balance
+for (type in c('abs', 'rel')) {
+  for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
+    if (grepl('S', D) | grepl('N', D)) {
+      for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
+        plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
+                     ifelse(type == 'rel', T, F), plot_dir)
+      }
+    } else {
+      for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
+        plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
+                     ifelse(type == 'rel', T, F), plot_dir)
+      }
+    }
+  }
+}
+# remove unuseful variables
+rm(type, D, R)
+
+# # detailed thermal balance
+# casos = c('sao_paulo_w_liv', 'sao_paulo_ne_dorm_2', 'sao_paulo_e_dorm_n')
+# days = c('19-06-20', '19-12-22')
+# for (caso in casos) {
+#   for (day in days) {
+#     plot_detail_tb(plot_name = caso, day = day, unit = 'kj', plot_dir)
+#   }
+# }
+# # remove unuseful variables
+# rm(casos, days, caso, day)
+
+# sz v03 + multi v01 -> steal_frame
+# validation
+results = valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                   '01.validation/00.sz/07.hvac_v03/02.steal_frame/01.result/'),
+                     'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                      '01.validation/01.multi/01.hvac_v01/02.steal_frame/',
+                                      '01.result/')),
+                cond = 'hvac', version_sz = '03', version_multi = '01',
+                df_area = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                                 '03.area/area_v01.csv'))
+
+# plot
+plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                  '07.hvac_sz_v03_m_v01/02.steal_frame/')
+
+# cgtr
+plot_cgtr(df = results[['combo']][['raw']], plot_dir)
+
+# diff cgtr 
+for (type in c('abs', 'rel')) {
+  plot_diff_cgtr(df = results[['diff']][['combo']][[type]], rel = ifelse(type == 'rel', T, F),
+                 plot_dir)
+}
+# remove unuseful variables
+rm (type)
+
+# thermal balance
+for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
+  if (grepl('S', D) | grepl('N', D)) {
+    for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
+    }
+  } else {
+    for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
+    }
+  }
+}
+# remove unuseful variables
+rm (D, R)
+
+# diff thermal balance
+for (type in c('abs', 'rel')) {
+  for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
+    if (grepl('S', D) | grepl('N', D)) {
+      for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
+        plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
+                     ifelse(type == 'rel', T, F), plot_dir)
+      }
+    } else {
+      for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
+        plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
+                     ifelse(type == 'rel', T, F), plot_dir)
+      }
+    }
+  }
+}
+# remove unuseful variables
+rm(type, D, R)
+
+# # detailed thermal balance
+# casos = c('sao_paulo_w_liv', 'sao_paulo_ne_dorm_2', 'sao_paulo_e_dorm_n')
+# days = c('19-06-20', '19-12-22')
+# for (caso in casos) {
+#   for (day in days) {
+#     plot_detail_tb(plot_name = caso, day = day, unit = 'kj', plot_dir)
+#   }
+# }
+# # remove unuseful variables
+# rm(casos, days, caso, day)
+
+# sz v04 + multi v01 -> concreto_10cm
+# validation
+results = valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                   '01.validation/00.sz/08.hvac_v04/00.concreto_10cm/01.result/'),
+                     'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                      '01.validation/01.multi/01.hvac_v01/00.concreto_10cm/',
+                                      '01.result/')),
+                cond = 'hvac', version_sz = '04', version_multi = '01',
+                df_area = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                                 '03.area/area_v01.csv'))
+
+# plot
+plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                  '08.hvac_sz_v04_m_v01/00.concreto_10cm/')
+
+# cgtr
+plot_cgtr(df = results[['combo']][['raw']], plot_dir)
+
+# diff cgtr 
+for (type in c('abs', 'rel')) {
+  plot_diff_cgtr(df = results[['diff']][['combo']][[type]], rel = ifelse(type == 'rel', T, F),
+                 plot_dir)
+}
+# remove unuseful variables
+rm (type)
+
+# thermal balance
+for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
+  if (grepl('S', D) | grepl('N', D)) {
+    for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
+    }
+  } else {
+    for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
+    }
+  }
+}
+# remove unuseful variables
+rm (D, R)
+
+# diff thermal balance
+for (type in c('abs', 'rel')) {
+  for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
+    if (grepl('S', D) | grepl('N', D)) {
+      for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
+        plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
+                     ifelse(type == 'rel', T, F), plot_dir)
+      }
+    } else {
+      for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
+        plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
+                     ifelse(type == 'rel', T, F), plot_dir)
+      }
+    }
+  }
+}
+# remove unuseful variables
+rm(type, D, R)
+
+# # detailed thermal balance
+# casos = c('sao_paulo_w_liv', 'sao_paulo_ne_dorm_2', 'sao_paulo_e_dorm_n')
+# days = c('19-06-20', '19-12-22')
+# for (caso in casos) {
+#   for (day in days) {
+#     plot_detail_tb(plot_name = caso, day = day, unit = 'kj', plot_dir)
+#   }
+# }
+# # remove unuseful variables
+# rm(casos, days, caso, day)
+
+# sz v04 + multi v01 -> tijolo_vazado
+# validation
+results = valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                   '01.validation/00.sz/08.hvac_v04/01.tijolo_vazado/01.result/'),
+                     'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                      '01.validation/01.multi/01.hvac_v01/01.tijolo_vazado/',
+                                      '01.result/')),
+                cond = 'hvac', version_sz = '04', version_multi = '01',
+                df_area = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                                 '03.area/area_v01.csv'))
+
+# plot
+plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                  '08.hvac_sz_v04_m_v01/01.tijolo_vazado/')
+
+# cgtr
+plot_cgtr(df = results[['combo']][['raw']], plot_dir)
+
+# diff cgtr 
+for (type in c('abs', 'rel')) {
+  plot_diff_cgtr(df = results[['diff']][['combo']][[type]], rel = ifelse(type == 'rel', T, F),
+                 plot_dir)
+}
+# remove unuseful variables
+rm (type)
+
+# thermal balance
+for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
+  if (grepl('S', D) | grepl('N', D)) {
+    for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
+    }
+  } else {
+    for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
+    }
+  }
+}
+# remove unuseful variables
+rm (D, R)
+
+# diff thermal balance
+for (type in c('abs', 'rel')) {
+  for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
+    if (grepl('S', D) | grepl('N', D)) {
+      for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
+        plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
+                     ifelse(type == 'rel', T, F), plot_dir)
+      }
+    } else {
+      for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
+        plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
+                     ifelse(type == 'rel', T, F), plot_dir)
+      }
+    }
+  }
+}
+# remove unuseful variables
+rm(type, D, R)
+
+# # detailed thermal balance
+# casos = c('sao_paulo_w_liv', 'sao_paulo_ne_dorm_2', 'sao_paulo_e_dorm_n')
+# days = c('19-06-20', '19-12-22')
+# for (caso in casos) {
+#   for (day in days) {
+#     plot_detail_tb(plot_name = caso, day = day, unit = 'kj', plot_dir)
+#   }
+# }
+# # remove unuseful variables
+# rm(casos, days, caso, day)
+
+# sz v04 + multi v01 -> steal_frame
+# validation
+results = valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                   '01.validation/00.sz/08.hvac_v04/02.steal_frame/01.result/'),
+                     'multi' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/',
+                                      '01.validation/01.multi/01.hvac_v01/02.steal_frame/',
+                                      '01.result/')),
+                cond = 'hvac', version_sz = '04', version_multi = '01',
+                df_area = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
+                                 '03.area/area_v01.csv'))
+
+# plot
+plot_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/',
+                  '08.hvac_sz_v04_m_v01/02.steal_frame/')
+
+# cgtr
+plot_cgtr(df = results[['combo']][['raw']], plot_dir)
+
+# diff cgtr 
+for (type in c('abs', 'rel')) {
+  plot_diff_cgtr(df = results[['diff']][['combo']][[type]], rel = ifelse(type == 'rel', T, F),
+                 plot_dir)
+}
+# remove unuseful variables
+rm (type)
+
+# thermal balance
+for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
+  if (grepl('S', D) | grepl('N', D)) {
+    for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
+    }
+  } else {
+    for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
+      plot_tb(df = results[['combo']][['tb']], Dwel = D, Room = R, plot_dir)
+    }
+  }
+}
+# remove unuseful variables
+rm (D, R)
+
+# diff thermal balance
+for (type in c('abs', 'rel')) {
+  for (D in c('SW', 'SE', 'E', 'NE', 'NW', 'W')) {
+    if (grepl('S', D) | grepl('N', D)) {
+      for (R in c('Living', 'Dorm. 1', 'Dorm. 2')) {
+        plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
+                     ifelse(type == 'rel', T, F), plot_dir)
+      }
+    } else {
+      for (R in c('Living', 'Dorm. S', 'Dorm. N')) {
+        plot_diff_tb(results[['diff']][['combo']][['tb']][[type]], Dwel = D, Room = R,
+                     ifelse(type == 'rel', T, F), plot_dir)
+      }
+    }
+  }
+}
+# remove unuseful variables 
 rm(type, D, R)
 
 # # detailed thermal balance
