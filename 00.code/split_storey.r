@@ -6,7 +6,7 @@ library('Hmisc')
 library('stringr')
 
 # split_floor()
-split_floor = function(input_dir, wrap_names = '', zone_names, ignored_zones = NULL, output_dir) {
+split_storey = function(input_dir, wrap_names = '', zone_names, ignored_zones = NULL, output_dir) {
   # input_dir: directory where the full floor simulation's outputs are located
   # wrap_names: types of possible wraps to be considered
   # zone_names: names of the zones to be splitted (by default it pick up all the zones in the
@@ -60,27 +60,42 @@ split_floor = function(input_dir, wrap_names = '', zone_names, ignored_zones = N
 }
 
 # application ####
-# concreto_10cm
-split_floor(input_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                               '01.multi/01.hvac_v01/00.concreto_10cm/'),
-            zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
-                           'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
-                           'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
-            output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                '01.multi/01.hvac_v01/00.concreto_10cm/01.result/'))
-# tijolo_vazado
-split_floor(input_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                               '01.multi/01.hvac_v01/01.tijolo_vazado/'),
-            zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
-                           'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
-                           'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
-            output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                '01.multi/01.hvac_v01/01.tijolo_vazado/01.result/'))
-# steal_frame
-split_floor(input_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                               '01.multi/01.hvac_v01/02.steal_frame/'),
-            zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
-                           'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
-                           'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
-            output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                                '01.multi/01.hvac_v01/02.steal_frame/01.result/'))
+# v00
+storeys = c('floor', 'inter', 'roof')
+n = 0
+for (i in 1:length(storeys)) {
+  split_storey(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/00.hyp_v00/00.c10/0',
+                                  n, '.', storeys[i], '/'),
+               zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
+                              'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
+                              'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
+               output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/00.hyp_v00/00.c10/0',
+                                   n, '.', storeys[i], '/00.split/'))
+  n = n + 1
+}
+# v01
+storeys = c('floor', 'inter', 'roof')
+n = 0
+for (i in 1:length(storeys)) {
+  split_storey(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/01/02.sf/0',
+                                  n, '.', storeys[i], '/'),
+               zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
+                              'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
+                              'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
+               output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/01/02.sf/0',
+                                   n, '.', storeys[i], '/00.split/'))
+  n = n + 1
+}
+# v02
+storeys = c('floor', 'inter', 'roof')
+n = 0
+for (i in 1:length(storeys)) {
+  split_storey(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/02/0', n, '.',
+                                  storeys[i], '/'),
+               zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
+                              'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
+                              'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
+               output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/02/0', n, '.',
+                                   storeys[i], '/00.split/'))
+  n = n + 1
+}

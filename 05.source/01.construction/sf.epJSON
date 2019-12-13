@@ -1,0 +1,51 @@
+{
+    "Construction": {
+        "ceiling": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "outside_layer": "piso_ceramico",
+            "layer_2": "contrapiso",
+            "layer_3": "concreto_5cm",
+            "layer_4": "impermeabilizacao"
+        },
+        "ext_wall": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "outside_layer": "placa_cimenticia",
+            "layer_2": "la_vidro_5cm",
+            "layer_3": "gesso"
+        },
+        "floor": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "outside_layer": "impermeabilizacao",
+            "layer_2": "concreto_5cm",
+            "layer_3": "contrapiso",
+            "layer_4": "piso_ceramico"
+        },
+        "int_wall": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "outside_layer": "gesso",
+            "layer_2": "la_vidro_5cm",
+            "layer_3": "gesso"
+        },
+        "door_3cm": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "outside_layer": "porta_mad_int_3cm"
+        },
+        "roof": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "outside_layer": "fibrocimento_telha",
+            "layer_2": "camara_cobertura",
+            "layer_3": "concreto_10cm"  
+        },
+        "simple_window": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "outside_layer": "vid_0.87"
+        }
+    },
+}
