@@ -31,7 +31,7 @@ split_storey = function(input_dir, wrap_names = '', zone_names, ignored_zones = 
       # count the splitting process
       print(paste('i =', i, '/ j =', j))
       # load files
-      csv_files[[i]][[j]] = read.csv(paste0(input_dir, csv_names[[i]][j]))
+      csv_files[[i]][[j]] = as.data.frame(fread(paste0(input_dir, csv_names[[i]][j])))
       # rename the list which contains the '.csv' files (remove '.csv' suffix)
       names(csv_files[[i]])[j] = str_remove(csv_names[[i]][j], '.csv')
       # remove columns related to ignored zones
@@ -43,9 +43,8 @@ split_storey = function(input_dir, wrap_names = '', zone_names, ignored_zones = 
       # split the floor in zones
       for (zone in zone_names) {
         # select the columns related to each interested zone
-        df = csv_files[[i]][[j]][, grepl('Date.Time', colnames(csv_files[[i]][[j]])) |
-                                   grepl(paste0('Environment.Site.Outdoor.Air.',
-                                                'Drybulb.Temperature..C..TimeStep.'),
+        df = csv_files[[i]][[j]][, grepl('Date/Time', colnames(csv_files[[i]][[j]])) |
+                                   grepl('Environment:Site Outdoor Air Drybulb',
                                          colnames(csv_files[[i]][[j]])) |
                                    grepl(paste0('^', toupper(zone)),
                                          colnames(csv_files[[i]][[j]])) |
@@ -61,41 +60,61 @@ split_storey = function(input_dir, wrap_names = '', zone_names, ignored_zones = 
 
 # application ####
 # v00
+wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
-n = 0
-for (i in 1:length(storeys)) {
-  split_storey(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/00.hyp_v00/00.c10/0',
-                                  n, '.', storeys[i], '/'),
-               zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
-                              'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
-                              'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
-               output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/00.hyp_v00/00.c10/0',
-                                   n, '.', storeys[i], '/00.split/'))
-  n = n + 1
+m = 0
+for (i in 1:length(wraps)) {
+  n = 0
+  print(toupper(wraps[i]))
+  for (storey in storeys) {
+    split_storey(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/00/0', m, '.', wraps[i],
+                                    '/0', n, '.', storey, '/'),
+                 zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
+                                'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
+                                'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
+                 output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/00/0', m, '.', wraps[i],
+                                     '/0', n, '.', storey, '/00.split/'))
+    n = n + 1
+  }
+  m = m + 1
 }
+
 # v01
+wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
-n = 0
-for (i in 1:length(storeys)) {
-  split_storey(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/01/02.sf/0',
-                                  n, '.', storeys[i], '/'),
-               zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
-                              'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
-                              'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
-               output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/01/02.sf/0',
-                                   n, '.', storeys[i], '/00.split/'))
-  n = n + 1
+m = 0
+for (i in 1:length(wraps)) {
+  n = 0
+  print(toupper(wraps[i]))
+  for (storey in storeys) {
+    split_storey(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/01/0', m, '.', wraps[i],
+                                    '/0', n, '.', storey, '/'),
+                 zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
+                                'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
+                                'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
+                 output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/01/0', m, '.', wraps[i],
+                                     '/0', n, '.', storey, '/00.split/'))
+    n = n + 1
+  }
+  m = m + 1
 }
+
 # v02
+wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
-n = 0
-for (i in 1:length(storeys)) {
-  split_storey(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/02/0', n, '.',
-                                  storeys[i], '/'),
-               zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
-                              'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
-                              'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
-               output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/02/0', n, '.',
-                                   storeys[i], '/00.split/'))
-  n = n + 1
+m = 0
+for (i in 1:length(wraps)) {
+  n = 0
+  print(toupper(wraps[i]))
+  for (storey in storeys) {
+    split_storey(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/02/0', m, '.', wraps[i],
+                                    '/0', n, '.', storey, '/'),
+                 zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
+                                'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
+                                'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
+                 output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/02/0', m, '.', wraps[i],
+                                     '/0', n, '.', storey, '/00.split/'))
+    n = n + 1
+  }
+  m = m + 1
 }
