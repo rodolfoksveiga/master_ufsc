@@ -1,11 +1,6 @@
-# the split_floor function splits the full floor simulation's outputs in individual dwelings
-
-# libraries
-library('dplyr')
-library('Hmisc')
-library('stringr')
-
-# split_floor()
+# main function ####
+# split_storey()
+  # splits the full floor simulation's outputs in individual dwelings
 split_storey = function(input_dir, wrap_names = '', zone_names, ignored_zones = NULL, output_dir) {
   # input_dir: directory where the full floor simulation's outputs are located
   # wrap_names: types of possible wraps to be considered
@@ -31,9 +26,9 @@ split_storey = function(input_dir, wrap_names = '', zone_names, ignored_zones = 
       # count the splitting process
       print(paste('i =', i, '/ j =', j))
       # load files
-      csv_files[[i]][[j]] = as.data.frame(fread(paste0(input_dir, csv_names[[i]][j])))
+      csv_files[[i]][[j]] = as.data.frame(data.table::fread(paste0(input_dir, csv_names[[i]][j])))
       # rename the list which contains the '.csv' files (remove '.csv' suffix)
-      names(csv_files[[i]])[j] = str_remove(csv_names[[i]][j], '.csv')
+      names(csv_files[[i]])[j] = stringr::str_remove(csv_names[[i]][j], '.csv')
       # remove columns related to ignored zones
       if (!is.null(ignored_zones)) {
         for (ign in ignored_zones) {
@@ -67,12 +62,12 @@ for (i in 1:length(wraps)) {
   n = 0
   print(toupper(wraps[i]))
   for (storey in storeys) {
-    split_storey(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/00/0', m, '.', wraps[i],
+    split_storey(input_dir = paste0('/home/rodox/01.going_on/00.hive/01.hvac/00.hyp/00/0', m, '.', wraps[i],
                                     '/0', n, '.', storey, '/'),
                  zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1',
                                 'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2',
                                 'nw_dorm_2', 'nw_liv', 'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s'),
-                 output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/00/0', m, '.', wraps[i],
+                 output_dir = paste0('/home/rodox/01.going_on/00.hive/01.hvac/00.hyp/00/0', m, '.', wraps[i],
                                      '/0', n, '.', storey, '/00.split/'))
     n = n + 1
   }

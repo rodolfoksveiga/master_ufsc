@@ -84,7 +84,6 @@ epjson_sim_runner(epjson_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zon
 # simplifications
 
 # v00
-
 # sf
 '''
 epjson_sim_runner(epjson_dir = '/home/rodox/01.going_on/00.hive/00.hyp/00.hyp_v00/02.sf/',
@@ -110,7 +109,6 @@ epjson_sim_runner(epjson_dir = '/home/rodox/01.going_on/00.hive/00.hyp/00/00.c10
 				  weather_names = np.array(['curitiba', 'rio_de_janeiro', 'sao_paulo']))
 '''
 # v01
-
 # c10
 '''
 epjson_sim_runner(epjson_dir = '/home/rodox/01.going_on/00.hive/00.hyp/01.hyp_v01/00.c10/',
@@ -136,7 +134,6 @@ epjson_sim_runner(epjson_dir = '/home/rodox/01.going_on/00.hive/00.hyp/01.hyp_v0
 				  weather_names = np.array(['curitiba','rio_de_janeiro', 'sao_paulo']))
 '''
 # v02
-
 # c10
 '''
 epjson_sim_runner(epjson_dir = '/home/rodox/01.going_on/00.hive/00.hyp/02.hyp_v02/00.c10/',
@@ -161,4 +158,53 @@ epjson_sim_runner(epjson_dir = '/home/rodox/01.going_on/00.hive/00.hyp/02.hyp_v0
 				  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
 				  weather_names = np.array(['curitiba','rio_de_janeiro', 'sao_paulo']))
 '''
+# v03
+# c10
+'''
+epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/01.hvac/00.hyp/03/00.c10/',
+				  pattern = 'hyp_c10_v03',
+				  output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/03/00.c10/',
+				  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
+				  weather_names = np.array(['curitiba','rio_de_janeiro', 'sao_paulo']))
+'''
+# tv
+'''
+epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/01.hvac/00.hyp/03/01.tv/',
+				  pattern = 'hyp_tv_v03',
+				  output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/03/01.tv/',
+				  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
+				  weather_names = np.array(['curitiba','rio_de_janeiro', 'sao_paulo']))
+'''
+# sf
+'''
+epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/01.hvac/00.hyp/03/02.sf/',
+				  pattern = 'hyp_sf_v03',
+				  output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/03/02.sf/',
+				  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
+				  weather_names = np.array(['curitiba','rio_de_janeiro', 'sao_paulo']))
+'''
+# v04
+# c10
 
+epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/01.hvac/00.hyp/04/00.c10/',
+				  pattern = 'hyp_c10_v04',
+				  output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/04/00.c10/',
+				  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
+				  weather_names = np.array(['curitiba','rio_de_janeiro', 'sao_paulo']))
+
+# tv
+'''
+epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/01.hvac/00.hyp/04/01.tv/',
+				  pattern = 'hyp_tv_v04',
+				  output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/04/01.tv/',
+				  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
+				  weather_names = np.array(['curitiba','rio_de_janeiro', 'sao_paulo']))
+'''
+# sf
+'''
+epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/01.hvac/00.hyp/04/02.sf/',
+				  pattern = 'hyp_sf_v04',
+				  output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/04/02.sf/',
+				  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
+				  weather_names = np.array(['curitiba','rio_de_janeiro', 'sao_paulo']))
+'''

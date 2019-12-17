@@ -656,7 +656,7 @@ results = valid(list('sz' = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single
 # plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/01.ems_sz_v02_m_v01/'
 # # v03
 # plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/02.ems_sz_v03_m_v01/'
-# va04
+# v04
 plot_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/02.plot/03.ems_sz_v04_m_v01/'
 
 # cgtr

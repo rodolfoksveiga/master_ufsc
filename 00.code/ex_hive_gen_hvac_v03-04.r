@@ -163,10 +163,13 @@ zone_adj = function(side, n, lx, ly) {
 # hive_gen()
   # loads a seed file filled with all possible surfaces, fenestrations and conditioning system
     # ('hvac' and 'afn') objects and sorting them out
-hive_gen = function(seed, cond, lx, ly, lz, alt, room, bounds, wrap, output_dir, model_name) {
+hive_gen = function(seed, cond, storey, lx, ly, lz, alt, room, bounds, wrap, output_dir,
+                    model_name) {
   # seed = epJSON's file full path filled with constant values
   # cond = air conditioning type
     # possible values: 'hvac' and 'afn'
+  # storey = storey level
+    # possible values: 'floor', 'inter' and 'roof'
   # lx = zone's width
   # ly = zone's depth
   # lz = zone's heigth
@@ -185,13 +188,12 @@ hive_gen = function(seed, cond, lx, ly, lz, alt, room, bounds, wrap, output_dir,
     #                   c('n', 'dorm', 0),
     #                   c('w', 'living', 0))
   # wrap = refeers to the wall materials
-    # possible values: 'concreto_10cm', 'tijolo_vazado' and 'steal_frame'
+    # possible values: 'c10' (concreto de 10 cm), 'tv' (tijolo vazado) and 'sf' (steel frame)
   # output_dir = directory where the model is saved
   # model_name =   name of the file (model) to be saved
   
 # # test
-# seed = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/00.seed/00.sz/',
-#               'seed_ex_hvac_v03-04_new.epJSON')
+# seed = '/home/rodox/Dropbox/00.master_ufsc/00.seed/00.sz/seed_ex_hvac_v03-04.epJSON'
 # cond = 'hvac'
 # lx = 4
 # ly = 3
@@ -200,8 +202,8 @@ hive_gen = function(seed, cond, lx, ly, lz, alt, room, bounds, wrap, output_dir,
 # room = 'dorm'
 # bounds = list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
 #               c('w', 'dorm', 0))
-# wrap = 'steal_frame'
-
+# wrap = 'steel_frame'
+# storey = 'roof'
 
   # some pre-process
   # load seed file
@@ -222,12 +224,12 @@ hive_gen = function(seed, cond, lx, ly, lz, alt, room, bounds, wrap, output_dir,
                'vertex_3_x', 'vertex_3_y', 'vertex_3_z', 'vertex_4_x', 'vertex_4_y', 'vertex_4_z')
   
   # construction
-  if (wrap == 'concreto_10cm') {
+  if (wrap == 'c10') {
     for (wall in c('ext_wall', 'int_wall')) {
         seed[['Construction']][[wall]]$outside_layer = 'concreto_10cm'
         seed[['Construction']][[wall]]$idf_max_fields = 2
     }
-  } else if (wrap == 'tijolo_vazado') {
+  } else if (wrap == 'tv') {
     seed[['Construction']][['ext_wall']]$outside_layer = 'argamassa_externa'
     seed[['Construction']][['int_wall']]$outside_layer = 'argamassa_interna'
     for (wall in c('ext_wall', 'int_wall')) {
@@ -237,7 +239,7 @@ hive_gen = function(seed, cond, lx, ly, lz, alt, room, bounds, wrap, output_dir,
       seed[['Construction']][[wall]]$layer_4 = 'tijolo_9x19x19'
       seed[['Construction']][[wall]]$layer_5 = 'argamassa_interna'
     }
-  } else if (wrap == 'steal_frame') {
+  } else if (wrap == 'sf') {
     seed[['Construction']][['ext_wall']]$outside_layer = 'placa_cimenticia'
     seed[['Construction']][['int_wall']]$outside_layer = 'gesso'
     for (wall in c('ext_wall', 'int_wall')) {
@@ -270,8 +272,94 @@ hive_gen = function(seed, cond, lx, ly, lz, alt, room, bounds, wrap, output_dir,
         }
       }
     }
-    
-    # building surface (geometry)
+
+    # building surface (boundary conditions) - floors and roofs
+    if (bound[[1]][2] == 'c') { # core
+      if (storey == 'floor') {
+        # floor
+        seed$'BuildingSurface:Detailed'$'hive_c_floor'$
+          'outside_boundary_condition' = 'OtherSideConditionsModel'
+        seed$'BuildingSurface:Detailed'$'hive_c_floor'$
+          'outside_boundary_condition_object' = 'ground_coupled_oscm'
+        # roof
+        seed$'BuildingSurface:Detailed'$'hive_c_roof'$'construction_name' = 'ceiling'
+        seed$'BuildingSurface:Detailed'$'hive_c_roof'$'surface_type' = 'Ceiling'
+        seed$'BuildingSurface:Detailed'$'hive_c_roof'$'outside_boundary_condition' = 'Adiabatic'
+        seed$'BuildingSurface:Detailed'$'hive_c_roof'$'sun_exposure' = 'NoSun'
+        seed$'BuildingSurface:Detailed'$'hive_c_roof'$'wind_exposure' = 'NoWind'
+      } else {
+        # floor
+        seed$'BuildingSurface:Detailed'$'hive_c_floor'$'outside_boundary_condition' = 'Adiabatic'
+        seed$'Site:GroundDomain:Slab' = NULL
+        seed$'Site:GroundTemperature:Undisturbed:FiniteDifference' = NULL
+        seed$'SurfaceProperty:OtherSideConditionsModel' = NULL
+        # roof
+        if (storey == 'inter') {
+          seed$'BuildingSurface:Detailed'$'hive_c_roof'$'construction_name' = 'ceiling'
+          seed$'BuildingSurface:Detailed'$'hive_c_roof'$'surface_type' = 'Ceiling'
+          seed$'BuildingSurface:Detailed'$'hive_c_roof'$'outside_boundary_condition' = 'Adiabatic'
+          seed$'BuildingSurface:Detailed'$'hive_c_roof'$'sun_exposure' = 'NoSun'
+          seed$'BuildingSurface:Detailed'$'hive_c_roof'$'wind_exposure' = 'NoWind'
+        } else {
+          seed$'BuildingSurface:Detailed'$'hive_c_roof'$'construction_name' = 'roof'
+          seed$'BuildingSurface:Detailed'$'hive_c_roof'$'surface_type' = 'Roof'
+          seed$'BuildingSurface:Detailed'$'hive_c_roof'$'outside_boundary_condition' = 'Outdoors'
+          seed$'BuildingSurface:Detailed'$'hive_c_roof'$'sun_exposure' = 'SunExposed'
+          seed$'BuildingSurface:Detailed'$'hive_c_roof'$'wind_exposure' = 'WindExposed'
+        }
+      }
+    } else { # hive
+      for (n in 1:2) { # run for interior and exterior hives
+        if (storey == 'floor') {
+          # floor
+          seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_floor')]]$
+            'outside_boundary_condition' = 'OtherSideConditionsModel'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_floor')]]$
+              'outside_boundary_condition_object' = 'ground_coupled_oscm'
+            # roof
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'construction_name' = 'ceiling'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'surface_type' = 'Ceiling'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'outside_boundary_condition' = 'Adiabatic'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'sun_exposure' = 'NoSun'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'wind_exposure' = 'NoWind'
+        } else {
+          # floor
+          seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_floor')]]$
+            'outside_boundary_condition' = 'Adiabatic'
+          # roof
+          if (storey == 'inter') {
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'construction_name' = 'ceiling'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'surface_type' = 'Ceiling'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'outside_boundary_condition' = 'Adiabatic'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'sun_exposure' = 'NoSun'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'wind_exposure' = 'NoWind'
+          } else {
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'construction_name' = 'roof'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'surface_type' = 'Roof'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'outside_boundary_condition' = 'Outdoors'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'sun_exposure' = 'SunExposed'
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
+              'wind_exposure' = 'WindExposed'
+          }
+        }
+      }
+    }
+
+    # building surface (geometry) - walls
     for (surf in surfs) { # run for all the surfaces
       if (bound[[1]][2] == 'c') { # core
         # surfaces geometry
@@ -295,7 +383,7 @@ hive_gen = function(seed, cond, lx, ly, lz, alt, room, bounds, wrap, output_dir,
       }
     }
     
-    # building surface (boundary condition)
+    # building surface (boundary condition) - walls
     if (bound[[1]][2] == 'c') { # core
       for (hive in hives) {
         # construction name
@@ -682,10 +770,85 @@ hive_gen = function(seed, cond, lx, ly, lz, alt, room, bounds, wrap, output_dir,
 # application ####
 
 # v03
-output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                    '00.sz/07.hvac_v03/')
-area_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/03.area/'
-wraps = c('concreto_10cm', 'tijolo_vazado', 'steal_frame')
+prop = list(
+  'sw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+                     list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
+                          c('w', 'adiabatic', 0))),
+  'sw_liv' = list('living' = c(5, 4, 2.7, 0),
+                  list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
+                       c('w', 'adiabatic', 0))),
+  'sw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+                     list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
+                          c('w', 'adiabatic', 0))),
+  'se_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+                     list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
+                          c('w', 'adiabatic', 0))),
+  'se_liv' = list('living' = c(5, 4, 2.7, 0),
+                  list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
+                       c('w', 'adiabatic', 0))),
+  'se_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+                     list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
+                          c('w', 'adiabatic', 0))),
+  'e_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
+                    list(c('s', 'outdoors', 0.2), c('e', 'outdoors', 0), c('n', 'adiabatic', 0),
+                         c('w', 'adiabatic', 0))),
+  'e_liv' = list('living' = c(3, 5, 2.7, 0),
+                 list(c('s', 'adiabatic', 0), c('e', 'outdoors', 0.2), c('n', 'adiabatic', 0),
+                      c('w', 'adiabatic', 0))),
+  'e_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
+                    list(c('s', 'adiabatic', 0), c('e', 'outdoors', 0), c('n', 'outdoors', 0.2),
+                         c('w', 'adiabatic', 0))),
+  'ne_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+                     list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
+                          c('w', 'adiabatic', 0))),
+  'ne_liv' = list('living' = c(5, 4, 2.7, 0),
+                  list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
+                       c('w', 'adiabatic', 0))),
+  'ne_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+                     list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
+                          c('w', 'adiabatic', 0))),
+  'nw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+                     list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
+                          c('w', 'adiabatic', 0))),
+  'nw_liv' = list('living' = c(5, 4, 2.7, 0),
+                  list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
+                       c('w', 'adiabatic', 0))),
+  'nw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+                     list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
+                          c('w', 'adiabatic', 0))),
+  'w_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
+                    list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
+                         c('w', 'outdoors', 0))),
+  'w_liv' = list('living' = c(3, 5, 2.7, 0),
+                 list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
+                      c('w', 'outdoors', 0.2))),
+  'w_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
+                    list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
+                         c('w', 'outdoors', 0)))
+)
+wraps = c('c10', 'tv', 'sf')
+storeys = c('floor', 'inter', 'roof')
+# create 'epjsons'
+n = 0
+for (wrap in wraps) {
+  m = 0
+  for (storey in storeys) {
+    for (i in 1:length(prop)) {
+      hive_gen(seed = paste0('/home/rodox/00.git/00.master_ufsc/01.seed/seed_ex_hive_hvac.epJSON'),
+               lx = prop[[i]][[1]][1], ly = prop[[i]][[1]][2], lz = prop[[i]][[1]][3],
+               alt = prop[[i]][[1]][4], room = names(prop[[i]])[1], bounds = prop[[i]][[2]],
+               cond = 'hvac', wrap = wrap, storey = storey, model_name =
+                 paste0('hyp_', wrap, '_v03_', storey, '_', names(prop)[i]),
+               output_dir = paste0('/home/rodox/00.git/00.master_ufsc/02.model/01.hvac/00.hyp/03/0',
+                                   n, '.', wrap, '/'))
+    }
+    m = m + 1
+  }
+  n = n + 1
+}
+rm(prop, wraps, storeys, n)
+
+# v04
 prop = list(
   'sw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
                      list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
@@ -743,98 +906,25 @@ prop = list(
                          c('w', 'outdoors', 0)))
 )
 
-# create 'epjsons' and 'csvs' with areas
-df_area = data.frame('model_name' = rep(NA, length(prop)), 'area' = rep(NA, length(prop)))
-for (i in 1:length(prop)) {
-  for (j in 1:length(wraps)) {
-    hive_gen(seed = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/00.seed/00.sz/',
-                           'seed_ex_hvac_v03-04_new.epJSON'),
-             cond = 'hvac', lx = prop[[i]][[1]][1], ly = prop[[i]][[1]][2], lz = prop[[i]][[1]][3],
-             alt = prop[[i]][[1]][4], room = names(prop[[i]])[1], bounds = prop[[i]][[2]],
-             output_dir = paste0(output_dir, '0', as.character(j - 1), '.', wraps[j], '/00.model/'),
-             wrap = wraps[j], model_name = paste0(names(prop)[i]))
+wraps = c('c10', 'tv', 'sf')
+storeys = c('floor', 'inter', 'roof')
+# create 'epjsons'
+n = 0
+for (wrap in wraps) {
+  m = 0
+  for (storey in storeys) {
+    for (i in 1:length(prop)) {
+      hive_gen(seed = paste0('/home/rodox/00.git/00.master_ufsc/01.seed/seed_ex_hive_hvac.epJSON'),
+               lx = prop[[i]][[1]][1], ly = prop[[i]][[1]][2], lz = prop[[i]][[1]][3],
+               alt = prop[[i]][[1]][4], room = names(prop[[i]])[1], bounds = prop[[i]][[2]],
+               cond = 'hvac', wrap = wrap, storey = storey, model_name =
+                 paste0('hyp_', wrap, '_v04_', storey, '_', names(prop)[i]),
+               output_dir = paste0('/home/rodox/00.git/00.master_ufsc/02.model/01.hvac/00.hyp/04/0',
+                                   n, '.', wrap, '/'))
+    }
+    m = m + 1
   }
-  df_area[i, ] = c(names(prop)[i], prop[[i]][[1]][1]*prop[[i]][[1]][2])
+  n = n + 1
 }
-df_area = df_area[order(df_area$model_name),]
-write.csv(df_area, paste0(area_dir, 'area_v01.csv'), row.names = F)
-rm(output_dir, df_area)
+rm(output_dir, wraps, prop)
 
-# v04
-output_dir = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/',
-                    '00.sz/08.hvac_v04/')
-area_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zone/01.validation/03.area/'
-wraps = c('concreto_10cm', 'tijolo_vazado', 'steal_frame')
-prop = list(
-  'sw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                     list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
-                          c('w', 'dorm', 0))),
-  'sw_liv' = list('living' = c(5, 4, 2.7, 0),
-                  list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
-                       c('w', 'dorm', 0))),
-  'sw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                     list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
-                          c('w', 'living', 0))),
-  'se_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                     list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
-                          c('w', 'dorm', 0))),
-  'se_liv' = list('living' = c(5, 4, 2.7, 0),
-                  list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
-                       c('w', 'dorm', 0))),
-  'se_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                     list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
-                          c('w', 'living', 0))),
-  'e_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
-                    list(c('s', 'outdoors', 0.2), c('e', 'outdoors', 0), c('n', 'living', 0),
-                         c('w', 'dorm', 0))),
-  'e_liv' = list('living' = c(3, 5, 2.7, 0),
-                 list(c('s', 'dorm', 0), c('e', 'outdoors', 0.2), c('n', 'dorm', 0),
-                      c('w', 'adiabatic', 0))),
-  'e_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
-                    list(c('s', 'living', 0), c('e', 'outdoors', 0), c('n', 'outdoors', 0.2),
-                         c('w', 'dorm', 0))),
-  'ne_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                     list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                          c('w', 'living', 0))),
-  'ne_liv' = list('living' = c(5, 4, 2.7, 0),
-                  list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                       c('w', 'dorm', 0))),
-  'ne_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                     list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
-                          c('w', 'dorm', 0))),
-  'nw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                     list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                          c('w', 'living', 0))),
-  'nw_liv' = list('living' = c(5, 4, 2.7, 0),
-                  list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                       c('w', 'dorm', 0))),
-  'nw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                     list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
-                          c('w', 'dorm', 0))),
-  'w_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
-                    list(c('s', 'living', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                         c('w', 'outdoors', 0))),
-  'w_liv' = list('living' = c(3, 5, 2.7, 0),
-                 list(c('s', 'dorm', 0), c('e', 'adiabatic', 0), c('n', 'dorm', 0),
-                      c('w', 'outdoors', 0.2))),
-  'w_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
-                    list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'living', 0),
-                         c('w', 'outdoors', 0)))
-)
-
-# create 'epjsons' and 'csvs' with areas
-df_area = data.frame('model_name' = rep(NA, length(prop)), 'area' = rep(NA, length(prop)))
-for (i in 1:length(prop)) {
-  for (j in 1:length(wraps)) {
-    hive_gen(seed = paste0('/home/rodox/Dropbox/00.master_ufsc/00.single_zone/00.seed/00.sz/',
-                           'seed_ex_hvac_v03-04_new.epJSON'),
-             cond = 'hvac', lx = prop[[i]][[1]][1], ly = prop[[i]][[1]][2], lz = prop[[i]][[1]][3],
-             alt = prop[[i]][[1]][4], room = names(prop[[i]])[1], bounds = prop[[i]][[2]],
-             output_dir = paste0(output_dir, '0', as.character(j - 1), '.', wraps[j], '/00.model/'),
-             wrap = wraps[j], model_name = paste0(names(prop)[i]))
-  }
-  df_area[i, ] = c(names(prop)[i], prop[[i]][[1]][1]*prop[[i]][[1]][2])
-}
-df_area = df_area[order(df_area$model_name),]
-write.csv(df_area, paste0(area_dir, 'area_v01.csv'), row.names = F)
-rm(output_dir, df_area)

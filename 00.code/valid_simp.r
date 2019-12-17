@@ -1,6 +1,3 @@
-# load libraries ####
-library(ggplot2)
-
 # base functions ####
 # cap_str()
 # capitalize all the words in a string
@@ -18,7 +15,7 @@ cap_str = function(str) {
 
 # diff()
 # calculate difference of results from simplified simulations (single zone) to full simulations
-df_diff = function(df_simp, df_base, df_area) {
+df_diff = function(df_base, df_simp, df_area) {
   # df_simp - data frame with single zone results
   # df_base - data frame with full simulation results
   
@@ -30,7 +27,9 @@ df_diff = function(df_simp, df_base, df_area) {
   df_diff_rel = df_diff_abs*100 / abs(df_base[, is_label(df_base)[[2]]])
   # add labels to the data frame
   df_diff_abs = cbind(df_diff_abs, df_simp[, is_label(df_simp)[[1]]])
+  df_diff_abs$sim = NULL
   df_diff_rel = cbind(df_diff_rel, df_simp[, is_label(df_simp)[[1]]])
+  df_diff_rel$sim = NULL
   return(list('abs' = df_diff_abs, 'rel' = df_diff_rel))
 }
 
@@ -40,16 +39,17 @@ is_label = function(df) {
   
   # yes, it is!
   yes_label = grepl('dwel', colnames(df)) | grepl('room', colnames(df)) |
-    grepl('weather', colnames(df))
+    grepl('wrap', colnames(df)) | grepl('weather', colnames(df)) | grepl('typo', colnames(df)) |
+    grepl('sim', colnames(df)) | grepl('storey', colnames(df))
   # no, it is not!
-  no_label = !grepl('sim', colnames(df)) & !grepl('dwel', colnames(df)) &
-    !grepl('room', colnames(df)) & !grepl('weather', colnames(df))
+  no_label = !yes_label
   return(list(yes_label, no_label))
 }
 
 # label_df()
-# label data frames according to dweling, room, front and weather
-label_df = function(df, file_name) {
+# label data frames according to dweling, room, side, weather, typology wrap and
+# simplification version
+label_df = function(df, file_name, typo, wrap) {
   df$dwel = ifelse(grepl('_sw_', file_name), 'SW',
                    ifelse(grepl('_se_', file_name), 'SE',
                           ifelse(grepl('_e_', file_name), 'E',
@@ -59,7 +59,11 @@ label_df = function(df, file_name) {
                 ifelse(grepl('rm_n', file_name), 'N',
                        ifelse(grepl('rm_1', file_name), '1', '2')))
   df$room = ifelse(grepl('liv', file_name), 'Living', paste('Dorm.', side))
-  df$weather = ifelse(grepl('rio_de_janeiro', file_name), 'Rio de Janeiro', 'São Paulo')
+  df$floor = Hmisc::capitalize(storey)
+  df$weather = ifelse(grepl('curitiba', file_name), 'Curitiba',
+                      ifelse(grepl('rio_de_janeiro', file_name), 'Rio de Janeiro', 'São Paulo'))
+  df$typo = paste0(Hmisc::capitalize(typo), '.')
+  df$wrap = toupper(wrap)
   return(df)
 }
 
@@ -147,8 +151,8 @@ report = function(csv, timestep = 6, unit = 'kwh') {
   report[['df']]$hvac_total_he = ifelse(report[['df']]$hvac_total_he < 0.01, 0,
                                         report[['df']]$hvac_total_he)
   report[['df']] = apply(report[['df']], 2, round, 1)
-  report[['df']] = cbind(report[['df']], data.frame('sim' = NA, 'dwel' = NA, 'room' = NA,
-                                                    'weather' = NA))
+  report[['df']] = cbind(report[['df']], data.frame('dwel' = NA, 'room' = NA, 'weather' = NA,
+                                                    'typo' = NA, 'wrap' = NA, 'sim' = NA))
   return(report)
 }
 
@@ -162,24 +166,48 @@ surf_rename = function(col_name) {
                        ifelse(grepl('WALL', col_name), '_wall',
                               ifelse(grepl('WINDOW', col_name), '_window',
                                      ifelse(grepl('DOOR', col_name), '_door', '')))))
-  side = ifelse(grepl('_S\\.', col_name) & !grepl('M_S\\.', col_name), '_s',
-                ifelse(grepl('_E\\.', col_name), '_e',
-                       ifelse(grepl('_N\\.', col_name) & !grepl('M_N\\.', col_name), '_n',
-                              ifelse(grepl('_W\\.', col_name), '_w',
+  side = ifelse(grepl('_S\\:', col_name) & !grepl('M_S\\:', col_name), '_s',
+                ifelse(grepl('_E\\:', col_name), '_e',
+                       ifelse(grepl('_N\\:', col_name) & !grepl('M_N\\:', col_name), '_n',
+                              ifelse(grepl('_W\\:', col_name), '_w',
                                      ''))))
   surf_rename = paste0(surf, side)
   return(surf_rename)
 }
 
 # main function ####
-valid = function(input_dirs, cond, storey, version_base, version_simp, df_area) {
-
+valid = function(input_dirs, cond, wrap, storey, df_area, typo, simp, output_dir = NULL) {
+  
+  # # test
+  # cond = c('hvac')
+  # typo = c('hyp')
+  # simp = c('02')
+  # wrap = c('sf')
+  # storey = c('roof')
+  # m = 1
+  # n = 0
+  # o = 2
+  # p = 2
+  # input_dirs = list('base' = paste0('/home/rodox/01.going_on/00.hive/0', m, '.', cond,
+  #                                   '/0', n, '.', typo, '/00/0', o, '.', wrap, '/0', p,
+  #                                   '.', storey, '/'),
+  #                   'simp' = paste0('/home/rodox/01.going_on/00.hive/0', m, '.', cond,
+  #                                   '/0', n, '.', typo, '/', simp, '/0', o, '.', wrap,
+  #                                   '/0', p, '.', storey, '/'))
+  # cond = cond
+  # storey = storey
+  # simp = simp
+  # df_area = paste0('/home/rodox/00.git/00.master_ufsc/02.model/0', m,
+  #                  '.', cond, '/0', n, '.', typo, '/area_', typo,
+  #                  '.csv')
+  # output_dir = paste0('/home/rodox/00.git/00.master_ufsc/03.result/', simp, '/')
+  
   # create empty lists to be filled with 'csv' files
   csv_names = csv_files = results = vector('list', length(input_dirs))
   # name the lists
   names(csv_names) = names(csv_files) = names(results) = names(input_dirs)
   
-  # load files ####
+  # load files
   # pick 'csv' names inside input directory
   for (i in 1:length(csv_names)) {
     csv_names[[i]] = dir(input_dirs[[i]], '.csv')
@@ -190,7 +218,7 @@ valid = function(input_dirs, cond, storey, version_base, version_simp, df_area) 
   # read files
   # data frame with zone areas
   df_area = read.csv(df_area)
-  # multiply data frace twice, because there is two weathers
+  # multiply data frame three times, because there are three weathers
   df_area = rbind(df_area, df_area, df_area)
   # 'csv' files from simulations
   for (i in 1:length(csv_names)) {
@@ -198,50 +226,64 @@ valid = function(input_dirs, cond, storey, version_base, version_simp, df_area) 
       # count the files while they're loaded
       print(paste('i =', i, '/ j =', j))
       # load the files themselves
-      csv_files[[i]][[j]] = read.csv(paste0(input_dirs[[i]], csv_names[[i]][[j]]))
+      csv_files[[i]][[j]] = as.data.frame(data.table::fread(paste0(input_dirs[[i]],
+                                                                   csv_names[[i]][[j]])))
       # define proper names to the list
       if (i == 1) {
-        names(csv_files[[i]])[j] = ifelse(cond == 'hvac',
-                                       sub(paste0('_', version_base, '_v00_', storey), '',
-                                           sub('.csv', '', csv_names[[i]][j])),
-                                       sub(paste0('_', version_base, '_v00_', storey), '',
-                                           sub('.csv', '', csv_names[[i]][j])))
+        names(csv_files[[i]])[j] = sub(paste0('_', typo, '_', wrap, '_v00_', storey), '',
+                                       sub('.csv', '', csv_names[[i]][j]))
       } else {
-        names(csv_files[[i]])[j] = ifelse(cond == 'hvac',
-                                       sub(paste0('_', version_base, '_v', version_simp, '_',
-                                                  storey), '', sub('.csv', '', csv_names[[i]][j])),
-                                       sub(paste0('_', version_base, '_v', version_simp, '_',
-                                                  storey), '', sub('.csv', '', csv_names[[i]][j])))
+        names(csv_files[[i]])[j] = sub(paste0('_', typo, '_', wrap, '_v', simp, '_', storey), '',
+                                       sub('.csv', '', csv_names[[i]][j]))
       }
     }
     names(results[[i]]) = names(csv_files[[i]])
   }
-
-  # rename columns ####
+  
+  # rename columns
   # define new column names
   # hvac
   if (cond == 'hvac') {
-    if (version_base == 'hyp') {
-      base_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
-                       rep('conv_hge', 8), 'mean_temp', 'op_temp', 'afn_inf_sens_hge',
-                       'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he',
-                       'hvac_total_ce')
-      base_ew_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
-                         rep('conv_hge', 9), 'mean_temp', 'op_temp', 'afn_inf_sens_hge',
-                         'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he',
-                         'hvac_total_ce')
-      base_sn_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
-                         rep('conv_hge', 10), 'mean_temp', 'op_temp', 'afn_inf_sens_hge',
-                         'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he',
-                         'hvac_total_ce')
-      if (version_simp == '01' | version_simp == '02') {
-        simp_dorm_cn = base_dorm_cn
-        simp_ew_liv_cn = base_ew_liv_cn
-        simp_sn_liv_cn = base_sn_liv_cn
+    if (grepl('hyp', typo)) {
+      mult_base_dorm_cn = 8
+      mult_base_ew_liv_cn = 10
+      mult_base_sn_liv_cn = 11
+      if (simp == '01') {
+        mult_simp_dorm_cn = 8
+        mult_simp_ew_liv_cn = 10
+        mult_simp_sn_liv_cn = 11
+      } else if (simp == '02') {
+        mult_simp_dorm_cn = 8
+        mult_simp_ew_liv_cn = 9
+        mult_simp_sn_liv_cn = 10
       }
     }
   }
-
+  base_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
+                   rep('conv_hge', mult_base_dorm_cn), 'mean_temp', 'op_temp', 'afn_inf_sens_hge',
+                   'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he',
+                   'hvac_total_ce')
+  base_ew_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
+                     rep('conv_hge', mult_base_ew_liv_cn), 'mean_temp', 'op_temp',
+                     'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce',
+                     'hvac_total_he', 'hvac_total_ce')
+  base_sn_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
+                     rep('conv_hge', mult_base_sn_liv_cn), 'mean_temp', 'op_temp',
+                     'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce',
+                     'hvac_total_he', 'hvac_total_ce')
+  simp_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
+                   rep('conv_hge', mult_simp_dorm_cn), 'mean_temp', 'op_temp', 'afn_inf_sens_hge',
+                   'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he',
+                   'hvac_total_ce')
+  simp_ew_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
+                     rep('conv_hge', mult_simp_ew_liv_cn), 'mean_temp', 'op_temp',
+                     'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce',
+                     'hvac_total_he', 'hvac_total_ce')
+  simp_sn_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
+                     rep('conv_hge', mult_simp_sn_liv_cn), 'mean_temp', 'op_temp',
+                     'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce',
+                     'hvac_total_he', 'hvac_total_ce')
+  
   # remove first column related to an x variable created when base 'csv' files were splitted
   for (i in 1:length(csv_files)) {
     for (j in 1:length(csv_files[[i]])) {
@@ -282,7 +324,7 @@ valid = function(input_dirs, cond, storey, version_base, version_simp, df_area) 
     }
   }
   
-  # configure 'date_time' column ####
+  # configure 'date_time' column
   for (i in 1:length(csv_files)) {
     for (j in 1:length(csv_files[[i]])) {
       csv_files[[i]][[j]]$date_time = seq(ISOdate(19, 1, 1, 0, 10, 0), by = '10 min',
@@ -290,29 +332,32 @@ valid = function(input_dirs, cond, storey, version_base, version_simp, df_area) 
     }
   }
   
-  # compile results ####
+  # compile results
   for (i in 1:length(csv_files)) {
     results[[i]] = lapply(csv_files[[i]], report)
     for (j in 1:length(csv_files[[i]])) {
-      results[[i]][[j]][['df']]$sim = ifelse(grepl('simp', names(results)[i]), 'Simp.', 'Base')
+      results[[i]][[j]][['df']]$sim = ifelse(grepl('base', names(results)[i]), 'Base', 'Simp.')
       results[[i]][[j]][['df']]$hvac_total_ce =
         results[[i]][[j]][['df']]$hvac_total_ce / df_area[j, 2]
-      results[[i]][[j]][['df']] = label_df(results[[i]][[j]][['df']], names(results[[i]])[j])
+      results[[i]][[j]][['df']] = label_df(results[[i]][[j]][['df']], names(results[[i]])[j],
+                                           typo, wrap)
       results[['combo']][['raw']] = rbind(results[['combo']][['raw']],
                                           results[[i]][[j]][['df']]['year', ])
+      
     }
   }
   
   # compile differences
-  for (i in 1:length(results[['simp']])) {
-    for (type in c('abs', 'rel')) {
+  for (type in c('abs', 'rel')) {
+    for (i in 1:length(results[['simp']])) {
       results[['diff']][[type]][[i]] =
         df_diff(results[['simp']][[i]][['df']], results[['base']][[i]][['df']])[[type]]
       results[['diff']][['combo']][[type]] =
         rbind(results[['diff']][['combo']][[type]], results[['diff']][[type]][[i]]['year', ])
     }
+    results[['diff']][['combo']][[type]]$simp = simp
   }
-
+  
   # name diff list
   names(results[['diff']][['abs']]) = names(results[['diff']][['rel']]) = names(results[['simp']])
   
@@ -350,60 +395,56 @@ valid = function(input_dirs, cond, storey, version_base, version_simp, df_area) 
   }
   results[['combo']][['tb']] = subset(results[['combo']][['tb']], !is.na(val))
   
-return(results)
+  if (!is.null(output_dir)) {
+    write.csv(results[['combo']][['raw']], paste0(output_dir, typo, '_', wrap, '_v', simp, '_',
+                                                  storey, '_raw.csv'))
+    write.csv(results[['combo']][['tb']], paste0(output_dir, typo, '_', wrap, '_v', simp, '_',
+                                                 storey, '_tb.csv'))
+    write.csv(results[['diff']][['combo']][['abs']], paste0(output_dir, typo, '_', wrap, '_v',
+                                                            simp, '_', storey, '_diff_abs.csv'))
+    write.csv(results[['diff']][['combo']][['rel']], paste0(output_dir, typo, '_', wrap, '_v',
+                                                            simp, '_', storey, '_diff_rel.csv'))
+  }
+  
+  return(results)
 }
 
 # application ####
-# # v00 - v01
-# storeys = c('floor', 'inter', 'roof')
-# n = 0
-# cond = 'hvac'
-# storey = 'floor'
-# version_base = 'hyp'
-# version_simp = '01'
-# for (i in 1:length(storeys)) {
-#   results = valid(input_dirs = list('base' = paste0('/home/rodox/01.going_on/00.hive/00.hyp/',
-#                                                     '00.hyp_v00/0', n, '.', storeys[i], '/00.split/'),
-#                                     'simp' = paste0('/home/rodox/01.going_on/00.hive/00.hyp/',
-#                                                     '01.hyp_v01/0', n, '.', storeys[i], '/00.split/')),
-#                   cond, storey, version_base, version_simp,
-#                   df_area = '/home/rodox/Dropbox/00.master_ufsc/01.validation/03.area/area_hyp.csv')
-#   write.csv(results$combo$raw, paste0('/home/rodox/01.going_on/00.hive/00.hyp/01.hyp_v01/03.result/',
-#                                       version_base, '_v', version_simp, '_', storeys[i], '_raw.csv'))
-#   write.csv(results$combo$tb, paste0('/home/rodox/01.going_on/00.hive/00.hyp/01.hyp_v01/03.result/',
-#                                       version_base, '_v', version_simp, '_', storeys[i], '_tb.csv'))
-#   write.csv(results$diff$combo$abs, paste0('/home/rodox/01.going_on/00.hive/00.hyp/01.hyp_v01/',
-#                                            '03.result/', version_base, '_v', version_simp, '_',
-#                                            storeys[i], '_diff_abs.csv'))
-#   write.csv(results$diff$combo$rel, paste0('/home/rodox/01.going_on/00.hive/00.hyp/01.hyp_v01/',
-#                                            '03.result/', version_base, '_v', version_simp, '_',
-#                                            storeys[i], '_diff_rel.csv'))
-#   n = n + 1
-# }
-
-# v00 - v02
+conds = c('hvac')
+typos = c('hyp')
+simps = c('01', '02')
+wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
-n = 0
-cond = 'hvac'
-storey = 'floor'
-version_base = 'hyp'
-version_simp = '02'
-for (i in 1:length(storeys)) {
-  results = valid(input_dirs = list('base' = paste0('/home/rodox/01.going_on/00.hive/00.hyp/',
-                                                    '00.hyp_v00/0', n, '.', storeys[i], '/00.split/'),
-                                    'simp' = paste0('/home/rodox/01.going_on/00.hive/00.hyp/',
-                                                    '02.hyp_v02/0', n, '.', storeys[i], '/00.split/')),
-                  cond, storey, version_base, version_simp,
-                  df_area = '/home/rodox/Dropbox/00.master_ufsc/01.validation/03.area/area_hyp.csv')
-  write.csv(results$combo$raw, paste0('/home/rodox/01.going_on/00.hive/00.hyp/02.hyp_v02/03.result/',
-                                      version_base, '_v', version_simp, '_', storeys[i], '_raw.csv'))
-  write.csv(results$combo$tb, paste0('/home/rodox/01.going_on/00.hive/00.hyp/02.hyp_v02/03.result/',
-                                     version_base, '_v', version_simp, '_', storeys[i], '_tb.csv'))
-  write.csv(results$diff$combo$abs, paste0('/home/rodox/01.going_on/00.hive/00.hyp/02.hyp_v02/',
-                                           '03.result/', version_base, '_v', version_simp, '_',
-                                           storeys[i], '_diff_abs.csv'))
-  write.csv(results$diff$combo$rel, paste0('/home/rodox/01.going_on/00.hive/00.hyp/02.hyp_v02/',
-                                           '03.result/', version_base, '_v', version_simp, '_',
-                                           storeys[i], '_diff_rel.csv'))
-  n = n + 1
+m = 1
+for (cond in conds) {
+  n = 0
+  for (typo in typos) {
+    for (simp in simps) {
+      o = 0
+      for (wrap in wraps) {
+        print(paste(toupper(cond), '/', Hmisc::capitalize(typo), '/', simp, '/', toupper(wrap)))
+        p = 0
+        for (storey in storeys) {
+          print(Hmisc::capitalize(storey))
+          valid(
+            input_dirs = list('base' = paste0('/home/rodox/01.going_on/00.hive/0', m, '.', cond,
+                                              '/0', n, '.', typo, '/00/0', o, '.', wrap, '/0', p,
+                                              '.', storey, '/'),
+                              'simp' = paste0('/home/rodox/01.going_on/00.hive/0', m, '.', cond,
+                                              '/0', n, '.', typo, '/', simp, '/0', o, '.', wrap,
+                                              '/0', p, '.', storey, '/')),
+            cond = cond, storey = storey, typo = typo, wrap = wrap,
+            simp = simp, df_area = paste0('/home/rodox/00.git/00.master_ufsc/02.model/0', m,
+                                          '.', cond, '/0', n, '.', typo, '/area_', typo,
+                                          '.csv'),
+            output_dir = paste0('/home/rodox/00.git/00.master_ufsc/03.result/', simp, '/'))
+          gc()
+          p = p + 1
+        }
+        o = o + 1
+      }
+    }
+    n = n + 1
+  }
+  m = m + 1
 }
