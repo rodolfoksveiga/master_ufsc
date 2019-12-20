@@ -1,62 +1,62 @@
-# load libraries
-library('data.table')
+# main function ####
+# split_building ()
+  # splits the full simulation output in individual storeys
+split_building = function(input_dir, pattern = NULL, storey_id, output_dir) {
+  # input_dir - directory where the full floor simulation's outputs are located
+  # pattern - pattern to be found inside the input directory
+  # storey_id - list with the code of the storeys to be splitted and their correspondent storeys
+    # e.g.: storey_id = list(c('F1', 'F3', 'F5'), c('floor', 'inter', 'roof'))
+  # output_dir - directory where the splitted files will be saved
 
-# split building
-
-# curitiba
-curitiba_hyp_sf_v00 = as.data.frame(fread(paste0('/home/rodox/01.going_on/00.hive/01.hvac/00.hyp/00/02.sf/',
-                                                  'curitiba_hyp_sf_v00.csv')))
-storeys = c('floor', 'inter', 'roof')
-
-n = 1
-m = 0
-for (i in 1:length(storeys)) {
-  storey = curitiba_hyp_sf_v00[, grepl('Date/Time', colnames(curitiba_hyp_sf_v00)) |
-                                  grepl('Environment:Site Outdoor Air',
-                                        colnames(curitiba_hyp_sf_v00)) |
-                                  grepl(paste0('F', n, '_'), colnames(curitiba_hyp_sf_v00))]
-  write.csv(storey, paste0('/home/rodox/01.going_on/00.hive/01.hvac/00.hyp/00/02.sf/0', m, '.',
-                           storeys[i], '/curitiba_hyp_sf_v00_', storeys[i], '.csv'))
-  n = n + 2
-  m = m + 1
+  # name '.csv' files
+  csv_names = dir(input_dir, paste0('*', pattern, '.*csv'))
+  # load, process, separet dwelings in zones and write the .csv files
+  for (i in 1:length(csv_names)) {
+    # count the splitting process
+    print(paste('i =', i))
+    # load files
+    df = as.data.frame(data.table::fread(paste0(input_dir, csv_names[i])))
+    # rename the list which contains the '.csv' files (remove '.csv' suffix)
+    csv_names[i] = stringr::str_remove(csv_names[i], '.csv')
+    # split the floor in zones
+    for (j in 1:length(storey_id[[1]])) {
+      # select the columns related to each interested storey
+      df_floor = df[, grepl('Date/Time', colnames(df)) |
+                     grepl('Environment:Site Outdoor Air Drybulb', colnames(df)) |
+                     grepl(paste0('^', toupper(storey_id[[1]][j])), colnames(df))]
+      # save '.csv' file for each storey
+      if (grepl('afn', csv_names[i])) {
+        file_path = paste0(output_dir, sub('_afn', '', csv_names[i]),
+                           '_', storey_id[[2]][j], '_afn.csv')
+      } else if (grepl('hvac', csv_names[i])) {
+        file_path = paste0(output_dir, sub('_hvac', '', csv_names[i]),
+                           '_', storey_id[[2]][j], '_hvac.csv')
+      }
+      write.csv(df_floor, file_path)
+      # print '.csv' file name
+      print(file_path)
+    }
+  }
 }
-rm(curitiba_hyp_sf_v00, storeys, n, m)
-gc()
 
-# sao_paulo
-sao_paulo_hyp_sf_v00 = as.data.frame(fread(paste0('/home/rodox/01.going_on/00.hive/01.hvac/00.hyp/00/02.sf/',
-                                                   'sao_paulo_hyp_sf_v00.csv')))
-storeys = c('floor', 'inter', 'roof')
-n = 1
+# application ####
+simps = c('00', '01')
+wraps = c('c10', 'tv', 'sf')
+conds = c('afn', 'hvac')
 m = 0
-for (i in 1:length(storeys)) {
-  storey = sao_paulo_hyp_sf_v00[, grepl('Date/Time', colnames(sao_paulo_hyp_sf_v00)) |
-                                   grepl('Environment:Site Outdoor Air',
-                                         colnames(sao_paulo_hyp_sf_v00)) |
-                                   grepl(paste0('F', n, '_'), colnames(sao_paulo_hyp_sf_v00))]
-  write.csv(storey, paste0('/home/rodox/01.going_on/00.hive/01.hvac/00.hyp/00/02.sf/0', m, '.',
-                           storeys[i], '/sao_paulo_hyp_sf_v00_', storeys[i], '.csv'))
-  n = n + 2
-  m = m + 1
+for (simp in simps) {
+  for (wrap in wraps) {
+    for (cond in conds) {
+      print(paste(simp, '/', toupper(wrap), '/', toupper(cond)))
+      split_building(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp, '/0', m,
+                                        '.', wrap, '/'),
+                     pattern = cond,
+                     storey_id = list(c('F1', 'F3', 'F5'), c('floor', 'inter', 'roof')),
+                     output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp, '/0', m,
+                                         '.', wrap, '/'))
+    }
+    m = m + 1
+  }
 }
-rm(sao_paulo_hyp_sf_v00, storeys, n, m)
-gc()
 
-# rio_de_janeiro
-rio_de_janeiro_hyp_sf_v00 = as.data.frame(fread(paste0('/home/rodox/01.going_on/00.hive/01.hvac/00.hyp/00/02.sf/',
-                                                        'rio_de_janeiro_hyp_sf_v00.csv')))
-storeys = c('floor', 'inter', 'roof')
-n = 1
-m = 0
-for (i in 1:length(storeys)) {
-  storey = rio_de_janeiro_hyp_sf_v00[, grepl('Date/Time', colnames(rio_de_janeiro_hyp_sf_v00)) |
-                                        grepl('Environment:Site Outdoor Air',
-                                              colnames(rio_de_janeiro_hyp_sf_v00)) |
-                                        grepl(paste0('F', n, '_'), colnames(rio_de_janeiro_hyp_sf_v00))]
-  write.csv(storey, paste0('/home/rodox/01.going_on/00.hive/01.hvac/00.hyp/00/02.sf/0', m, '.',
-                           storeys[i], '/rio_de_janeiro_hyp_sf_v00_', storeys[i], '.csv'))
-  n = n + 2
-  m = m + 1
-}
-rm(rio_de_janeiro_hyp_sf_v00, storeys, n, m)
-gc()
+

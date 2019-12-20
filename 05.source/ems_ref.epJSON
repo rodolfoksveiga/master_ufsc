@@ -1,0 +1,3518 @@
+{
+    "AirflowNetwork:MultiZone:Component:DetailedOpening": {
+        "Det_Janela": {
+            "air_mass_flow_coefficient_when_opening_is_closed": 0.00028,
+            "air_mass_flow_exponent_when_opening_is_closed": 0.63,
+            "discharge_coefficient_for_opening_factor_1": 0.001,
+            "discharge_coefficient_for_opening_factor_2": 0.65,
+            "extra_crack_length_or_height_of_pivoting_axis": 0,
+            "height_factor_for_opening_factor_1": 1.0,
+            "height_factor_for_opening_factor_2": 1.0,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 16,
+            "idf_order": 127,
+            "number_of_sets_of_opening_factor_data": 2,
+            "opening_factor_1": 0.0,
+            "opening_factor_2": 1,
+            "start_height_factor_for_opening_factor_1": 0.0,
+            "start_height_factor_for_opening_factor_2": 0,
+            "type_of_rectangular_large_vertical_opening_lvo_": "NonPivoted",
+            "width_factor_for_opening_factor_1": 0.0,
+            "width_factor_for_opening_factor_2": 0.45
+        },
+        "Det_Porta": {
+            "air_mass_flow_coefficient_when_opening_is_closed": 0.0024,
+            "air_mass_flow_exponent_when_opening_is_closed": 0.59,
+            "discharge_coefficient_for_opening_factor_1": 0.001,
+            "discharge_coefficient_for_opening_factor_2": 0.65,
+            "extra_crack_length_or_height_of_pivoting_axis": 0.0,
+            "height_factor_for_opening_factor_1": 1.0,
+            "height_factor_for_opening_factor_2": 1.0,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 16,
+            "idf_order": 125,
+            "number_of_sets_of_opening_factor_data": 2,
+            "opening_factor_1": 0.0,
+            "opening_factor_2": 1,
+            "start_height_factor_for_opening_factor_1": 0.0,
+            "start_height_factor_for_opening_factor_2": 0.0,
+            "type_of_rectangular_large_vertical_opening_lvo_": "NonPivoted",
+            "width_factor_for_opening_factor_1": 0.0,
+            "width_factor_for_opening_factor_2": 1
+        },
+        "janela_bwc": {
+            "air_mass_flow_coefficient_when_opening_is_closed": 0.00041,
+            "air_mass_flow_exponent_when_opening_is_closed": 0.6,
+            "discharge_coefficient_for_opening_factor_1": 0.001,
+            "discharge_coefficient_for_opening_factor_2": 0.65,
+            "extra_crack_length_or_height_of_pivoting_axis": 0,
+            "height_factor_for_opening_factor_1": 1.0,
+            "height_factor_for_opening_factor_2": 1.0,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 16,
+            "idf_order": 126,
+            "number_of_sets_of_opening_factor_data": 2,
+            "opening_factor_1": 0.0,
+            "opening_factor_2": 1,
+            "start_height_factor_for_opening_factor_1": 0.0,
+            "start_height_factor_for_opening_factor_2": 0.0,
+            "type_of_rectangular_large_vertical_opening_lvo_": "HorizontallyPivoted",
+            "width_factor_for_opening_factor_1": 0.0,
+            "width_factor_for_opening_factor_2": 0.9
+        }
+    },
+    "AirflowNetwork:MultiZone:Surface": {
+        "AirflowNetwork:MultiZone:Surface 1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 12,
+            "idf_order": 115,
+            "leakage_component_name": "Det_Janela",
+            "minimum_venting_open_factor": 0,
+            "surface_name": "JANSALA_OESTE",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "TempVentilacao",
+            "venting_availability_schedule_name": "VN_Sala",
+            "window_door_opening_factor_or_crack_factor": 1
+        },
+        "AirflowNetwork:MultiZone:Surface 2": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 7,
+            "idf_order": 116,
+            "leakage_component_name": "Det_Porta",
+            "minimum_venting_open_factor": 0,
+            "surface_name": "PORTAEXT_LESTE",
+            "ventilation_control_mode": "NoVent",
+            "window_door_opening_factor_or_crack_factor": 1
+        },
+        "AirflowNetwork:MultiZone:Surface 3": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 12,
+            "idf_order": 117,
+            "leakage_component_name": "Det_Janela",
+            "minimum_venting_open_factor": 0,
+            "surface_name": "JANSALA_SUL",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "TempVentilacao",
+            "venting_availability_schedule_name": "VN_Sala",
+            "window_door_opening_factor_or_crack_factor": 1
+        },
+        "AirflowNetwork:MultiZone:Surface 4": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 12,
+            "idf_order": 118,
+            "leakage_component_name": "Det_Janela",
+            "minimum_venting_open_factor": 0,
+            "surface_name": "JANQUARTO1_SUL",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "TempVentilacao",
+            "venting_availability_schedule_name": "VN_Dorm1",
+            "window_door_opening_factor_or_crack_factor": 1
+        },
+        "AirflowNetwork:MultiZone:Surface 5": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 12,
+            "idf_order": 119,
+            "leakage_component_name": "Det_Janela",
+            "minimum_venting_open_factor": 0,
+            "surface_name": "JANQUARTO2_LESTE",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "TempVentilacao",
+            "venting_availability_schedule_name": "VN_Dorm2",
+            "window_door_opening_factor_or_crack_factor": 1
+        },
+        "AirflowNetwork:MultiZone:Surface 6": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 7,
+            "idf_order": 120,
+            "leakage_component_name": "Det_Janela",
+            "minimum_venting_open_factor": 0,
+            "surface_name": "JANBWC",
+            "ventilation_control_mode": "Constant",
+            "window_door_opening_factor_or_crack_factor": 1
+        },
+        "AirflowNetwork:MultiZone:Surface 7": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 7,
+            "idf_order": 121,
+            "leakage_component_name": "Det_Porta",
+            "minimum_venting_open_factor": 0,
+            "surface_name": "PORTAEXT_NORTE",
+            "ventilation_control_mode": "NoVent",
+            "window_door_opening_factor_or_crack_factor": 1
+        },
+        "AirflowNetwork:MultiZone:Surface 8": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 7,
+            "idf_order": 122,
+            "leakage_component_name": "Det_Porta",
+            "minimum_venting_open_factor": 0,
+            "surface_name": "PORTAINT_BWCSALA",
+            "ventilation_control_mode": "NoVent",
+            "window_door_opening_factor_or_crack_factor": 1
+        },
+        "AirflowNetwork:MultiZone:Surface 9": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 7,
+            "idf_order": 123,
+            "leakage_component_name": "Det_Porta",
+            "minimum_venting_open_factor": 0,
+            "surface_name": "PORTAINT_DORM1SALA",
+            "ventilation_control_mode": "NoVent",
+            "window_door_opening_factor_or_crack_factor": 1
+        },
+        "AirflowNetwork:MultiZone:Surface 10": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 7,
+            "idf_order": 124,
+            "leakage_component_name": "Det_Porta",
+            "minimum_venting_open_factor": 0,
+            "surface_name": "PORTAINT_DORM2SALA",
+            "ventilation_control_mode": "NoVent",
+            "window_door_opening_factor_or_crack_factor": 1
+        }
+    },
+    "AirflowNetwork:MultiZone:Zone": {
+        "AirflowNetwork:MultiZone:Zone 1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 8,
+            "idf_order": 111,
+            "zone_name": "Sala"
+        },
+        "AirflowNetwork:MultiZone:Zone 2": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 8,
+            "idf_order": 112,
+            "zone_name": "Dorm1"
+        },
+        "AirflowNetwork:MultiZone:Zone 3": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 8,
+            "idf_order": 113,
+            "zone_name": "Banh1"
+        },
+        "AirflowNetwork:MultiZone:Zone 4": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 8,
+            "idf_order": 114,
+            "zone_name": "Dorm2"
+        }
+    },
+    "AirflowNetwork:SimulationControl": {
+        "CasaMCMV": {
+            "absolute_airflow_convergence_tolerance": 1e-06,
+            "airflownetwork_control": "MultizoneWithoutDistribution",
+            "azimuth_angle_of_long_axis_of_building": 0,
+            "building_type": "LowRise",
+            "convergence_acceleration_limit": -0.5,
+            "height_selection_for_local_wind_pressure_calculation": "OpeningHeight",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 12,
+            "idf_order": 110,
+            "initialization_type": "LinearInitializationMethod",
+            "maximum_number_of_iterations": 500,
+            "ratio_of_building_width_along_short_axis_to_width_along_long_axis": 0.85,
+            "relative_airflow_convergence_tolerance": 0.0001,
+            "wind_pressure_coefficient_type": "SurfaceAverageCalculation"
+        }
+    },
+    "Building": {
+        "UNI": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 8,
+            "idf_order": 3,
+            "loads_convergence_tolerance_value": 0.04,
+            "maximum_number_of_warmup_days": 25,
+            "minimum_number_of_warmup_days": 6,
+            "north_axis": 0.0,
+            "solar_distribution": "FullExteriorWithReflections",
+            "temperature_convergence_tolerance_value": 0.4,
+            "terrain": "City"
+        }
+    },
+    "BuildingSurface:Detailed": {
+        "FORRO_BWCATICO": {
+            "construction_name": "Cobertura_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 70,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Roof",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Banh1"
+        },
+        "FORRO_DORM1ATICO": {
+            "construction_name": "Cobertura_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 52,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Roof",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Dorm1"
+        },
+        "FORRO_DORM2ATICO": {
+            "construction_name": "Cobertura_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 56,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Roof",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Dorm2"
+        },
+        "FORRO_SALAATICO1": {
+            "construction_name": "Cobertura_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 62,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Roof",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Sala"
+        },
+        "FORRO_SALAATICO2": {
+            "construction_name": "Cobertura_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 78,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Roof",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Sala"
+        },
+        "PAREXT_LESTE_DORM1": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 51,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Dorm1"
+        },
+        "PAREXT_LESTE_DORM2": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 57,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Dorm2"
+        },
+        "PAREXT_LESTE_SALA": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 67,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 1.15,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 1.15,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Sala"
+        },
+        "PAREXT_NORTE_BWC": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 73,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Banh1"
+        },
+        "PAREXT_NORTE_DORM2": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 59,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Dorm2"
+        },
+        "PAREXT_NORTE_SALA": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 68,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Sala"
+        },
+        "PAREXT_OESTE_BWC": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 72,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Banh1"
+        },
+        "PAREXT_OESTE_DORM2": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 76,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 2.36,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 2.36,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Dorm2"
+        },
+        "PAREXT_OESTE_SALA": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 66,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Sala"
+        },
+        "PAREXT_SUL_DORM1": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 53,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Dorm1"
+        },
+        "PAREXT_SUL_SALA": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 65,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Outdoors",
+            "sun_exposure": "SunExposed",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "WindExposed",
+            "zone_name": "Sala"
+        },
+        "PARINT1_BWCSALA": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 74,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "PARINT1_SALABWC",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Banh1"
+        },
+        "PARINT1_DORM1SALA": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 50,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "PARINT2_SALADORM1",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Dorm1"
+        },
+        "PARINT1_DORM2SALA": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 60,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "PARINT1_SALADORM2",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 2.36,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 2.36,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Dorm2"
+        },
+        "PARINT1_SALABWC": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 64,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "PARINT1_BWCSALA",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Sala"
+        },
+        "PARINT1_SALADORM2": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 75,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "PARINT1_DORM2SALA",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 4.38,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 4.38,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Sala"
+        },
+        "PARINT2_BWCSALA": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 71,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "PARINT2_SALABWC",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Banh1"
+        },
+        "PARINT2_DORM1DORM2": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 54,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "PARINT2_DORM2DORM1",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Dorm1"
+        },
+        "PARINT2_DORM2DORM1": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 58,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "PARINT2_DORM1DORM2",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Dorm2"
+        },
+        "PARINT2_SALABWC": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 63,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "PARINT2_BWCSALA",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Sala"
+        },
+        "PARINT2_SALADORM1": {
+            "construction_name": "Parede_REF",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 77,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "Surface",
+            "outside_boundary_condition_object": "PARINT1_DORM1SALA",
+            "sun_exposure": "NoSun",
+            "surface_type": "Wall",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 1.15,
+                    "vertex_z_coordinate": 0
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 4.38,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 4.38,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 1.15,
+                    "vertex_z_coordinate": 2.5
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Sala"
+        },
+        "PISO_BWC": {
+            "construction_name": "Piso_concreto",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 69,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "OtherSideConditionsModel",
+            "outside_boundary_condition_object": "GroundCoupledOSCM",
+            "sun_exposure": "NoSun",
+            "surface_type": "Floor",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 1.84,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0.0
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Banh1"
+        },
+        "PISO_QUARTO1": {
+            "construction_name": "Piso_concreto",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 49,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "OtherSideConditionsModel",
+            "outside_boundary_condition_object": "GroundCoupledOSCM",
+            "sun_exposure": "NoSun",
+            "surface_type": "Floor",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.23,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0.0
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Dorm1"
+        },
+        "PISO_QUARTO2": {
+            "construction_name": "Piso_concreto",
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
+            "idf_order": 55,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "OtherSideConditionsModel",
+            "outside_boundary_condition_object": "GroundCoupledOSCM",
+            "sun_exposure": "NoSun",
+            "surface_type": "Floor",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 3.03,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.74,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0.0
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Dorm2"
+        },
+        "PISO_SALA": {
+            "construction_name": "Piso_concreto",
+            "idf_max_extensible_fields": 18,
+            "idf_max_fields": 28,
+            "idf_order": 61,
+            "number_of_vertices": "Autocalculate",
+            "outside_boundary_condition": "OtherSideConditionsModel",
+            "outside_boundary_condition_object": "GroundCoupledOSCM",
+            "sun_exposure": "NoSun",
+            "surface_type": "Floor",
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 0,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 0.0
+                },
+                {
+                    "vertex_x_coordinate": 2.53,
+                    "vertex_y_coordinate": 4.9,
+                    "vertex_z_coordinate": 0.0
+                }
+            ],
+            "view_factor_to_ground": "Autocalculate",
+            "wind_exposure": "NoWind",
+            "zone_name": "Sala"
+        }
+    },
+    "Construction": {
+        "Cobertura_REF": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "idf_order": 42,
+            "layer_2": "Camara_ar_atico_telhado",
+            "layer_3": "Forro Madeira",
+            "outside_layer": "fibrocimento telha"
+        },
+        "Parede_Concreto": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "idf_order": 41,
+            "outside_layer": "Concreto 10 cm"
+        },
+        "Parede_REF": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "idf_order": 43,
+            "outside_layer": "Tijolo_macico"
+        },
+        "Piso_concreto": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 40,
+            "layer_2": "Piso ceramico",
+            "outside_layer": "Concreto Piso"
+        },
+        "Porta_3_cm": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "idf_order": 38,
+            "outside_layer": "PortaMadInt3cm"
+        },
+        "Vid87": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "idf_order": 39,
+            "outside_layer": "VidFS0.87"
+        }
+    },
+    "ElectricEquipment": {
+        "Sala": {
+            "design_level": 120,
+            "design_level_calculation_method": "EquipmentLevel",
+            "end_use_subcategory": "General",
+            "fraction_latent": 0,
+            "fraction_lost": 0,
+            "fraction_radiant": 0.3,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 11,
+            "idf_order": 109,
+            "schedule_name": "EquipSala",
+            "zone_or_zonelist_name": "Sala"
+        }
+    },
+    "EnergyManagementSystem:Actuator": {
+        "Controle_HVAC_Dorm1": {
+            "actuated_component_control_type": "Schedule Value",
+            "actuated_component_type": "Schedule:Constant",
+            "actuated_component_unique_name": "HVAC_Dorm1",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "idf_order": 141
+        },
+        "Controle_HVAC_Dorm2": {
+            "actuated_component_control_type": "Schedule Value",
+            "actuated_component_type": "Schedule:Constant",
+            "actuated_component_unique_name": "HVAC_Dorm2",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "idf_order": 145
+        },
+        "Controle_HVAC_Sala": {
+            "actuated_component_control_type": "Schedule Value",
+            "actuated_component_type": "Schedule:Constant",
+            "actuated_component_unique_name": "HVAC_Sala",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "idf_order": 143
+        },
+        "Controle_VN_Dorm1": {
+            "actuated_component_control_type": "Schedule Value",
+            "actuated_component_type": "Schedule:Constant",
+            "actuated_component_unique_name": "VN_Dorm1",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "idf_order": 142
+        },
+        "Controle_VN_Dorm2": {
+            "actuated_component_control_type": "Schedule Value",
+            "actuated_component_type": "Schedule:Constant",
+            "actuated_component_unique_name": "VN_Dorm2",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "idf_order": 146
+        },
+        "Controle_VN_Sala": {
+            "actuated_component_control_type": "Schedule Value",
+            "actuated_component_type": "Schedule:Constant",
+            "actuated_component_unique_name": "VN_Sala",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "idf_order": 144
+        }
+    },
+    "EnergyManagementSystem:Program": {
+        "CompDorm1Ativo": {
+            "idf_max_extensible_fields": 20,
+            "idf_max_fields": 21,
+            "idf_order": 148,
+            "lines": [
+                {
+                    "program_line": "SET Temp_Conf = ((Temp_Dorm1 >= 26) || (Temp_Dorm1 <= 16))"
+                },
+                {
+                    "program_line": "IF (Ocup_Dorm1 > 0) && (Temp_Conf == 1)"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Dorm1 = 1"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm1 = 0"
+                },
+                {
+                    "program_line": "ELSEIF ((Ocup_Dorm1 > 0) && (Sensor_HVACD1 > 0))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Dorm1 = 1"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm1 = 0"
+                },
+                {
+                    "program_line": "ELSEIF ((Ocup_Sala > 0) || (Ocup_Dorm1 > 0))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Dorm1 = 0"
+                },
+                {
+                    "program_line": "IF ((Temp_Ext<Tar_D1) && (Temp_Ext>19))"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm1 = 1"
+                },
+                {
+                    "program_line": "ELSEIF ((Temp_Ext>Tar_D1) && (Temp_Ext>19))"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm1 = 0"
+                },
+                {
+                    "program_line": "ELSEIF (Temp_Ext<19)"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm1 = 0"
+                },
+                {
+                    "program_line": "ENDIF"
+                },
+                {
+                    "program_line": "ELSEIF (Ocup_Dorm1 == 0) && (Ocup_Sala == 0)"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Dorm1 = 0"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm1 = 0"
+                },
+                {
+                    "program_line": "ENDIF"
+                }
+            ]
+        },
+        "CompDorm2Ativo": {
+            "idf_max_extensible_fields": 20,
+            "idf_max_fields": 21,
+            "idf_order": 150,
+            "lines": [
+                {
+                    "program_line": "SET Temp_Conf = ((Temp_Dorm2 >= 26) || (Temp_Dorm2 <= 16))"
+                },
+                {
+                    "program_line": "IF (Ocup_Dorm2 > 0) && (Temp_Conf == 1)"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Dorm2 = 1"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm2 = 0"
+                },
+                {
+                    "program_line": "ELSEIF ((Ocup_Dorm2 > 0) && (Sensor_HVACD2 > 0))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Dorm2 = 1"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm2 = 0"
+                },
+                {
+                    "program_line": "ELSEIF ((Ocup_Sala > 0) || (Ocup_Dorm2 > 0))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Dorm2 = 0"
+                },
+                {
+                    "program_line": "IF ((Temp_Ext<Tar_D2) && (Temp_Ext>19))"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm2 = 1"
+                },
+                {
+                    "program_line": "ELSEIF ((Temp_Ext>Tar_D2) && (Temp_Ext>19))"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm2 = 0"
+                },
+                {
+                    "program_line": "ELSEIF (Temp_Ext<19)"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm2 = 0"
+                },
+                {
+                    "program_line": "ENDIF"
+                },
+                {
+                    "program_line": "ELSEIF (Ocup_Dorm2 == 0) && (Ocup_Sala == 0)"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Dorm2 = 0"
+                },
+                {
+                    "program_line": "Set Controle_VN_Dorm2 = 0"
+                },
+                {
+                    "program_line": "ENDIF"
+                }
+            ]
+        },
+        "CompSalaAtivo": {
+            "idf_max_extensible_fields": 22,
+            "idf_max_fields": 23,
+            "idf_order": 149,
+            "lines": [
+                {
+                    "program_line": "SET Temp_Conf = ((Temp_Sala >= 26) || (Temp_Sala <= 16))"
+                },
+                {
+                    "program_line": "IF ((Ocup_Sala > 0) && (Temp_Conf == 1))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 1"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 0"
+                },
+                {
+                    "program_line": "ELSEIF ((Ocup_Sala > 0) && (Sensor_HVACSALA > 0))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 1"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 0"
+                },
+                {
+                    "program_line": "ELSEIF (Ocup_Sala > 0)"
+                },
+                {
+                    "program_line": "IF ((Temp_Ext<Tar_Sala) && (Temp_Ext>19))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 0"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 1"
+                },
+                {
+                    "program_line": "ELSEIF ((Temp_Ext>Tar_Sala) && (Temp_Ext>19))"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 0"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 0"
+                },
+                {
+                    "program_line": "ELSEIF (Temp_Ext<19)"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 0"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 0"
+                },
+                {
+                    "program_line": "ENDIF"
+                },
+                {
+                    "program_line": "ELSEIF (Ocup_Sala == 0)"
+                },
+                {
+                    "program_line": "Set Controle_HVAC_Sala = 0"
+                },
+                {
+                    "program_line": "Set Controle_VN_Sala = 0"
+                },
+                {
+                    "program_line": "ENDIF"
+                }
+            ]
+        }
+    },
+    "EnergyManagementSystem:ProgramCallingManager": {
+        "Meu Controle HVAC": {
+            "energyplus_model_calling_point": "BeginTimestepBeforePredictor",
+            "idf_max_extensible_fields": 3,
+            "idf_max_fields": 5,
+            "idf_order": 147,
+            "programs": [
+                {
+                    "program_name": "CompDorm1Ativo"
+                },
+                {
+                    "program_name": "CompSalaAtivo"
+                },
+                {
+                    "program_name": "CompDorm2Ativo"
+                }
+            ]
+        }
+    },
+    "EnergyManagementSystem:Sensor": {
+        "Ocup_Dorm1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 130,
+            "output_variable_or_output_meter_index_key_name": "Dormitorio1",
+            "output_variable_or_output_meter_name": "People Occupant Count"
+        },
+        "Ocup_Dorm2": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 138,
+            "output_variable_or_output_meter_index_key_name": "Dormitorio2",
+            "output_variable_or_output_meter_name": "People Occupant Count"
+        },
+        "Ocup_Sala": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 131,
+            "output_variable_or_output_meter_index_key_name": "Sala1",
+            "output_variable_or_output_meter_name": "People Occupant Count"
+        },
+        "Sensor_HVACD1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 135,
+            "output_variable_or_output_meter_index_key_name": "HVAC_Dorm1",
+            "output_variable_or_output_meter_name": "Schedule Value"
+        },
+        "Sensor_HVACD2": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 140,
+            "output_variable_or_output_meter_index_key_name": "HVAC_Dorm2",
+            "output_variable_or_output_meter_name": "Schedule Value"
+        },
+        "Sensor_HVACSALA": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 136,
+            "output_variable_or_output_meter_index_key_name": "HVAC_Sala",
+            "output_variable_or_output_meter_name": "Schedule Value"
+        },
+        "Tar_D1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 133,
+            "output_variable_or_output_meter_index_key_name": "Dorm1",
+            "output_variable_or_output_meter_name": "Zone Mean Air Temperature"
+        },
+        "Tar_D2": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 139,
+            "output_variable_or_output_meter_index_key_name": "Dorm2",
+            "output_variable_or_output_meter_name": "Zone Mean Air Temperature"
+        },
+        "Tar_Sala": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 134,
+            "output_variable_or_output_meter_index_key_name": "Sala",
+            "output_variable_or_output_meter_name": "Zone Mean Air Temperature"
+        },
+        "Temp_Dorm1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 128,
+            "output_variable_or_output_meter_index_key_name": "Dorm1",
+            "output_variable_or_output_meter_name": "Zone Operative Temperature"
+        },
+        "Temp_Dorm2": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 137,
+            "output_variable_or_output_meter_index_key_name": "Dorm2",
+            "output_variable_or_output_meter_name": "Zone Operative Temperature"
+        },
+        "Temp_Ext": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 132,
+            "output_variable_or_output_meter_index_key_name": "Environment",
+            "output_variable_or_output_meter_name": "Site Outdoor Air Drybulb Temperature"
+        },
+        "Temp_Sala": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 129,
+            "output_variable_or_output_meter_index_key_name": "Sala",
+            "output_variable_or_output_meter_name": "Zone Operative Temperature"
+        }
+    },
+    "FenestrationSurface:Detailed": {
+        "JANBWC": {
+            "building_surface_name": "PAREXT_OESTE_BWC",
+            "construction_name": "Vid87",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 81,
+            "number_of_vertices": 4,
+            "surface_type": "Window",
+            "vertex_1_x_coordinate": 0,
+            "vertex_1_y_coordinate": 1.32,
+            "vertex_1_z_coordinate": 1.6,
+            "vertex_2_x_coordinate": 0,
+            "vertex_2_y_coordinate": 0.52,
+            "vertex_2_z_coordinate": 1.6,
+            "vertex_3_x_coordinate": 0,
+            "vertex_3_y_coordinate": 0.52,
+            "vertex_3_z_coordinate": 2.2,
+            "vertex_4_x_coordinate": 0,
+            "vertex_4_y_coordinate": 1.32,
+            "vertex_4_z_coordinate": 2.2
+        },
+        "JANQUARTO1_SUL": {
+            "building_surface_name": "PAREXT_SUL_DORM1",
+            "construction_name": "Vid87",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 83,
+            "number_of_vertices": 4,
+            "surface_type": "Window",
+            "vertex_1_x_coordinate": 0.62,
+            "vertex_1_y_coordinate": 0,
+            "vertex_1_z_coordinate": 1.1,
+            "vertex_2_x_coordinate": 2.12,
+            "vertex_2_y_coordinate": 0,
+            "vertex_2_z_coordinate": 1.1,
+            "vertex_3_x_coordinate": 2.12,
+            "vertex_3_y_coordinate": 0,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 0.62,
+            "vertex_4_y_coordinate": 0,
+            "vertex_4_z_coordinate": 2.1
+        },
+        "JANQUARTO2_LESTE": {
+            "building_surface_name": "PAREXT_LESTE_DORM2",
+            "construction_name": "Vid87",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 84,
+            "number_of_vertices": 4,
+            "surface_type": "Window",
+            "vertex_1_x_coordinate": 2.74,
+            "vertex_1_y_coordinate": 0.76,
+            "vertex_1_z_coordinate": 1.1,
+            "vertex_2_x_coordinate": 2.74,
+            "vertex_2_y_coordinate": 2.26,
+            "vertex_2_z_coordinate": 1.1,
+            "vertex_3_x_coordinate": 2.74,
+            "vertex_3_y_coordinate": 2.26,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 2.74,
+            "vertex_4_y_coordinate": 0.76,
+            "vertex_4_z_coordinate": 2.1
+        },
+        "JANSALA_OESTE": {
+            "building_surface_name": "PAREXT_OESTE_SALA",
+            "construction_name": "Vid87",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 80,
+            "number_of_vertices": 4,
+            "surface_type": "Window",
+            "vertex_1_x_coordinate": 0.0,
+            "vertex_1_y_coordinate": 4.09,
+            "vertex_1_z_coordinate": 1.1,
+            "vertex_2_x_coordinate": 0.0,
+            "vertex_2_y_coordinate": 2.89,
+            "vertex_2_z_coordinate": 1.1,
+            "vertex_3_x_coordinate": 0.0,
+            "vertex_3_y_coordinate": 2.89,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 0.0,
+            "vertex_4_y_coordinate": 4.09,
+            "vertex_4_z_coordinate": 2.1
+        },
+        "JANSALA_SUL": {
+            "building_surface_name": "PAREXT_SUL_SALA",
+            "construction_name": "Vid87",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 82,
+            "number_of_vertices": 4,
+            "surface_type": "Window",
+            "vertex_1_x_coordinate": 1.2,
+            "vertex_1_y_coordinate": 0.0,
+            "vertex_1_z_coordinate": 1.1,
+            "vertex_2_x_coordinate": 2.7,
+            "vertex_2_y_coordinate": 0.0,
+            "vertex_2_z_coordinate": 1.1,
+            "vertex_3_x_coordinate": 2.7,
+            "vertex_3_y_coordinate": 0.0,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 1.2,
+            "vertex_4_y_coordinate": 0.0,
+            "vertex_4_z_coordinate": 2.1
+        },
+        "PORTAEXT_LESTE": {
+            "building_surface_name": "PAREXT_LESTE_SALA",
+            "construction_name": "Porta_3_cm",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 79,
+            "number_of_vertices": 4,
+            "surface_type": "Door",
+            "vertex_1_x_coordinate": 3.87,
+            "vertex_1_y_coordinate": 0.17,
+            "vertex_1_z_coordinate": 0,
+            "vertex_2_x_coordinate": 3.87,
+            "vertex_2_y_coordinate": 0.97,
+            "vertex_2_z_coordinate": 0.0,
+            "vertex_3_x_coordinate": 3.87,
+            "vertex_3_y_coordinate": 0.97,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 3.87,
+            "vertex_4_y_coordinate": 0.17,
+            "vertex_4_z_coordinate": 2.1
+        },
+        "PORTAEXT_NORTE": {
+            "building_surface_name": "PAREXT_NORTE_SALA",
+            "construction_name": "Porta_3_cm",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 85,
+            "number_of_vertices": 4,
+            "surface_type": "Door",
+            "vertex_1_x_coordinate": 3.7,
+            "vertex_1_y_coordinate": 6.74,
+            "vertex_1_z_coordinate": 0,
+            "vertex_2_x_coordinate": 2.9,
+            "vertex_2_y_coordinate": 6.74,
+            "vertex_2_z_coordinate": 0.0,
+            "vertex_3_x_coordinate": 2.9,
+            "vertex_3_y_coordinate": 6.74,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 3.7,
+            "vertex_4_y_coordinate": 6.74,
+            "vertex_4_z_coordinate": 2.1
+        },
+        "PORTAINT_BWCSALA": {
+            "building_surface_name": "PARINT2_BWCSALA",
+            "construction_name": "Porta_3_cm",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 87,
+            "number_of_vertices": 4,
+            "outside_boundary_condition_object": "PORTAINT_SALABWC",
+            "surface_type": "Door",
+            "vertex_1_x_coordinate": 2.53,
+            "vertex_1_y_coordinate": 0.17,
+            "vertex_1_z_coordinate": 0,
+            "vertex_2_x_coordinate": 2.53,
+            "vertex_2_y_coordinate": 0.97,
+            "vertex_2_z_coordinate": 0.0,
+            "vertex_3_x_coordinate": 2.53,
+            "vertex_3_y_coordinate": 0.97,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 2.53,
+            "vertex_4_y_coordinate": 0.17,
+            "vertex_4_z_coordinate": 2.1
+        },
+        "PORTAINT_DORM1SALA": {
+            "building_surface_name": "PARINT1_DORM1SALA",
+            "construction_name": "Porta_3_cm",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 91,
+            "number_of_vertices": 4,
+            "outside_boundary_condition_object": "PORTAINT_SALADORM1",
+            "surface_type": "Door",
+            "vertex_1_x_coordinate": 0.0,
+            "vertex_1_y_coordinate": 3.065,
+            "vertex_1_z_coordinate": 0,
+            "vertex_2_x_coordinate": 0.0,
+            "vertex_2_y_coordinate": 2.265,
+            "vertex_2_z_coordinate": 0.0,
+            "vertex_3_x_coordinate": 0.0,
+            "vertex_3_y_coordinate": 2.265,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 0.0,
+            "vertex_4_y_coordinate": 3.065,
+            "vertex_4_z_coordinate": 2.1
+        },
+        "PORTAINT_DORM2SALA": {
+            "building_surface_name": "PARINT1_DORM2SALA",
+            "construction_name": "Porta_3_cm",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 90,
+            "number_of_vertices": 4,
+            "outside_boundary_condition_object": "PORTAINT_SALADORM2",
+            "surface_type": "Door",
+            "vertex_1_x_coordinate": 0.0,
+            "vertex_1_y_coordinate": 0.97,
+            "vertex_1_z_coordinate": 0,
+            "vertex_2_x_coordinate": 0.0,
+            "vertex_2_y_coordinate": 0.17,
+            "vertex_2_z_coordinate": 0.0,
+            "vertex_3_x_coordinate": 0.0,
+            "vertex_3_y_coordinate": 0.17,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 0.0,
+            "vertex_4_y_coordinate": 0.97,
+            "vertex_4_z_coordinate": 2.1
+        },
+        "PORTAINT_SALABWC": {
+            "building_surface_name": "PARINT2_SALABWC",
+            "construction_name": "Porta_3_cm",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 86,
+            "number_of_vertices": 4,
+            "outside_boundary_condition_object": "PORTAINT_BWCSALA",
+            "surface_type": "Door",
+            "vertex_1_x_coordinate": 2.53,
+            "vertex_1_y_coordinate": 5.87,
+            "vertex_1_z_coordinate": 0,
+            "vertex_2_x_coordinate": 2.53,
+            "vertex_2_y_coordinate": 5.07,
+            "vertex_2_z_coordinate": 0.0,
+            "vertex_3_x_coordinate": 2.53,
+            "vertex_3_y_coordinate": 5.07,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 2.53,
+            "vertex_4_y_coordinate": 5.87,
+            "vertex_4_z_coordinate": 2.1
+        },
+        "PORTAINT_SALADORM1": {
+            "building_surface_name": "PARINT2_SALADORM1",
+            "construction_name": "Porta_3_cm",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 88,
+            "number_of_vertices": 4,
+            "outside_boundary_condition_object": "PORTAINT_DORM1SALA",
+            "surface_type": "Door",
+            "vertex_1_x_coordinate": 3.87,
+            "vertex_1_y_coordinate": 3.415,
+            "vertex_1_z_coordinate": 0,
+            "vertex_2_x_coordinate": 3.87,
+            "vertex_2_y_coordinate": 4.215,
+            "vertex_2_z_coordinate": 0.0,
+            "vertex_3_x_coordinate": 3.87,
+            "vertex_3_y_coordinate": 4.215,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 3.87,
+            "vertex_4_y_coordinate": 3.415,
+            "vertex_4_z_coordinate": 2.1
+        },
+        "PORTAINT_SALADORM2": {
+            "building_surface_name": "PARINT1_SALADORM2",
+            "construction_name": "Porta_3_cm",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 21,
+            "idf_order": 89,
+            "number_of_vertices": 4,
+            "outside_boundary_condition_object": "PORTAINT_DORM2SALA",
+            "surface_type": "Door",
+            "vertex_1_x_coordinate": 3.87,
+            "vertex_1_y_coordinate": 4.55,
+            "vertex_1_z_coordinate": 0,
+            "vertex_2_x_coordinate": 3.87,
+            "vertex_2_y_coordinate": 5.35,
+            "vertex_2_z_coordinate": 0.0,
+            "vertex_3_x_coordinate": 3.87,
+            "vertex_3_y_coordinate": 5.35,
+            "vertex_3_z_coordinate": 2.1,
+            "vertex_4_x_coordinate": 3.87,
+            "vertex_4_y_coordinate": 4.55,
+            "vertex_4_z_coordinate": 2.1
+        }
+    },
+    "GlobalGeometryRules": {
+        "GlobalGeometryRules 1": {
+            "coordinate_system": "Relative",
+            "daylighting_reference_point_coordinate_system": "Relative",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "idf_order": 44,
+            "rectangular_surface_coordinate_system": "Relative",
+            "starting_vertex_position": "LowerLeftCorner",
+            "vertex_entry_direction": "Counterclockwise"
+        }
+    },
+    "Lights": {
+        "Dormitorio1": {
+            "design_level_calculation_method": "Watts/Area",
+            "end_use_subcategory": "GeneralLights",
+            "fraction_radiant": 0.32,
+            "fraction_replaceable": 0,
+            "fraction_visible": 0.23,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 12,
+            "idf_order": 106,
+            "return_air_fraction": 0,
+            "schedule_name": "IlumDorm1",
+            "watts_per_zone_floor_area": 5,
+            "zone_or_zonelist_name": "Dorm1"
+        },
+        "Dormitorio2": {
+            "design_level_calculation_method": "Watts/Area",
+            "end_use_subcategory": "GeneralLights",
+            "fraction_radiant": 0.32,
+            "fraction_replaceable": 0,
+            "fraction_visible": 0.23,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 12,
+            "idf_order": 107,
+            "return_air_fraction": 0,
+            "schedule_name": "IlumDorm2",
+            "watts_per_zone_floor_area": 5,
+            "zone_or_zonelist_name": "Dorm2"
+        },
+        "Sala": {
+            "design_level_calculation_method": "Watts/Area",
+            "end_use_subcategory": "GeneralLights",
+            "fraction_radiant": 0.32,
+            "fraction_replaceable": 0,
+            "fraction_visible": 0.23,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 12,
+            "idf_order": 108,
+            "return_air_fraction": 0,
+            "schedule_name": "IlumSala",
+            "watts_per_zone_floor_area": 5,
+            "zone_or_zonelist_name": "Sala"
+        }
+    },
+    "Material": {
+        "Concreto 10 cm": {
+            "conductivity": 1.75,
+            "density": 2200,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 9,
+            "idf_order": 33,
+            "roughness": "Rough",
+            "solar_absorptance": 0.5,
+            "specific_heat": 1000,
+            "thermal_absorptance": 0.9,
+            "thickness": 0.1,
+            "visible_absorptance": 0.5
+        },
+        "Concreto Piso": {
+            "conductivity": 1.75,
+            "density": 2200,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 9,
+            "idf_order": 30,
+            "roughness": "Rough",
+            "solar_absorptance": 0.5,
+            "specific_heat": 1000,
+            "thermal_absorptance": 0.9,
+            "thickness": 0.07,
+            "visible_absorptance": 0.5
+        },
+        "Forro Madeira": {
+            "conductivity": 0.1,
+            "density": 400,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 9,
+            "idf_order": 34,
+            "roughness": "Smooth",
+            "solar_absorptance": 0.5,
+            "specific_heat": 2300,
+            "thermal_absorptance": 0.9,
+            "thickness": 0.01,
+            "visible_absorptance": 0.5
+        },
+        "Piso ceramico": {
+            "conductivity": 1.05,
+            "density": 2000,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 9,
+            "idf_order": 31,
+            "roughness": "Smooth",
+            "solar_absorptance": 0.5,
+            "specific_heat": 920,
+            "thermal_absorptance": 0.9,
+            "thickness": 0.0075,
+            "visible_absorptance": 0.5
+        },
+        "PortaMadInt3cm": {
+            "conductivity": 0.15,
+            "density": 650,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 9,
+            "idf_order": 32,
+            "roughness": "MediumSmooth",
+            "solar_absorptance": 0.5,
+            "specific_heat": 2300,
+            "thermal_absorptance": 0.9,
+            "thickness": 0.03,
+            "visible_absorptance": 0.5
+        },
+        "Tijolo_macico": {
+            "conductivity": 1.05,
+            "density": 1800,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 9,
+            "idf_order": 35,
+            "roughness": "Rough",
+            "solar_absorptance": 0.5,
+            "specific_heat": 920,
+            "thermal_absorptance": 0.9,
+            "thickness": 0.1,
+            "visible_absorptance": 0.5
+        },
+        "fibrocimento telha": {
+            "conductivity": 0.65,
+            "density": 1700,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 9,
+            "idf_order": 29,
+            "roughness": "Rough",
+            "solar_absorptance": 0.5,
+            "specific_heat": 840,
+            "thermal_absorptance": 0.9,
+            "thickness": 0.008,
+            "visible_absorptance": 0.5
+        }
+    },
+    "Material:AirGap": {
+        "Camara_ar_atico_telhado": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "idf_order": 36,
+            "thermal_resistance": 0.21
+        }
+    },
+    "Output:Diagnostics": {
+        "Output:Diagnostics 1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "idf_order": 179,
+            "key_1": "DisplayAllWarnings",
+            "key_2": "DisplayExtraWarnings"
+        }
+    },
+    "Output:EnergyManagementSystem": {
+        "Output:EnergyManagementSystem 1": {
+            "actuator_availability_dictionary_reporting": "NotByUniqueKeyNames",
+            "ems_runtime_language_debug_output_level": "ErrorsOnly",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 154,
+            "internal_variable_availability_dictionary_reporting": "NotByUniqueKeyNames"
+        }
+    },
+    "Output:Surfaces:Drawing": {
+        "Output:Surfaces:Drawing 1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "idf_order": 153,
+            "report_specifications_1": "ThickPolyline",
+            "report_type": "DXF"
+        }
+    },
+    "Output:Table:SummaryReports": {
+        "Output:Table:SummaryReports 1": {
+            "idf_max_extensible_fields": 1,
+            "idf_max_fields": 1,
+            "idf_order": 155,
+            "reports": [
+                {
+                    "report_name": "AllSummary"
+                }
+            ]
+        }
+    },
+    "Output:Variable": {
+        "Output:Variable 1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 157,
+            "key_value": "*",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Site Outdoor Air Drybulb Temperature"
+        },
+        "Output:Variable 2": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 158,
+            "key_value": "Dorm1",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Zone Operative Temperature"
+        },
+        "Output:Variable 3": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 159,
+            "key_value": "Dorm2",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Zone Operative Temperature"
+        },
+        "Output:Variable 4": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 160,
+            "key_value": "Sala",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Zone Operative Temperature"
+        },
+        "Output:Variable 5": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 161,
+            "key_value": "Sala1",
+            "reporting_frequency": "Timestep",
+            "variable_name": "People Occupant Count"
+        },
+        "Output:Variable 6": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 162,
+            "key_value": "Dormitorio1",
+            "reporting_frequency": "Timestep",
+            "variable_name": "People Occupant Count"
+        },
+        "Output:Variable 7": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 163,
+            "key_value": "Dormitorio2",
+            "reporting_frequency": "Timestep",
+            "variable_name": "People Occupant Count"
+        },
+        "Output:Variable 8": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 164,
+            "key_value": "*",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Zone Ideal Loads Zone Total Heating Energy"
+        },
+        "Output:Variable 9": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 165,
+            "key_value": "*",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Zone Ideal Loads Zone Total Cooling Energy"
+        },
+        "Output:Variable 10": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 166,
+            "key_value": "*",
+            "reporting_frequency": "Timestep",
+            "variable_name": "AFN Surface Venting Window or Door Opening Factor"
+        },
+        "Output:Variable 11": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 167,
+            "key_value": "*",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Zone Mean Air Temperature"
+        },
+        "Output:Variable 12": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 168,
+            "key_value": "*",
+            "reporting_frequency": "Timestep",
+            "variable_name": "AFN Zone Infiltration Air Change Rate"
+        },
+        "Output:Variable 13": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 169,
+            "key_value": "Dorm1",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Zone Mean Air Temperature"
+        },
+        "Output:Variable 14": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 170,
+            "key_value": "Dorm2",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Zone Mean Air Temperature"
+        },
+        "Output:Variable 15": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 171,
+            "key_value": "Sala",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Zone Mean Air Temperature"
+        },
+        "Output:Variable 16": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 172,
+            "key_value": "VN_Dorm1",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Schedule Value"
+        },
+        "Output:Variable 17": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 173,
+            "key_value": "VN_Dorm2",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Schedule Value"
+        },
+        "Output:Variable 18": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 174,
+            "key_value": "VN_Sala",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Schedule Value"
+        },
+        "Output:Variable 19": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 175,
+            "key_value": "HVAC_Dorm1",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Schedule Value"
+        },
+        "Output:Variable 20": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 176,
+            "key_value": "HVAC_Dorm2",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Schedule Value"
+        },
+        "Output:Variable 21": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 177,
+            "key_value": "HVAC_Sala",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Schedule Value"
+        },
+        "Output:Variable 22": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 178,
+            "key_value": "*",
+            "reporting_frequency": "Timestep",
+            "variable_name": "Zone Ideal Loads Zone Total Cooling Energy"
+        }
+    },
+    "Output:VariableDictionary": {
+        "Output:VariableDictionary 1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 1,
+            "idf_order": 151,
+            "key_field": "IDF"
+        },
+        "Output:VariableDictionary 2": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 1,
+            "idf_order": 152,
+            "key_field": "regular"
+        }
+    },
+    "OutputControl:Table:Style": {
+        "OutputControl:Table:Style 1": {
+            "column_separator": "Comma",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "idf_order": 156,
+            "unit_conversion": "JtoKWH"
+        }
+    },
+    "People": {
+        "Dormitorio1": {
+            "activity_level_schedule_name": "AtivDorm",
+            "fraction_radiant": 0.3,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 10,
+            "idf_order": 103,
+            "number_of_people": 2,
+            "number_of_people_calculation_method": "People",
+            "number_of_people_schedule_name": "OcupDorm1",
+            "zone_or_zonelist_name": "Dorm1"
+        },
+        "Dormitorio2": {
+            "activity_level_schedule_name": "AtivDorm",
+            "fraction_radiant": 0.3,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 10,
+            "idf_order": 104,
+            "number_of_people": 2,
+            "number_of_people_calculation_method": "People",
+            "number_of_people_schedule_name": "OcupDorm2",
+            "zone_or_zonelist_name": "Dorm2"
+        },
+        "Sala1": {
+            "activity_level_schedule_name": "AtivSala",
+            "fraction_radiant": 0.3,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 10,
+            "idf_order": 105,
+            "number_of_people": 4,
+            "number_of_people_calculation_method": "People",
+            "number_of_people_schedule_name": "OcupSala",
+            "zone_or_zonelist_name": "Sala"
+        }
+    },
+    "RunPeriod": {
+        "Ano": {
+            "apply_weekend_holiday_rule": "No",
+            "begin_day_of_month": 1,
+            "begin_month": 1,
+            "day_of_week_for_start_day": "Monday",
+            "end_day_of_month": 31,
+            "end_month": 12,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 13,
+            "idf_order": 6,
+            "use_weather_file_daylight_saving_period": "No",
+            "use_weather_file_holidays_and_special_days": "No",
+            "use_weather_file_rain_indicators": "No",
+            "use_weather_file_snow_indicators": "No"
+        }
+    },
+    "Schedule:Compact": {
+        "AtivDorm": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For:AllDays"
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 81
+                }
+            ],
+            "idf_max_extensible_fields": 4,
+            "idf_max_fields": 6,
+            "idf_order": 20,
+            "schedule_type_limits_name": "atividade"
+        },
+        "AtivSala": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For:AllDays"
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 108
+                }
+            ],
+            "idf_max_extensible_fields": 4,
+            "idf_max_fields": 6,
+            "idf_order": 19,
+            "schedule_type_limits_name": "atividade"
+        },
+        "EquipSala": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For:AllDays"
+                },
+                {
+                    "field": "Until: 14:00"
+                },
+                {
+                    "field": 0
+                },
+                {
+                    "field": "Until: 22:00"
+                },
+                {
+                    "field": 1
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 0
+                }
+            ],
+            "idf_max_extensible_fields": 8,
+            "idf_max_fields": 10,
+            "idf_order": 21,
+            "schedule_type_limits_name": "fracao"
+        },
+        "HVACTemplate-Always 4": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For: AllDays"
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 4
+                }
+            ],
+            "idf_max_extensible_fields": 4,
+            "idf_max_fields": 6,
+            "idf_order": 184,
+            "schedule_type_limits_name": "HVACTemplate Any Number"
+        },
+        "HVACTemplate-Always 18": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For: AllDays"
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 18
+                }
+            ],
+            "idf_max_extensible_fields": 4,
+            "idf_max_fields": 6,
+            "idf_order": 181,
+            "schedule_type_limits_name": "HVACTemplate Any Number"
+        },
+        "HVACTemplate-Always 23": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For: AllDays"
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 23
+                }
+            ],
+            "idf_max_extensible_fields": 4,
+            "idf_max_fields": 6,
+            "idf_order": 182,
+            "schedule_type_limits_name": "HVACTemplate Any Number"
+        },
+        "IlumDorm1": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For: AllDays"
+                },
+                {
+                    "field": "Until: 6:00"
+                },
+                {
+                    "field": 0
+                },
+                {
+                    "field": "Until: 8:00"
+                },
+                {
+                    "field": 1
+                },
+                {
+                    "field": "Until: 22:00"
+                },
+                {
+                    "field": 0
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 1
+                }
+            ],
+            "idf_max_extensible_fields": 10,
+            "idf_max_fields": 12,
+            "idf_order": 17,
+            "schedule_type_limits_name": "fracao"
+        },
+        "IlumDorm2": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For: AllDays"
+                },
+                {
+                    "field": "Until: 6:00"
+                },
+                {
+                    "field": 0
+                },
+                {
+                    "field": "Until: 8:00"
+                },
+                {
+                    "field": 1
+                },
+                {
+                    "field": "Until: 22:00"
+                },
+                {
+                    "field": 0
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 1
+                }
+            ],
+            "idf_max_extensible_fields": 10,
+            "idf_max_fields": 12,
+            "idf_order": 18,
+            "schedule_type_limits_name": "fracao"
+        },
+        "IlumSala": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For: AllDays"
+                },
+                {
+                    "field": "Until: 16:00"
+                },
+                {
+                    "field": 0
+                },
+                {
+                    "field": "Until: 22:00"
+                },
+                {
+                    "field": 1
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 0
+                }
+            ],
+            "idf_max_extensible_fields": 8,
+            "idf_max_fields": 10,
+            "idf_order": 16,
+            "schedule_type_limits_name": "fracao"
+        },
+        "OcupDorm1": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For: AllDays"
+                },
+                {
+                    "field": "Until:  8:00"
+                },
+                {
+                    "field": 1
+                },
+                {
+                    "field": "Until: 22:00"
+                },
+                {
+                    "field": 0
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 1
+                }
+            ],
+            "idf_max_extensible_fields": 8,
+            "idf_max_fields": 10,
+            "idf_order": 14,
+            "schedule_type_limits_name": "fracao"
+        },
+        "OcupDorm2": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For: AllDays"
+                },
+                {
+                    "field": "Until:  8:00"
+                },
+                {
+                    "field": 1
+                },
+                {
+                    "field": "Until: 22:00"
+                },
+                {
+                    "field": 0
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 1
+                }
+            ],
+            "idf_max_extensible_fields": 8,
+            "idf_max_fields": 10,
+            "idf_order": 15,
+            "schedule_type_limits_name": "fracao"
+        },
+        "OcupSala": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For: AllDays"
+                },
+                {
+                    "field": "Until: 14:00"
+                },
+                {
+                    "field": 0
+                },
+                {
+                    "field": "Until: 18:00"
+                },
+                {
+                    "field": 0.5
+                },
+                {
+                    "field": "Until: 22:00"
+                },
+                {
+                    "field": 1
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 0
+                }
+            ],
+            "idf_max_extensible_fields": 10,
+            "idf_max_fields": 12,
+            "idf_order": 13,
+            "schedule_type_limits_name": "fracao"
+        },
+        "TempVentilacao": {
+            "data": [
+                {
+                    "field": "Through: 12/31"
+                },
+                {
+                    "field": "For: AllDays"
+                },
+                {
+                    "field": "Until: 24:00"
+                },
+                {
+                    "field": 19
+                }
+            ],
+            "idf_max_extensible_fields": 4,
+            "idf_max_fields": 6,
+            "idf_order": 22,
+            "schedule_type_limits_name": "TEMPERATURE"
+        }
+    },
+    "Schedule:Constant": {
+        "HVAC_Dorm1": {
+            "hourly_value": 0,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 25,
+            "schedule_type_limits_name": "On_Off"
+        },
+        "HVAC_Dorm2": {
+            "hourly_value": 0,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 27,
+            "schedule_type_limits_name": "On_Off"
+        },
+        "HVAC_Sala": {
+            "hourly_value": 0,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 23,
+            "schedule_type_limits_name": "On_Off"
+        },
+        "VN_Dorm1": {
+            "hourly_value": 1,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 26,
+            "schedule_type_limits_name": "On_Off"
+        },
+        "VN_Dorm2": {
+            "hourly_value": 1,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 28,
+            "schedule_type_limits_name": "On_Off"
+        },
+        "VN_Sala": {
+            "hourly_value": 1,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 24,
+            "schedule_type_limits_name": "On_Off"
+        }
+    },
+    "ScheduleTypeLimits": {
+        "HVACTemplate Any Number": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 1,
+            "idf_order": 180
+        },
+        "On_Off": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "idf_order": 11,
+            "lower_limit_value": 0,
+            "numeric_type": "Discrete",
+            "unit_type": "Control",
+            "upper_limit_value": 1
+        },
+        "TEMPERATURE": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "idf_order": 12,
+            "lower_limit_value": 0,
+            "numeric_type": "Continuous",
+            "unit_type": "Temperature",
+            "upper_limit_value": 50
+        },
+        "atividade": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "idf_order": 10,
+            "lower_limit_value": 0,
+            "numeric_type": "Continuous",
+            "unit_type": "ActivityLevel",
+            "upper_limit_value": 1000
+        },
+        "fracao": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "idf_order": 9,
+            "lower_limit_value": 0,
+            "numeric_type": "Continuous",
+            "unit_type": "Percent",
+            "upper_limit_value": 1
+        }
+    },
+    "Shading:Building:Detailed": {
+        "BEIRAL1_LESTE": {
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 15,
+            "idf_order": 101,
+            "number_of_vertices": 4,
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 6.61,
+                    "vertex_y_coordinate": 0.65,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 7.07039706183,
+                    "vertex_y_coordinate": 0.65,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 7.07039706183,
+                    "vertex_y_coordinate": 7.41,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 6.61,
+                    "vertex_y_coordinate": 7.41,
+                    "vertex_z_coordinate": 2.5
+                }
+            ]
+        },
+        "BEIRAL1_NORTE": {
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 15,
+            "idf_order": 97,
+            "number_of_vertices": 4,
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3.305,
+                    "vertex_y_coordinate": 7.24,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": -0.46039706183,
+                    "vertex_y_coordinate": 7.24,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": -0.46039706183,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.305,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                }
+            ]
+        },
+        "BEIRAL1_OESTE": {
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 15,
+            "idf_order": 96,
+            "number_of_vertices": 4,
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": -0.46039706183,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": -0.46039706183,
+                    "vertex_y_coordinate": -0.5,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": -0.5,
+                    "vertex_z_coordinate": 2.5
+                }
+            ]
+        },
+        "BEIRAL1_SUL": {
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 15,
+            "idf_order": 93,
+            "number_of_vertices": 4,
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 4.33039706183,
+                    "vertex_y_coordinate": 0.65,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 6.61,
+                    "vertex_y_coordinate": 0.65,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 6.61,
+                    "vertex_y_coordinate": 1.15,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 4.33039706183,
+                    "vertex_y_coordinate": 1.15,
+                    "vertex_z_coordinate": 2.5
+                }
+            ]
+        },
+        "BEIRAL2_NORTE": {
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 15,
+            "idf_order": 98,
+            "number_of_vertices": 4,
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3.305,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 6.74,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 7.24,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.305,
+                    "vertex_y_coordinate": 7.24,
+                    "vertex_z_coordinate": 2.5
+                }
+            ]
+        },
+        "BEIRAL2_SUL": {
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 15,
+            "idf_order": 92,
+            "number_of_vertices": 4,
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 4.33039706183,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 4.33039706183,
+                    "vertex_y_coordinate": 1.15,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 1.15,
+                    "vertex_z_coordinate": 2.5
+                }
+            ]
+        },
+        "BEIRAL3_NORTE": {
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 15,
+            "idf_order": 99,
+            "number_of_vertices": 4,
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3.305,
+                    "vertex_y_coordinate": 7.24,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 7.24,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 7.91,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.305,
+                    "vertex_y_coordinate": 7.91,
+                    "vertex_z_coordinate": 2.5
+                }
+            ]
+        },
+        "BEIRAL3_SUL": {
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 15,
+            "idf_order": 94,
+            "number_of_vertices": 4,
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3.305,
+                    "vertex_y_coordinate": -0.5,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 4.33039706183,
+                    "vertex_y_coordinate": -0.5,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 4.33039706183,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.305,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                }
+            ]
+        },
+        "BEIRAL4_NORTE": {
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 15,
+            "idf_order": 100,
+            "number_of_vertices": 4,
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 7.41,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 7.07039706183,
+                    "vertex_y_coordinate": 7.41,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 7.07039706183,
+                    "vertex_y_coordinate": 7.91,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.87,
+                    "vertex_y_coordinate": 7.91,
+                    "vertex_z_coordinate": 2.5
+                }
+            ]
+        },
+        "BEIRAL4_SUL": {
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 15,
+            "idf_order": 95,
+            "number_of_vertices": 4,
+            "vertices": [
+                {
+                    "vertex_x_coordinate": 3.305,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": 0.0,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 0.0,
+                    "vertex_y_coordinate": -0.5,
+                    "vertex_z_coordinate": 2.5
+                },
+                {
+                    "vertex_x_coordinate": 3.305,
+                    "vertex_y_coordinate": -0.5,
+                    "vertex_z_coordinate": 2.5
+                }
+            ]
+        }
+    },
+    "SimulationControl": {
+        "SimulationControl 1": {
+            "do_plant_sizing_calculation": "No",
+            "do_system_sizing_calculation": "No",
+            "do_zone_sizing_calculation": "No",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "idf_order": 2,
+            "run_simulation_for_sizing_periods": "No",
+            "run_simulation_for_weather_file_run_periods": "Yes"
+        }
+    },
+    "Site:GroundDomain:Slab": {
+        "GroundDomain": {
+            "aspect_ratio": 1,
+            "evapotranspiration_ground_cover_parameter": 0.4,
+            "geometric_mesh_coefficient": 1.6,
+            "ground_domain_depth": 10,
+            "horizontal_insulation": "No",
+            "horizontal_insulation_extents": "Full",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 25,
+            "idf_order": 8,
+            "mesh_density_parameter": 6,
+            "perimeter_offset": 5,
+            "simulation_timestep": "Timestep",
+            "slab_boundary_condition_model_name": "GroundCoupledOSCM",
+            "slab_location": "OnGrade",
+            "soil_density": 1250,
+            "soil_moisture_content_volume_fraction": 30,
+            "soil_moisture_content_volume_fraction_at_saturation": 50,
+            "soil_specific_heat": 1500,
+            "soil_thermal_conductivity": 1.5,
+            "undisturbed_ground_temperature_model_name": "FiniteDiff",
+            "undisturbed_ground_temperature_model_type": "Site:GroundTemperature:Undisturbed:FiniteDifference",
+            "vertical_insulation": "No"
+        }
+    },
+    "Site:GroundTemperature:Undisturbed:FiniteDifference": {
+        "FiniteDiff": {
+            "evapotranspiration_ground_cover_parameter": 0.4,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 7,
+            "idf_order": 7,
+            "soil_density": 1250,
+            "soil_moisture_content_volume_fraction": 30,
+            "soil_moisture_content_volume_fraction_at_saturation": 50,
+            "soil_specific_heat": 1500,
+            "soil_thermal_conductivity": 1.5
+        }
+    },
+    "SizingPeriod:WeatherFileDays": {
+        "ano": {
+            "begin_day_of_month": 1,
+            "begin_month": 1,
+            "day_of_week_for_start_day": "Monday",
+            "end_day_of_month": 31,
+            "end_month": 12,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 8,
+            "idf_order": 5,
+            "use_weather_file_daylight_saving_period": "No",
+            "use_weather_file_rain_and_snow_indicators": "No"
+        }
+    },
+    "SurfaceProperty:OtherSideConditionsModel": {
+        "GroundCoupledOSCM": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "idf_order": 102,
+            "type_of_modeling": "GroundCoupledSurface"
+        }
+    },
+    "ThermostatSetpoint:DualSetpoint": {
+        "Termostato Dual SP Control": {
+            "cooling_setpoint_temperature_schedule_name": "HVACTemplate-Always 23",
+            "heating_setpoint_temperature_schedule_name": "HVACTemplate-Always 18",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 183
+        }
+    },
+    "Timestep": {
+        "Timestep 1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 1,
+            "idf_order": 4,
+            "number_of_timesteps_per_hour": 12
+        }
+    },
+    "Version": {
+        "Version 1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 1,
+            "idf_order": 1,
+            "version_identifier": "9.0"
+        }
+    },
+    "WindowMaterial:SimpleGlazingSystem": {
+        "VidFS0.87": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "idf_order": 37,
+            "solar_heat_gain_coefficient": 0.87,
+            "u_factor": 5.7
+        }
+    },
+    "Zone": {
+        "Banh1": {
+            "direction_of_relative_north": 0.0,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 7,
+            "idf_order": 48,
+            "multiplier": 1,
+            "x_origin": 0,
+            "y_origin": 4.9,
+            "z_origin": 0.0
+        },
+        "Dorm1": {
+            "direction_of_relative_north": 0.0,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 7,
+            "idf_order": 46,
+            "multiplier": 1,
+            "x_origin": 3.87,
+            "y_origin": 1.15,
+            "z_origin": 0.0
+        },
+        "Dorm2": {
+            "direction_of_relative_north": 0.0,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 7,
+            "idf_order": 47,
+            "multiplier": 1,
+            "x_origin": 3.87,
+            "y_origin": 4.38,
+            "z_origin": 0.0
+        },
+        "Sala": {
+            "direction_of_relative_north": 0.0,
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 7,
+            "idf_order": 45,
+            "multiplier": 1,
+            "x_origin": 0.0,
+            "y_origin": 0.0,
+            "z_origin": 0.0
+        }
+    },
+    "ZoneControl:Thermostat": {
+        "Dorm1 Thermostat": {
+            "control_1_name": "Termostato Dual SP Control",
+            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
+            "control_type_schedule_name": "HVACTemplate-Always 4",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "idf_order": 185,
+            "zone_or_zonelist_name": "Dorm1"
+        },
+        "Dorm2 Thermostat": {
+            "control_1_name": "Termostato Dual SP Control",
+            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
+            "control_type_schedule_name": "HVACTemplate-Always 4",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "idf_order": 193,
+            "zone_or_zonelist_name": "Dorm2"
+        },
+        "Sala Thermostat": {
+            "control_1_name": "Termostato Dual SP Control",
+            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
+            "control_type_schedule_name": "HVACTemplate-Always 4",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "idf_order": 189,
+            "zone_or_zonelist_name": "Sala"
+        }
+    },
+    "ZoneHVAC:EquipmentConnections": {
+        "ZoneHVAC:EquipmentConnections 1": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 6,
+            "idf_order": 186,
+            "zone_air_inlet_node_or_nodelist_name": "Dorm1 Ideal Loads Supply Inlet",
+            "zone_air_node_name": "Dorm1 Zone Air Node",
+            "zone_conditioning_equipment_list_name": "Dorm1 Equipment",
+            "zone_name": "Dorm1",
+            "zone_return_air_node_or_nodelist_name": "Dorm1 Return Outlet"
+        },
+        "ZoneHVAC:EquipmentConnections 2": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 6,
+            "idf_order": 190,
+            "zone_air_inlet_node_or_nodelist_name": "Sala Ideal Loads Supply Inlet",
+            "zone_air_node_name": "Sala Zone Air Node",
+            "zone_conditioning_equipment_list_name": "Sala Equipment",
+            "zone_name": "Sala",
+            "zone_return_air_node_or_nodelist_name": "Sala Return Outlet"
+        },
+        "ZoneHVAC:EquipmentConnections 3": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 6,
+            "idf_order": 194,
+            "zone_air_inlet_node_or_nodelist_name": "Dorm2 Ideal Loads Supply Inlet",
+            "zone_air_node_name": "Dorm2 Zone Air Node",
+            "zone_conditioning_equipment_list_name": "Dorm2 Equipment",
+            "zone_name": "Dorm2",
+            "zone_return_air_node_or_nodelist_name": "Dorm2 Return Outlet"
+        }
+    },
+    "ZoneHVAC:EquipmentList": {
+        "Dorm1 Equipment": {
+            "equipment": [
+                {
+                    "zone_equipment_cooling_sequence": 1,
+                    "zone_equipment_heating_or_no_load_sequence": 1,
+                    "zone_equipment_name": "Dorm1 Ideal Loads Air System",
+                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
+                }
+            ],
+            "idf_max_extensible_fields": 4,
+            "idf_max_fields": 6,
+            "idf_order": 187,
+            "load_distribution_scheme": "SequentialLoad"
+        },
+        "Dorm2 Equipment": {
+            "equipment": [
+                {
+                    "zone_equipment_cooling_sequence": 1,
+                    "zone_equipment_heating_or_no_load_sequence": 1,
+                    "zone_equipment_name": "Dorm2 Ideal Loads Air System",
+                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
+                }
+            ],
+            "idf_max_extensible_fields": 4,
+            "idf_max_fields": 6,
+            "idf_order": 195,
+            "load_distribution_scheme": "SequentialLoad"
+        },
+        "Sala Equipment": {
+            "equipment": [
+                {
+                    "zone_equipment_cooling_sequence": 1,
+                    "zone_equipment_heating_or_no_load_sequence": 1,
+                    "zone_equipment_name": "Sala Ideal Loads Air System",
+                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
+                }
+            ],
+            "idf_max_extensible_fields": 4,
+            "idf_max_fields": 6,
+            "idf_order": 191,
+            "load_distribution_scheme": "SequentialLoad"
+        }
+    },
+    "ZoneHVAC:IdealLoadsAirSystem": {
+        "Dorm1 Ideal Loads Air System": {
+            "availability_schedule_name": "HVAC_Dorm1",
+            "cooling_limit": "NoLimit",
+            "cooling_sensible_heat_ratio": 0.7,
+            "dehumidification_control_type": "None",
+            "demand_controlled_ventilation_type": "None",
+            "heat_recovery_type": "None",
+            "heating_limit": "NoLimit",
+            "humidification_control_type": "None",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 27,
+            "idf_order": 188,
+            "latent_heat_recovery_effectiveness": 0.65,
+            "maximum_heating_supply_air_humidity_ratio": 0.0156,
+            "maximum_heating_supply_air_temperature": 50,
+            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
+            "minimum_cooling_supply_air_temperature": 13,
+            "outdoor_air_economizer_type": "NoEconomizer",
+            "sensible_heat_recovery_effectiveness": 0.7,
+            "zone_supply_air_node_name": "Dorm1 Ideal Loads Supply Inlet"
+        },
+        "Dorm2 Ideal Loads Air System": {
+            "availability_schedule_name": "HVAC_Dorm2",
+            "cooling_limit": "NoLimit",
+            "cooling_sensible_heat_ratio": 0.7,
+            "dehumidification_control_type": "None",
+            "demand_controlled_ventilation_type": "None",
+            "heat_recovery_type": "None",
+            "heating_limit": "NoLimit",
+            "humidification_control_type": "None",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 27,
+            "idf_order": 196,
+            "latent_heat_recovery_effectiveness": 0.65,
+            "maximum_heating_supply_air_humidity_ratio": 0.0156,
+            "maximum_heating_supply_air_temperature": 50,
+            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
+            "minimum_cooling_supply_air_temperature": 13,
+            "outdoor_air_economizer_type": "NoEconomizer",
+            "sensible_heat_recovery_effectiveness": 0.7,
+            "zone_supply_air_node_name": "Dorm2 Ideal Loads Supply Inlet"
+        },
+        "Sala Ideal Loads Air System": {
+            "availability_schedule_name": "HVAC_Sala",
+            "cooling_limit": "NoLimit",
+            "cooling_sensible_heat_ratio": 0.7,
+            "dehumidification_control_type": "None",
+            "demand_controlled_ventilation_type": "None",
+            "heat_recovery_type": "None",
+            "heating_limit": "NoLimit",
+            "humidification_control_type": "None",
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 27,
+            "idf_order": 192,
+            "latent_heat_recovery_effectiveness": 0.65,
+            "maximum_heating_supply_air_humidity_ratio": 0.0156,
+            "maximum_heating_supply_air_temperature": 50,
+            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
+            "minimum_cooling_supply_air_temperature": 13,
+            "outdoor_air_economizer_type": "NoEconomizer",
+            "sensible_heat_recovery_effectiveness": 0.7,
+            "zone_supply_air_node_name": "Sala Ideal Loads Supply Inlet"
+        }
+    }
+}

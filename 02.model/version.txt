@@ -1,0 +1,13 @@
+VERSIONS
+
+v00
+	full building
+v01
+	full building without the core
+v02
+	only one storey
+v03
+	only one storey without the core
+v04
+	only one thermal zone
+		if the surface isn't outdoors, it's adiabatic

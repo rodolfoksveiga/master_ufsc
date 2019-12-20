@@ -40,12 +40,13 @@
         }
     },
     "AirflowNetwork:MultiZone:Surface": {
-        "afn_hive_c_window_s": {
+		"afn_hive_c_window_s": {
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_c_window_s",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_c_window_e": {
@@ -53,7 +54,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_c_window_e",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_c_window_n": {
@@ -61,7 +63,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_c_window_n",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_c_window_w": {
@@ -69,7 +72,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_c_window_w",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_s1_window_e": {
@@ -77,7 +81,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_s1_window_e",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_s1_window_w": {
@@ -85,7 +90,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_s1_window_w",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_s2_window_s": {
@@ -93,7 +99,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_s2_window_s",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_e1_window_s": {
@@ -101,7 +108,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_e1_window_s",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_e1_window_n": {
@@ -109,7 +117,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_e1_window_n",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_e2_window_e": {
@@ -117,7 +126,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_e2_window_e",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_n1_window_e": {
@@ -125,7 +135,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_n1_window_e",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_n1_window_w": {
@@ -133,7 +144,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_n1_window_w",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_n2_window_n": {
@@ -141,7 +153,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_n2_window_n",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_w1_window_s": {
@@ -149,7 +162,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_w1_window_s",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_w1_window_n": {
@@ -157,7 +171,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_w1_window_n",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_w2_window_w": {
@@ -165,7 +180,8 @@
             "idf_max_fields": 12,
             "leakage_component_name": "window_opening",
             "surface_name": "hive_w2_window_w",
-            "ventilation_control_mode": "NoVent",
+            "ventilation_control_mode": "Temperature",
+            "ventilation_control_zone_temperature_setpoint_schedule_name": "sch_window_behav",
             "window_door_opening_factor_or_crack_factor": 1
         },
         "afn_hive_c_door_s": {
@@ -1582,19 +1598,12 @@
             "reporting_frequency": "Timestep",
             "variable_name": "Zone People Occupant Count"
         },
-        "output_zones_hvac_total_he": {
+        "output_zones_occup_count": {
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 3,
             "key_value": "*",
             "reporting_frequency": "Timestep",
-            "variable_name": "Zone Ideal Loads Zone Total Heating Energy"
-        },
-        "output_zones_hvac_total_ce": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 3,
-            "key_value": "*",
-            "reporting_frequency": "Timestep",
-            "variable_name": "Zone Ideal Loads Zone Total Cooling Energy"
+            "variable_name": "Zone Infiltration Air Change Rate"
         },
         "output_surf_conv_hge": {
             "idf_max_extensible_fields": 0,
@@ -1602,20 +1611,6 @@
             "key_value": "*",
             "reporting_frequency": "Timestep",
             "variable_name": "Surface Inside Face Convection Heat Gain Energy"
-        },
-        "output_zones_hvac_sens_he": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 3,
-            "key_value": "*",
-            "reporting_frequency": "Timestep",
-            "variable_name": "Zone Air System Sensible Heating Energy"
-        },
-        "output_zones_hvac_sens_ce": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 3,
-            "key_value": "*",
-            "reporting_frequency": "Timestep",
-            "variable_name": "Zone Air System Sensible Cooling Energy"
         },
         "output_zones_afn_inf_sens_hge": {
             "idf_max_extensible_fields": 0,
@@ -1741,7 +1736,26 @@
         }
     },
     "Schedule:Compact": {
-        "sch_hvac_living": {
+		"sch_window_behav": {
+			"data": [
+				{
+					"field": "Through: 12/31"
+				},
+				{
+					"field": "For: AllDays"
+				},
+				{
+					"field": "Until: 24:00"
+				},
+				{
+					"field": 19
+				}
+			],
+			"idf_max_extensible_fields": 4,
+			"idf_max_fields": 6,
+			"schedule_type_limits_name": "sch_lim_temp"
+		},
+		"sch_afn_living": {
             "data": [
                 {
                     "field": "Through: 12/31"
@@ -1772,7 +1786,7 @@
             "idf_max_fields": 6,
             "schedule_type_limits_name": "sch_lim_on_off"
         },
-        "sch_hvac_dorm": {
+        "sch_afn_dorm": {
             "data": [
                 {
                     "field": "Through: 12/31"
@@ -2007,70 +2021,9 @@
             "idf_max_extensible_fields": 10,
             "idf_max_fields": 12,
             "schedule_type_limits_name": "sch_lim_fracao"
-        },
-        "sch_hvac_4": {
-            "data": [
-                {
-                    "field": "Through: 12/31"
-                },
-                {
-                    "field": "For: AllDays"
-                },
-                {
-                    "field": "Until: 24:00"
-                },
-                {
-                    "field": 4
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "schedule_type_limits_name": "sch_lim_any_number"
-        },
-        "sch_hvac_18": {
-            "data": [
-                {
-                    "field": "Through: 12/31"
-                },
-                {
-                    "field": "For: AllDays"
-                },
-                {
-                    "field": "Until: 24:00"
-                },
-                {
-                    "field": 18
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "schedule_type_limits_name": "sch_lim_any_number"
-        },
-        "sch_hvac_23": {
-            "data": [
-                {
-                    "field": "Through: 12/31"
-                },
-                {
-                    "field": "For: AllDays"
-                },
-                {
-                    "field": "Until: 24:00"
-                },
-                {
-                    "field": 23
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "schedule_type_limits_name": "sch_lim_any_number"
         }
     },
     "ScheduleTypeLimits": {
-	    "sch_lim_any_number": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 1
-        },
         "sch_lim_fracao": {
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 5,
@@ -2079,6 +2032,14 @@
             "unit_type": "Percent",
             "upper_limit_value": 1
         },
+        "sch_lim_temp": {
+			"idf_max_extensible_fields": 0,
+			"idf_max_fields": 5,
+			"lower_limit_value": 0,
+			"numeric_type": "Continuous",
+			"unit_type": "Temperature",
+			"upper_limit_value": 50
+		},
         "sch_lim_activ": {
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 5,
@@ -2149,14 +2110,6 @@
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 2,
             "type_of_modeling": "GroundCoupledSurface"
-        }
-    },
-    "ThermostatSetpoint:DualSetpoint": {
-        "thermostat_setpoint": {
-            "cooling_setpoint_temperature_schedule_name": "sch_hvac_23",
-            "heating_setpoint_temperature_schedule_name": "sch_hvac_18",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 3
         }
     },
     "Timestep": {
@@ -2237,455 +2190,6 @@
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 7,
             "multiplier": 1
-        }
-    },
-    "ZoneControl:Thermostat": {
-        "thermostat_hive_c": {
-            "control_1_name": "thermostat_setpoint",
-            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
-            "control_type_schedule_name": "sch_hvac_4",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 5,
-            "zone_or_zonelist_name": "hive_c"
-        },
-        "thermostat_hive_s1": {
-            "control_1_name": "thermostat_setpoint",
-            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
-            "control_type_schedule_name": "sch_hvac_4",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 5,
-            "zone_or_zonelist_name": "hive_s1"
-        },
-        "thermostat_hive_s2": {
-            "control_1_name": "thermostat_setpoint",
-            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
-            "control_type_schedule_name": "sch_hvac_4",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 5,
-            "zone_or_zonelist_name": "hive_s2"
-        },
-        "thermostat_hive_e1": {
-            "control_1_name": "thermostat_setpoint",
-            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
-            "control_type_schedule_name": "sch_hvac_4",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 5,
-            "zone_or_zonelist_name": "hive_e1"
-        },
-        "thermostat_hive_e2": {
-            "control_1_name": "thermostat_setpoint",
-            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
-            "control_type_schedule_name": "sch_hvac_4",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 5,
-            "zone_or_zonelist_name": "hive_e2"
-        },
-        "thermostat_hive_n1": {
-            "control_1_name": "thermostat_setpoint",
-            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
-            "control_type_schedule_name": "sch_hvac_4",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 5,
-            "zone_or_zonelist_name": "hive_n1"
-        },
-        "thermostat_hive_n2": {
-            "control_1_name": "thermostat_setpoint",
-            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
-            "control_type_schedule_name": "sch_hvac_4",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 5,
-            "zone_or_zonelist_name": "hive_n2"
-        },
-        "thermostat_hive_w1": {
-            "control_1_name": "thermostat_setpoint",
-            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
-            "control_type_schedule_name": "sch_hvac_4",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 5,
-            "zone_or_zonelist_name": "hive_w1"
-        },
-        "thermostat_hive_w2": {
-            "control_1_name": "thermostat_setpoint",
-            "control_1_object_type": "ThermostatSetpoint:DualSetpoint",
-            "control_type_schedule_name": "sch_hvac_4",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 5,
-            "zone_or_zonelist_name": "hive_w2"
-        }
-    },
-    "ZoneHVAC:EquipmentConnections": {
-        "hvac_equip_connect_hive_c": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 6,
-            "zone_air_inlet_node_or_nodelist_name": "hvac_supply_inlet_hive_c",
-            "zone_air_node_name": "air_node_hive_c",
-            "zone_conditioning_equipment_list_name": "hvac_equip_hive_c",
-            "zone_name": "hive_c",
-            "zone_return_air_node_or_nodelist_name": "hvac_return_outlet_hive_c"
-        },
-        "hvac_equip_connect_hive_s1": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 6,
-            "zone_air_inlet_node_or_nodelist_name": "hvac_supply_inlet_hive_s1",
-            "zone_air_node_name": "air_node_hive_s1",
-            "zone_conditioning_equipment_list_name": "hvac_equip_hive_s1",
-            "zone_name": "hive_s1",
-            "zone_return_air_node_or_nodelist_name": "hvac_return_outlet_hive_s1"
-        },
-        "hvac_equip_connect_hive_s2": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 6,
-            "zone_air_inlet_node_or_nodelist_name": "hvac_supply_inlet_hive_s2",
-            "zone_air_node_name": "air_node_hive_s2",
-            "zone_conditioning_equipment_list_name": "hvac_equip_hive_s2",
-            "zone_name": "hive_s2",
-            "zone_return_air_node_or_nodelist_name": "hvac_return_outlet_hive_s2"
-        },
-        "hvac_equip_connect_hive_e1": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 6,
-            "zone_air_inlet_node_or_nodelist_name": "hvac_supply_inlet_hive_e1",
-            "zone_air_node_name": "air_node_hive_e1",
-            "zone_conditioning_equipment_list_name": "hvac_equip_hive_e1",
-            "zone_name": "hive_e1",
-            "zone_return_air_node_or_nodelist_name": "hvac_return_outlet_hive_e1"
-        },
-        "hvac_equip_connect_hive_e2": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 6,
-            "zone_air_inlet_node_or_nodelist_name": "hvac_supply_inlet_hive_e2",
-            "zone_air_node_name": "air_node_hive_e2",
-            "zone_conditioning_equipment_list_name": "hvac_equip_hive_e2",
-            "zone_name": "hive_e2",
-            "zone_return_air_node_or_nodelist_name": "hvac_return_outlet_hive_e2"
-        },
-        "hvac_equip_connect_hive_n1": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 6,
-            "zone_air_inlet_node_or_nodelist_name": "hvac_supply_inlet_hive_n1",
-            "zone_air_node_name": "air_node_hive_n1",
-            "zone_conditioning_equipment_list_name": "hvac_equip_hive_n1",
-            "zone_name": "hive_n1",
-            "zone_return_air_node_or_nodelist_name": "hvac_return_outlet_hive_n1"
-        },
-        "hvac_equip_connect_hive_n2": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 6,
-            "zone_air_inlet_node_or_nodelist_name": "hvac_supply_inlet_hive_n2",
-            "zone_air_node_name": "air_node_hive_n2",
-            "zone_conditioning_equipment_list_name": "hvac_equip_hive_n2",
-            "zone_name": "hive_n2",
-            "zone_return_air_node_or_nodelist_name": "hvac_return_outlet_hive_n2"
-        },
-        "hvac_equip_connect_hive_w1": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 6,
-            "zone_air_inlet_node_or_nodelist_name": "hvac_supply_inlet_hive_w1",
-            "zone_air_node_name": "air_node_hive_w1",
-            "zone_conditioning_equipment_list_name": "hvac_equip_hive_w1",
-            "zone_name": "hive_w1",
-            "zone_return_air_node_or_nodelist_name": "hvac_return_outlet_hive_w1"
-        },
-        "hvac_equip_connect_hive_w2": {
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 6,
-            "zone_air_inlet_node_or_nodelist_name": "hvac_supply_inlet_hive_w2",
-            "zone_air_node_name": "air_node_hive_w2",
-            "zone_conditioning_equipment_list_name": "hvac_equip_hive_w2",
-            "zone_name": "hive_w2",
-            "zone_return_air_node_or_nodelist_name": "hvac_return_outlet_hive_w2"
-        }
-    },
-    "ZoneHVAC:EquipmentList": {
-        "hvac_equip_hive_c": {
-            "equipment": [
-                {
-                    "zone_equipment_cooling_sequence": 1,
-                    "zone_equipment_heating_or_no_load_sequence": 1,
-                    "zone_equipment_name": "hvac_hive_c",
-                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "load_distribution_scheme": "SequentialLoad"
-        },
-        "hvac_equip_hive_s1": {
-            "equipment": [
-                {
-                    "zone_equipment_cooling_sequence": 1,
-                    "zone_equipment_heating_or_no_load_sequence": 1,
-                    "zone_equipment_name": "hvac_hive_s1",
-                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "load_distribution_scheme": "SequentialLoad"
-        },
-        "hvac_equip_hive_s2": {
-            "equipment": [
-                {
-                    "zone_equipment_cooling_sequence": 1,
-                    "zone_equipment_heating_or_no_load_sequence": 1,
-                    "zone_equipment_name": "hvac_hive_s2",
-                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "load_distribution_scheme": "SequentialLoad"
-        },
-        "hvac_equip_hive_e1": {
-            "equipment": [
-                {
-                    "zone_equipment_cooling_sequence": 1,
-                    "zone_equipment_heating_or_no_load_sequence": 1,
-                    "zone_equipment_name": "hvac_hive_e1",
-                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "load_distribution_scheme": "SequentialLoad"
-        },
-        "hvac_equip_hive_e2": {
-            "equipment": [
-                {
-                    "zone_equipment_cooling_sequence": 1,
-                    "zone_equipment_heating_or_no_load_sequence": 1,
-                    "zone_equipment_name": "hvac_hive_e2",
-                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "load_distribution_scheme": "SequentialLoad"
-        },
-        "hvac_equip_hive_n1": {
-            "equipment": [
-                {
-                    "zone_equipment_cooling_sequence": 1,
-                    "zone_equipment_heating_or_no_load_sequence": 1,
-                    "zone_equipment_name": "hvac_hive_n1",
-                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "load_distribution_scheme": "SequentialLoad"
-        },
-        "hvac_equip_hive_n2": {
-            "equipment": [
-                {
-                    "zone_equipment_cooling_sequence": 1,
-                    "zone_equipment_heating_or_no_load_sequence": 1,
-                    "zone_equipment_name": "hvac_hive_n2",
-                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "load_distribution_scheme": "SequentialLoad"
-        },
-        "hvac_equip_hive_w1": {
-            "equipment": [
-                {
-                    "zone_equipment_cooling_sequence": 1,
-                    "zone_equipment_heating_or_no_load_sequence": 1,
-                    "zone_equipment_name": "hvac_hive_w1",
-                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "load_distribution_scheme": "SequentialLoad"
-        },
-        "hvac_equip_hive_w2": {
-            "equipment": [
-                {
-                    "zone_equipment_cooling_sequence": 1,
-                    "zone_equipment_heating_or_no_load_sequence": 1,
-                    "zone_equipment_name": "hvac_hive_w2",
-                    "zone_equipment_object_type": "ZoneHVAC:IdealLoadsAirSystem"
-                }
-            ],
-            "idf_max_extensible_fields": 4,
-            "idf_max_fields": 6,
-            "load_distribution_scheme": "SequentialLoad"
-        }
-    },
-    "ZoneHVAC:IdealLoadsAirSystem": {
-        "hvac_hive_c": {
-            "cooling_limit": "NoLimit",
-            "cooling_sensible_heat_ratio": 0.7,
-            "dehumidification_control_type": "None",
-            "demand_controlled_ventilation_type": "None",
-            "heat_recovery_type": "None",
-            "heating_limit": "NoLimit",
-            "humidification_control_type": "None",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 27,
-            "latent_heat_recovery_effectiveness": 0.65,
-            "maximum_heating_supply_air_humidity_ratio": 0.0156,
-            "maximum_heating_supply_air_temperature": 50,
-            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
-            "minimum_cooling_supply_air_temperature": 13,
-            "outdoor_air_economizer_type": "NoEconomizer",
-            "sensible_heat_recovery_effectiveness": 0.7,
-            "zone_supply_air_node_name": "hvac_supply_inlet_hive_c"
-        },
-        "hvac_hive_s1": {
-            "cooling_limit": "NoLimit",
-            "cooling_sensible_heat_ratio": 0.7,
-            "dehumidification_control_type": "None",
-            "demand_controlled_ventilation_type": "None",
-            "heat_recovery_type": "None",
-            "heating_limit": "NoLimit",
-            "humidification_control_type": "None",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 27,
-            "latent_heat_recovery_effectiveness": 0.65,
-            "maximum_heating_supply_air_humidity_ratio": 0.0156,
-            "maximum_heating_supply_air_temperature": 50,
-            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
-            "minimum_cooling_supply_air_temperature": 13,
-            "outdoor_air_economizer_type": "NoEconomizer",
-            "sensible_heat_recovery_effectiveness": 0.7,
-            "zone_supply_air_node_name": "hvac_supply_inlet_hive_s1"
-        },
-        "hvac_hive_s2": {
-            "cooling_limit": "NoLimit",
-            "cooling_sensible_heat_ratio": 0.7,
-            "dehumidification_control_type": "None",
-            "demand_controlled_ventilation_type": "None",
-            "heat_recovery_type": "None",
-            "heating_limit": "NoLimit",
-            "humidification_control_type": "None",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 27,
-            "latent_heat_recovery_effectiveness": 0.65,
-            "maximum_heating_supply_air_humidity_ratio": 0.0156,
-            "maximum_heating_supply_air_temperature": 50,
-            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
-            "minimum_cooling_supply_air_temperature": 13,
-            "outdoor_air_economizer_type": "NoEconomizer",
-            "sensible_heat_recovery_effectiveness": 0.7,
-            "zone_supply_air_node_name": "hvac_supply_inlet_hive_s2"
-        },
-        "hvac_hive_e1": {
-            "cooling_limit": "NoLimit",
-            "cooling_sensible_heat_ratio": 0.7,
-            "dehumidification_control_type": "None",
-            "demand_controlled_ventilation_type": "None",
-            "heat_recovery_type": "None",
-            "heating_limit": "NoLimit",
-            "humidification_control_type": "None",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 27,
-            "latent_heat_recovery_effectiveness": 0.65,
-            "maximum_heating_supply_air_humidity_ratio": 0.0156,
-            "maximum_heating_supply_air_temperature": 50,
-            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
-            "minimum_cooling_supply_air_temperature": 13,
-            "outdoor_air_economizer_type": "NoEconomizer",
-            "sensible_heat_recovery_effectiveness": 0.7,
-            "zone_supply_air_node_name": "hvac_supply_inlet_hive_e1"
-        },
-        "hvac_hive_e2": {
-            "cooling_limit": "NoLimit",
-            "cooling_sensible_heat_ratio": 0.7,
-            "dehumidification_control_type": "None",
-            "demand_controlled_ventilation_type": "None",
-            "heat_recovery_type": "None",
-            "heating_limit": "NoLimit",
-            "humidification_control_type": "None",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 27,
-            "latent_heat_recovery_effectiveness": 0.65,
-            "maximum_heating_supply_air_humidity_ratio": 0.0156,
-            "maximum_heating_supply_air_temperature": 50,
-            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
-            "minimum_cooling_supply_air_temperature": 13,
-            "outdoor_air_economizer_type": "NoEconomizer",
-            "sensible_heat_recovery_effectiveness": 0.7,
-            "zone_supply_air_node_name": "hvac_supply_inlet_hive_e2"
-        },
-        "hvac_hive_n1": {
-            "cooling_limit": "NoLimit",
-            "cooling_sensible_heat_ratio": 0.7,
-            "dehumidification_control_type": "None",
-            "demand_controlled_ventilation_type": "None",
-            "heat_recovery_type": "None",
-            "heating_limit": "NoLimit",
-            "humidification_control_type": "None",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 27,
-            "latent_heat_recovery_effectiveness": 0.65,
-            "maximum_heating_supply_air_humidity_ratio": 0.0156,
-            "maximum_heating_supply_air_temperature": 50,
-            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
-            "minimum_cooling_supply_air_temperature": 13,
-            "outdoor_air_economizer_type": "NoEconomizer",
-            "sensible_heat_recovery_effectiveness": 0.7,
-            "zone_supply_air_node_name": "hvac_supply_inlet_hive_n1"
-        },
-        "hvac_hive_n2": {
-            "cooling_limit": "NoLimit",
-            "cooling_sensible_heat_ratio": 0.7,
-            "dehumidification_control_type": "None",
-            "demand_controlled_ventilation_type": "None",
-            "heat_recovery_type": "None",
-            "heating_limit": "NoLimit",
-            "humidification_control_type": "None",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 27,
-            "latent_heat_recovery_effectiveness": 0.65,
-            "maximum_heating_supply_air_humidity_ratio": 0.0156,
-            "maximum_heating_supply_air_temperature": 50,
-            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
-            "minimum_cooling_supply_air_temperature": 13,
-            "outdoor_air_economizer_type": "NoEconomizer",
-            "sensible_heat_recovery_effectiveness": 0.7,
-            "zone_supply_air_node_name": "hvac_supply_inlet_hive_n2"
-        },
-        "hvac_hive_w1": {
-            "cooling_limit": "NoLimit",
-            "cooling_sensible_heat_ratio": 0.7,
-            "dehumidification_control_type": "None",
-            "demand_controlled_ventilation_type": "None",
-            "heat_recovery_type": "None",
-            "heating_limit": "NoLimit",
-            "humidification_control_type": "None",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 27,
-            "latent_heat_recovery_effectiveness": 0.65,
-            "maximum_heating_supply_air_humidity_ratio": 0.0156,
-            "maximum_heating_supply_air_temperature": 50,
-            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
-            "minimum_cooling_supply_air_temperature": 13,
-            "outdoor_air_economizer_type": "NoEconomizer",
-            "sensible_heat_recovery_effectiveness": 0.7,
-            "zone_supply_air_node_name": "hvac_supply_inlet_hive_w1"
-        },
-        "hvac_hive_w2": {
-            "cooling_limit": "NoLimit",
-            "cooling_sensible_heat_ratio": 0.7,
-            "dehumidification_control_type": "None",
-            "demand_controlled_ventilation_type": "None",
-            "heat_recovery_type": "None",
-            "heating_limit": "NoLimit",
-            "humidification_control_type": "None",
-            "idf_max_extensible_fields": 0,
-            "idf_max_fields": 27,
-            "latent_heat_recovery_effectiveness": 0.65,
-            "maximum_heating_supply_air_humidity_ratio": 0.0156,
-            "maximum_heating_supply_air_temperature": 50,
-            "minimum_cooling_supply_air_humidity_ratio": 0.0077,
-            "minimum_cooling_supply_air_temperature": 13,
-            "outdoor_air_economizer_type": "NoEconomizer",
-            "sensible_heat_recovery_effectiveness": 0.7,
-            "zone_supply_air_node_name": "hvac_supply_inlet_hive_w2"
         }
     }
 }
