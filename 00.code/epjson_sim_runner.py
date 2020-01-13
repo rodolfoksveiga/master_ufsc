@@ -46,7 +46,7 @@ def epjson_sim_runner(epjson_dir, pattern, output_dir, epw_dir, weather_names):
 			  '*.mtd ' + output_dir + '*.rdd ' + output_dir + '*.edd ' + output_dir + '*.shd ' +
 			  output_dir + 'sqlite.err && rm sqlite.err')
 
-	os.system('rm ' + output_dir + pattern + 'errors.txt')
+	os.system('rm ' + output_dir + pattern + '_errors.txt')
 	# bundle the 'err' files
 	error_files = glob.glob(output_dir + '*.err')
 	for value in error_files:
@@ -89,22 +89,22 @@ epjson_sim_runner(epjson_dir = '/home/rodox/Dropbox/00.master_ufsc/00.single_zon
 wraps = np.array(['c10', 'tv', 'sf'])
 for count, value in enumerate(wraps):
 	epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/00/',
-					  pattern = 'hyp_' + value + '_v00_afn',
-					  output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/00/0' + str(count) + '.' + value + '/',
+					  pattern = 'hyp_' + value + '_v00_hvac',
+					  output_dir = '/home/rodox/Desktop/01.new/00.hyp/00/0' + str(count) + '.' +
+								   value + '/',
 					  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
 					  weather_names = np.array(['curitiba', 'rio_de_janeiro', 'sao_paulo']))
 '''
 # v01
 '''
-conds = np.array(['afn', 'hvac'])
 wraps = np.array(['c10', 'tv', 'sf'])
-for count_1, value_1 in enumerate(conds):
-	for count_2, value_2 in enumerate(wraps):
-		epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/01/',
-						  pattern = 'hyp_' + value_2 + '_v01_' + value_1,
-						  output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/01/0' + str(count_2) + '.' + value_2 + '/',
-						  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
-						  weather_names = np.array(['curitiba', 'rio_de_janeiro', 'sao_paulo']))
+for count, value in enumerate(wraps):
+	epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/01/',
+					  pattern = 'hyp_' + value + '_v01_hvac',
+					  output_dir = '/home/rodox/Desktop/01.new/00.hyp/01/0' + str(count) + '.' +
+								   value + '/',
+					  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
+					  weather_names = np.array(['curitiba', 'rio_de_janeiro', 'sao_paulo']))
 '''
 # v02
 '''
@@ -134,13 +134,59 @@ for count_1, value_1 in enumerate(wraps):
 							  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
 							  weather_names = np.array(['curitiba', 'rio_de_janeiro', 'sao_paulo']))
 '''
+
+
+# v98
+'''
+wraps = np.array(['c10', 'tv', 'sf'])
 storeys = np.array(['floor', 'inter', 'roof'])
 conds = np.array(['afn', 'hvac'])
-for count_2, value_2 in enumerate(storeys):
-	for count_3, value_3 in enumerate(conds):
-			epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/03/tv/',
-							  pattern = 'hyp_tv_v03_' + value_2 + '_' + value_3,
-							  output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/03/01.tv/0' +
-							  str(count_2) + '.' + value_2 + '/0' + str(count_3) + '.' + value_3 + '/',
+for count_1, value_1 in enumerate(wraps):
+	for count_2, value_2 in enumerate(storeys):
+		for count_3, value_3 in enumerate(conds):
+			epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/98/',
+							  pattern = 'hyp_' + value_1 + '_v98_' + value_2 + '_' + value_3,
+							  output_dir = '/media/rodox/HD_EXTERNO/00.hive/00.hyp/98/0' +
+										   str(count_1) + '.' + value_1 + '/0' + str(count_2) + '.'
+										   + value_2 + '/0' + str(count_3) + '.' + value_3 + '/',
 							  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
 							  weather_names = np.array(['curitiba', 'rio_de_janeiro', 'sao_paulo']))
+'''
+# v99
+'''
+wraps = np.array(['c10', 'tv', 'sf'])
+storeys = np.array(['floor', 'inter', 'roof'])
+conds = np.array(['afn', 'hvac'])
+for count_1, value_1 in enumerate(wraps):
+	for count_2, value_2 in enumerate(storeys):
+		for count_3, value_3 in enumerate(conds):
+			epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/99/',
+							  pattern = 'hyp_' + value_1 + '_v99_' + value_2 + '_' + value_3,
+							  output_dir = '/media/rodox/HD_EXTERNO/00.hive/00.hyp/99/0' +
+										   str(count_1) + '.' + value_1 + '/0' + str(count_2) + '.'
+										   + value_2 + '/0' + str(count_3) + '.' + value_3 + '/',
+							  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
+							  weather_names = np.array(['curitiba', 'rio_de_janeiro', 'sao_paulo']))
+'''
+
+
+wraps = np.array(['sf']) # count_1
+storeys = np.array(['roof']) # count_2
+conds = np.array(['afn']) # count_3
+count_1 = 2
+for value_1 in wraps:
+	count_2 = 2
+	for value_2 in storeys:
+		count_3 = 0
+		for value_3 in conds:
+			epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/98/',
+							  pattern = 'hyp_' + value_1 + '_v98_' + value_2 + '_' + value_3,
+							  output_dir = '/home/rodox/Desktop/98/0' +
+										   str(count_1) + '.' + value_1 + '/0' + str(count_2) + '.'
+										   + value_2 + '/0' + str(count_3) + '.' + value_3 + '/',
+							  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
+							  weather_names = np.array(['curitiba', 'rio_de_janeiro', 'sao_paulo']))
+			count_3 = count_3 + 1
+		count_2 = count_2 + 1
+	count_1 = count_1 + 1
+							

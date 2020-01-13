@@ -1,6 +1,6 @@
 # base functions ####
 # cap_str()
-# capitalize all the words in a string
+  # capitalize all the words in a string
 cap_str = function(str) {
   # str - string to capitalize
   
@@ -14,10 +14,10 @@ cap_str = function(str) {
 }
 
 # diff()
-# calculate difference of results from simplified simulations (single zone) to full simulations
+  # calculate difference of results from simplified simulations (single zone) to full simulations
 df_diff = function(df_base, df_simp, df_area) {
-  # df_simp - data frame with single zone results
   # df_base - data frame with full simulation results
+  # df_simp - data frame with single zone results
   
   # calculate absolute difference
   # formula: diff_abs = (val_simp - val_base) / floor_area
@@ -27,9 +27,8 @@ df_diff = function(df_base, df_simp, df_area) {
   df_diff_rel = df_diff_abs*100 / abs(df_base[, is_label(df_base)[[2]]])
   # add labels to the data frame
   df_diff_abs = cbind(df_diff_abs, df_simp[, is_label(df_simp)[[1]]])
-  df_diff_abs$sim = NULL
   df_diff_rel = cbind(df_diff_rel, df_simp[, is_label(df_simp)[[1]]])
-  df_diff_rel$sim = NULL
+
   return(list('abs' = df_diff_abs, 'rel' = df_diff_rel))
 }
 
@@ -38,37 +37,96 @@ is_label = function(df) {
   # df - data frame with the columns to destinguish
   
   # yes, it is!
-  yes_label = grepl('dwel', colnames(df)) | grepl('room', colnames(df)) |
-    grepl('wrap', colnames(df)) | grepl('weather', colnames(df)) | grepl('typo', colnames(df)) |
-    grepl('sim', colnames(df)) | grepl('storey', colnames(df))
+  yes_label = grepl('typo', colnames(df)) | grepl('simp', colnames(df)) |
+    grepl('wrap', colnames(df)) | grepl('storey', colnames(df)) | grepl('cond', colnames(df)) |
+    grepl('dwel', colnames(df)) | grepl('room', colnames(df)) | grepl('weather', colnames(df))
   # no, it is not!
   no_label = !yes_label
+  
   return(list(yes_label, no_label))
 }
 
+# label()
+  # create a label data frame according to building typology, simplification version, wrap system,
+    # storey and type of conditioning
+label = function(input_dirs) {
+  # input_dirs -  
+  
+  characs = c('typo', 'simp', 'wrap', 'storey', 'cond')
+  labels = vector('list', length = length(input_dirs))
+  names(labels) = names(input_dirs)
+  labels = lapply(labels, function(x) x = vector('list', length = length(characs)))
+  
+  for (i in 1:length(labels)) {
+    names(labels[[i]]) = characs
+    if (grepl('/00.hyp/', input_dirs[[i]])) {
+      labels[[i]]$typo = c('hyp', 'Hip.')
+    } else if (grepl('/01.lin/', input_dirs[[i]])) {
+      labels[[i]]$typo = c('lin', 'Linear')
+    } else {
+      labels[[i]]$typo = c('h', 'H')
+    }
+    if (grepl('/00/', input_dirs[[i]])) {
+      labels[[i]]$simp = rep('00', 2)
+    } else if (grepl('/01/', input_dirs[[i]])) {
+      labels[[i]]$simp = rep('01', 2)
+    } else if (grepl('/02/', input_dirs[[i]])) {
+      labels[[i]]$simp = rep('02', 2)
+    } else if (grepl('/03/', input_dirs[[i]])) {
+      labels[[i]]$simp = rep('03', 2)
+    } else if (grepl('/03/', input_dirs[[i]])) {
+      labels[[i]]$simp = rep('04', 2)
+    }
+    if (grepl('/00.c10/', input_dirs[[i]])) {
+      labels[[i]]$wrap = c('c10', 'C10')
+    } else if (grepl('/01.tv/', input_dirs[[i]])) {
+      labels[[i]]$wrap = c('tv', 'TV')
+    } else {
+      labels[[i]]$wrap = c('sf', 'SF')
+    }
+    if (grepl('/00.floor/', input_dirs[[i]])) {
+      labels[[i]]$storey = c('floor', 'Térreo')
+    } else if (grepl('/01.inter/', input_dirs[[i]])) {
+      labels[[i]]$storey = c('inter', 'Intermediário')
+    } else {
+      labels[[i]]$storey = c('roof', 'Cobertura')
+    }
+    if (grepl('/00.afn/', input_dirs[[i]])) {
+      labels[[i]]$cond = c('afn', 'AFN')
+    } else {
+      labels[[i]]$cond = c('hvac', 'HVAC')
+    }
+  }
+  
+  return(labels)
+}
+
 # label_df()
-# label data frames according to dweling, room, side, weather, typology wrap and
-# simplification version
-label_df = function(df, file_name, typo, wrap) {
-  df$dwel = ifelse(grepl('_sw_', file_name), 'SW',
+  # label data frames according to dweling, room, side, weather, typology wrap and
+    # simplification version
+label_df = function(df, labels, file_name) {
+  df$typo = labels$typo[2]
+  df$simp = labels$simp[2]
+  df$wrap = labels$wrap[2]
+  df$storey = labels$storey[2]
+  df$cond = labels$cond[2]
+  df$dwel = ifelse(grepl('_sw_', file_name), 'SO',
                    ifelse(grepl('_se_', file_name), 'SE',
-                          ifelse(grepl('_e_', file_name), 'E',
+                          ifelse(grepl('_e_', file_name), 'L',
                                  ifelse(grepl('_ne_', file_name), 'NE',
-                                        ifelse(grepl('_nw_', file_name), 'NW', 'W')))))
+                                        ifelse(grepl('_nw_', file_name), 'NO', 'O')))))
   side = ifelse(grepl('rm_s', file_name), 'S',
                 ifelse(grepl('rm_n', file_name), 'N',
                        ifelse(grepl('rm_1', file_name), '1', '2')))
-  df$room = ifelse(grepl('liv', file_name), 'Living', paste('Dorm.', side))
-  df$floor = Hmisc::capitalize(storey)
+  df$room = ifelse(grepl('liv', file_name), 'Sala', paste('Dorm.', side))
   df$weather = ifelse(grepl('curitiba', file_name), 'Curitiba',
                       ifelse(grepl('rio_de_janeiro', file_name), 'Rio de Janeiro', 'São Paulo'))
-  df$typo = paste0(Hmisc::capitalize(typo), '.')
-  df$wrap = toupper(wrap)
+  
   return(df)
 }
 
 # month_timestep()
-# define interval of timesteps for each month
+  # define interval of timesteps for each month
 month_timestep = function(timestep) {
   # timestep - number of timesteps per hour in the 'csv' (simulation) file
   
@@ -91,19 +149,19 @@ month_timestep = function(timestep) {
 }
 
 # report()
-# splits the 'csv' simulation report in data frames for each thermal fenom. and other metrics and
-# calculates thermal balance and other metrics monthly and annual
-report = function(csv, timestep = 6, unit = 'kwh') {
+  # splits the 'csv' simulation report in data frames for each thermal fenom. and other metrics and
+    # calculates thermal balance and other metrics monthly and annually
+report = function(csv, timestep = 6, unit = 'kwh', cond) {
   # csv - 'csv' simulation file from energyplus simulation
   # timestep - number of timesteps per hour in the 'csv' simulation file
   # unit - output's units
   # possible values: 'kwh' or 'kj'
   
-  # define unites
+  # unites
   div = ifelse(unit == 'kwh', 3600000, 1000)
-  # define months
+  # months
   year = month_timestep(timestep)
-  # thermal balance vectors
+  
   int_conv_he = csv$int_conv_he/div
   conv_hge_floor = -csv[, grepl('conv_hge', colnames(csv)) & grepl('floor', colnames(csv))]/div
   conv_hge_roof = -csv[, grepl('conv_hge', colnames(csv)) & grepl('roof', colnames(csv))]/div
@@ -114,50 +172,108 @@ report = function(csv, timestep = 6, unit = 'kwh') {
   conv_hge_walls = -csv[, grepl('conv_hge', colnames(csv)) & grepl('wall', colnames(csv))]/div
   conv_hge_windows = -csv[, grepl('conv_hge', colnames(csv)) & grepl('window', colnames(csv))]/div
   conv_hge_doors = -csv[, grepl('conv_hge', colnames(csv)) & grepl('door', colnames(csv))]/div
-  hvac_sens_he = csv$hvac_sens_he/div
-  hvac_sens_ce = -csv$hvac_sens_ce/div
   afn_inf_sens_hge = csv$afn_inf_sens_hge/div
   afn_inf_sens_hle = -csv$afn_inf_sens_hle/div
-  # other evaluation metrics vectors
-  hvac_total_he = csv$hvac_total_he/div
-  hvac_total_ce = csv$hvac_total_ce/div
+  if (cond == 'hvac') {
+    hvac_sens_he = csv$hvac_sens_he/div
+    hvac_sens_ce = -csv$hvac_sens_ce/div
+    hvac_total_he = csv$hvac_total_he/div
+    hvac_total_ce = csv$hvac_total_ce/div
+  } else {
+    mean_temp = csv$mean_temp
+    comf = csv[, grepl('occup_count', colnames(csv)) | grepl('op_temp', colnames(csv))]
+    afn_air_change = csv$afn_air_change
+  }
+  
   # throw all the vectors inside the report list
   report = list('int_conv_he' = int_conv_he, 'conv_hge_floor' = conv_hge_floor,
                 'conv_hge_roof' = conv_hge_roof, 'conv_hge_wall_s' = conv_hge_wall_s,
                 'conv_hge_wall_e' = conv_hge_wall_e, 'conv_hge_wall_n' = conv_hge_wall_n,
                 'conv_hge_wall_w' = conv_hge_wall_w, 'conv_hge_walls' = conv_hge_walls,
                 'conv_hge_windows' = conv_hge_windows, 'conv_hge_doors' = conv_hge_doors,
-                'hvac_sens_he' = hvac_sens_he, 'hvac_sens_ce' = hvac_sens_ce,
-                'afn_inf_sens_hge' = afn_inf_sens_hge, 'afn_inf_sens_hle' = afn_inf_sens_hle,
-                'hvac_total_he' = hvac_total_he, 'hvac_total_ce' = hvac_total_ce, 'df' = NULL)
+                'afn_inf_sens_hge' = afn_inf_sens_hge, 'afn_inf_sens_hle' = afn_inf_sens_hle)
+  if (cond == 'hvac') {
+    report[['hvac_sens_he']] = hvac_sens_he
+    report[['hvac_sens_ce']] = hvac_sens_ce
+    report[['hvac_total_he']] = hvac_total_he
+    report[['hvac_total_ce']] = hvac_total_ce
+  } else {
+    report[['mean_temp']] = mean_temp
+    report[['comf']] = comf
+    report[['afn_air_change']] = afn_air_change
+  }
+  report[['df']] = NULL
+  
   # create data frame
-  # the data frame number of columns is 1 size smaller than the length of report because 1 item of
-  # report's list correspond to 'df'
-  report[['df']] = as.data.frame(matrix(NA, 12, length(report) - 1))
-  colnames(report[['df']]) = c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_walls',
-                               'conv_hge_wall_s', 'conv_hge_wall_e', 'conv_hge_wall_n',
-                               'conv_hge_wall_w', 'conv_hge_windows', 'conv_hge_doors',
-                               'hvac_sens_he', 'hvac_sens_ce', 'afn_inf_sens_hge',
-                               'afn_inf_sens_hle', 'hvac_total_he', 'hvac_total_ce')
+    # the data frame number of columns is 1 size smaller than the length of report because 1 item of
+      # report's list correspond to 'df'
+  if (cond == 'hvac') {
+    cond_vars = c('hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce')
+    report[['df']] = as.data.frame(matrix(NA, 12, length(report)))
+  } else {
+    cond_vars = c('afn_air_change', 'uncomf_hot', 'uncomf_cold', 'comf', 'temp_max', 'temp_95')
+    report[['df']] = as.data.frame(matrix(NA, 12, length(report) + 3))
+  }
+  
+  colnames(report[['df']]) = c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_wall_s',
+                               'conv_hge_wall_e', 'conv_hge_wall_n', 'conv_hge_wall_w',
+                               'conv_hge_walls', 'conv_hge_windows', 'conv_hge_doors',
+                               'afn_inf_sens_hge', 'afn_inf_sens_hle', cond_vars)
   rownames(report[['df']]) = names(year)
   for (month in names(year)) {
-    for (col in colnames(report[['df']])) {
-      report[['df']][month, col] = ifelse(is.null(dim(report[[col]])),
-                                          sum(report[[col]][year[[month]]]),
-                                          sum(apply(report[[col]][year[[month]], ], 2, sum)))
+    if (cond == 'hvac') {
+      for (col in colnames(report[['df']])) {
+        report[['df']][month, col] = ifelse(is.null(dim(report[[col]])),
+                                            sum(report[[col]][year[[month]]]),
+                                            sum(apply(report[[col]][year[[month]], ], 2, sum)))
+      }
+    } else {
+      for (col in colnames(report[['df']][, 1:12])) {
+        report[['df']][month, col] = ifelse(is.null(dim(report[[col]])),
+                                            sum(report[[col]][year[[month]]]),
+                                            sum(apply(report[[col]][year[[month]], ], 2, sum)))
+      }
+      report[['df']][month, 'afn_air_change'] = mean(report[['afn_air_change']][year[[month]]])
+      report[['df']][month, 'uncomf_hot'] = uncomf(df = report[['comf']][year[[month]], ],
+                                                   feel = 'hot', hot_weather = F)
+      report[['df']][month, 'uncomf_cold'] = uncomf(df = report[['comf']][year[[month]], ],
+                                                    feel = 'cold', hot_weather = F)
+      report[['df']][month, 'comf'] =
+        100 - (report[['df']][month, 'uncomf_hot'] + report[['df']][month, 'uncomf_cold'])
+      report[['df']][month, 'temp_max'] = max(report[['comf']][year[[month]], 'op_temp'])
+      report[['df']][month, 'temp_95'] = quantile(report[['mean_temp']][year[[month]]],
+                                                   probs = 0.95, names = F)
     }
   }
-  report[['df']]['year', ] = apply(report[['df']][1:12, ], 2, sum)
-  report[['df']]$hvac_total_he = ifelse(report[['df']]$hvac_total_he < 0.01, 0,
-                                        report[['df']]$hvac_total_he)
+
+  if (cond == 'hvac') {
+    report[['df']]['year', ] = apply(report[['df']][1:12, ], 2, sum)
+    report[['df']]$hvac_total_he = ifelse(report[['df']]$hvac_total_he < 0.01, 0,
+                                          report[['df']]$hvac_total_he)
+    report[['df']]$hvac_total_ce = ifelse(report[['df']]$hvac_total_ce < 0.01, 0,
+                                          report[['df']]$hvac_total_ce)
+  } else {
+    report[['df']]['year', 1:12] = apply(report[['df']][1:12, 1:12], 2, sum)
+    report[['df']]['year', 'afn_air_change'] = mean(report[['df']][1:12, 'afn_air_change'])
+    report[['df']]['year', 'uncomf_hot'] = uncomf(df = report[['comf']],
+                                                  feel = 'hot', hot_weather = F)
+    report[['df']]['year', 'uncomf_cold'] = uncomf(df = report[['comf']],
+                                                   feel = 'cold', hot_weather = F)
+    report[['df']]['year', 'comf'] =
+      100 - (report[['df']]['year', 'uncomf_hot'] + report[['df']]['year', 'uncomf_cold'])
+    report[['df']]['year', 'temp_max'] = max(report[['df']][1:12, 'temp_max'])
+    report[['df']]['year', 'temp_95'] = quantile(report[['mean_temp']], probs = 0.95, names = F)
+  }
+  
   report[['df']] = apply(report[['df']], 2, round, 1)
-  report[['df']] = cbind(report[['df']], data.frame('dwel' = NA, 'room' = NA, 'weather' = NA,
-                                                    'typo' = NA, 'wrap' = NA, 'sim' = NA))
+  report[['df']] = cbind(report[['df']], data.frame('typo' = NA, 'simp' = NA, 'wrap' = NA,
+                                                    'storey' = NA, 'cond' = NA, 'dwel' = NA,
+                                                    'room' = NA, 'weather' = NA))
   return(report)
 }
 
 # surf_rename()
-# rename the surfaces removing zone name and unecessary information
+  # rename the surfaces removing zone name and unecessary information
 surf_rename = function(col_name) {
   # col_name - name of the surface column name to rename
   
@@ -175,33 +291,34 @@ surf_rename = function(col_name) {
   return(surf_rename)
 }
 
+# uncomf()
+  # calculate percentage of hours feeling uncomfortable (hot or cold)
+uncomf = function (df, feel, hot_weather) {
+  # df - data frame containing raw info about natural ventilation (vn)
+  # hot_weather - TRUE for brazilian climate zone 8, which means hot weather
+  # feel - 'hot' or 'cold'
+  
+  if (hot_weather == T) {
+    uncomf_hot = sum(df$occup_count > 0 & df$op_temp > 28) / sum(df$occup_count > 0) * 100
+  } else {
+    uncomf_hot = sum(df$occup_count > 0 & df$op_temp > 26) / sum(df$occup_count > 0) * 100
+  }
+  uncomf_cold = sum(df$occup_count > 0 & df$op_temp < 18) / sum(df$occup_count > 0) * 100
+  
+  ifelse(feel == 'hot', return(uncomf_hot), return(uncomf_cold))
+}
+
 # main function ####
-valid = function(input_dirs, cond, wrap, storey, df_area, typo, simp, output_dir = NULL) {
+valid = function(input_dirs, df_area, write_results = F, output_dir) {
+  # input_dirs - 
+  # df_area - 
+  # output_dir - 
+  # write_results - if it's f' the results are assigned to a variable, if it's 't' the results are
+    # writen into 'csv' files
   
-  # # test
-  # cond = c('hvac')
-  # typo = c('hyp')
-  # simp = c('02')
-  # wrap = c('sf')
-  # storey = c('roof')
-  # m = 1
-  # n = 0
-  # o = 2
-  # p = 2
-  # input_dirs = list('base' = paste0('/home/rodox/01.going_on/00.hive/0', m, '.', cond,
-  #                                   '/0', n, '.', typo, '/00/0', o, '.', wrap, '/0', p,
-  #                                   '.', storey, '/'),
-  #                   'simp' = paste0('/home/rodox/01.going_on/00.hive/0', m, '.', cond,
-  #                                   '/0', n, '.', typo, '/', simp, '/0', o, '.', wrap,
-  #                                   '/0', p, '.', storey, '/'))
-  # cond = cond
-  # storey = storey
-  # simp = simp
-  # df_area = paste0('/home/rodox/00.git/00.master_ufsc/02.model/0', m,
-  #                  '.', cond, '/0', n, '.', typo, '/area_', typo,
-  #                  '.csv')
-  # output_dir = paste0('/home/rodox/00.git/00.master_ufsc/03.result/', simp, '/')
-  
+  # create a data frame with simplification labels
+  labels = label(input_dirs)
+
   # create empty lists to be filled with 'csv' files
   csv_names = csv_files = results = vector('list', length(input_dirs))
   # name the lists
@@ -229,60 +346,55 @@ valid = function(input_dirs, cond, wrap, storey, df_area, typo, simp, output_dir
       csv_files[[i]][[j]] = as.data.frame(data.table::fread(paste0(input_dirs[[i]],
                                                                    csv_names[[i]][[j]])))
       # define proper names to the list
-      if (i == 1) {
-        names(csv_files[[i]])[j] = sub(paste0('_', typo, '_', wrap, '_v00_', storey), '',
-                                       sub('.csv', '', csv_names[[i]][j]))
-      } else {
-        names(csv_files[[i]])[j] = sub(paste0('_', typo, '_', wrap, '_v', simp, '_', storey), '',
-                                       sub('.csv', '', csv_names[[i]][j]))
-      }
+      names(csv_files[[i]])[j] = sub(paste0('_', labels[[i]]$typo[1], '_',
+                                            labels[[i]]$wrap[1], '_v',
+                                            labels[[i]]$simp[1], '_',
+                                            labels[[i]]$storey[1], '_',
+                                            labels[[i]]$cond[1]), '',
+                                     sub('.csv', '', csv_names[[i]][j]))
     }
     names(results[[i]]) = names(csv_files[[i]])
   }
   
   # rename columns
   # define new column names
-  # hvac
-  if (cond == 'hvac') {
-    if (grepl('hyp', typo)) {
-      mult_base_dorm_cn = 8
-      mult_base_ew_liv_cn = 10
-      mult_base_sn_liv_cn = 11
-      if (simp == '01') {
-        mult_simp_dorm_cn = 8
-        mult_simp_ew_liv_cn = 10
-        mult_simp_sn_liv_cn = 11
-      } else if (simp == '02') {
-        mult_simp_dorm_cn = 8
-        mult_simp_ew_liv_cn = 9
-        mult_simp_sn_liv_cn = 10
-      }
+  if (grepl('hyp', labels[[1]]$typo[1])) {
+    mult_base_dorm_cn = 8
+    mult_base_ew_liv_cn = 10
+    mult_base_sn_liv_cn = 11
+    if (labels[[2]]$simp[1] == '01' | labels[[2]]$simp[1] == '03') {
+      mult_simp_dorm_cn = 8
+      mult_simp_ew_liv_cn = 9
+      mult_simp_sn_liv_cn = 10
+    } else if (labels[[2]]$simp[1] == '02') {
+      mult_simp_dorm_cn = 8
+      mult_simp_ew_liv_cn = 10
+      mult_simp_sn_liv_cn = 11
     }
+  }
+  if (labels[[1]]$cond[1] == 'hvac') {
+    out_cond = c('hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he', 'hvac_total_ce')
+  } else {
+    out_cond = 'afn_air_change'
   }
   base_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
                    rep('conv_hge', mult_base_dorm_cn), 'mean_temp', 'op_temp', 'afn_inf_sens_hge',
-                   'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he',
-                   'hvac_total_ce')
+                   'afn_inf_sens_hle', out_cond)
   base_ew_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
                      rep('conv_hge', mult_base_ew_liv_cn), 'mean_temp', 'op_temp',
-                     'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce',
-                     'hvac_total_he', 'hvac_total_ce')
+                     'afn_inf_sens_hge', 'afn_inf_sens_hle', out_cond)
   base_sn_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
                      rep('conv_hge', mult_base_sn_liv_cn), 'mean_temp', 'op_temp',
-                     'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce',
-                     'hvac_total_he', 'hvac_total_ce')
+                     'afn_inf_sens_hge', 'afn_inf_sens_hle', out_cond)
   simp_dorm_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
                    rep('conv_hge', mult_simp_dorm_cn), 'mean_temp', 'op_temp', 'afn_inf_sens_hge',
-                   'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce', 'hvac_total_he',
-                   'hvac_total_ce')
+                   'afn_inf_sens_hle', out_cond)
   simp_ew_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
                      rep('conv_hge', mult_simp_ew_liv_cn), 'mean_temp', 'op_temp',
-                     'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce',
-                     'hvac_total_he', 'hvac_total_ce')
+                     'afn_inf_sens_hge', 'afn_inf_sens_hle', out_cond)
   simp_sn_liv_cn = c('date_time', 'site_drybulb_temp', 'int_conv_he', 'occup_count',
                      rep('conv_hge', mult_simp_sn_liv_cn), 'mean_temp', 'op_temp',
-                     'afn_inf_sens_hge', 'afn_inf_sens_hle', 'hvac_sens_he', 'hvac_sens_ce',
-                     'hvac_total_he', 'hvac_total_ce')
+                     'afn_inf_sens_hge', 'afn_inf_sens_hle', out_cond)
   
   # remove first column related to an x variable created when base 'csv' files were splitted
   for (i in 1:length(csv_files)) {
@@ -333,17 +445,18 @@ valid = function(input_dirs, cond, wrap, storey, df_area, typo, simp, output_dir
   }
   
   # compile results
+  results[['combo']][['raw']] = vector('list', length = length(csv_files))
+  names(results[['combo']][['raw']]) = names(csv_files)
   for (i in 1:length(csv_files)) {
-    results[[i]] = lapply(csv_files[[i]], report)
+    results[[i]] = lapply(csv_files[[i]], report, cond = labels[[i]]$cond[1])
     for (j in 1:length(csv_files[[i]])) {
-      results[[i]][[j]][['df']]$sim = ifelse(grepl('base', names(results)[i]), 'Base', 'Simp.')
-      results[[i]][[j]][['df']]$hvac_total_ce =
-        results[[i]][[j]][['df']]$hvac_total_ce / df_area[j, 2]
-      results[[i]][[j]][['df']] = label_df(results[[i]][[j]][['df']], names(results[[i]])[j],
-                                           typo, wrap)
-      results[['combo']][['raw']] = rbind(results[['combo']][['raw']],
+      if (labels[[i]]$cond[1] == 'hvac') {
+        results[[i]][[j]][['df']] = results[[i]][[j]][['df']] / df_area[j, 2]
+      }
+      results[[i]][[j]][['df']] = label_df(results[[i]][[j]][['df']], labels[[i]],
+                                           names(results[[i]])[j])
+      results[['combo']][['raw']][[i]] = rbind(results[['combo']][['raw']][[i]],
                                           results[[i]][[j]][['df']]['year', ])
-      
     }
   }
   
@@ -351,100 +464,71 @@ valid = function(input_dirs, cond, wrap, storey, df_area, typo, simp, output_dir
   for (type in c('abs', 'rel')) {
     for (i in 1:length(results[['simp']])) {
       results[['diff']][[type]][[i]] =
-        df_diff(results[['simp']][[i]][['df']], results[['base']][[i]][['df']])[[type]]
-      results[['diff']][['combo']][[type]] =
-        rbind(results[['diff']][['combo']][[type]], results[['diff']][[type]][[i]]['year', ])
+        df_diff(results[['base']][[i]][['df']], results[['simp']][[i]][['df']])[[type]]
+      results[['combo']][['diff']][[type]] =
+        rbind(results[['combo']][['diff']][[type]], results[['diff']][[type]][[i]]['year', ])
     }
-    results[['diff']][['combo']][[type]]$simp = simp
   }
-  
   # name diff list
   names(results[['diff']][['abs']]) = names(results[['diff']][['rel']]) = names(results[['simp']])
   
-  # set a data frame for plotting thermal balance
-  vars = c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_walls', 'conv_hge_windows',
-           'conv_hge_doors', 'hvac_sens_ce', 'afn_inf_sens_hle')
-  results[['combo']][['tb']] = data.frame('val' = NA, 'var' = NA, 'sim' = NA, 'dwel' = NA,
-                                          'room' = NA, 'weather' = NA)
-  results[['diff']][['combo']][['tb']][['abs']] = results[['diff']][['combo']][['tb']][['rel']] =
-    data.frame('val' = NA, 'var' = NA, 'dwel' = NA, 'room' = NA, 'weather' = NA)
-  
-  # add data to data frames
-  for (var in vars) {
-    # thermal balance
-    df = data.frame('val' = results[['combo']][['raw']][, var],
-                    'var' = var, 'dwel' = results[['combo']][['raw']]$dwel,
-                    'sim' = results[['combo']][['raw']]$sim,
-                    'room' = results[['combo']][['raw']]$room,
-                    'weather' = results[['combo']][['raw']]$weather)
-    results[['combo']][['tb']] = rbind(results[['combo']][['tb']], df)
-    # absolute difference of thermal balance between simplified and 'original' models
-    df = data.frame('val' = results[['diff']][['combo']][['abs']][, var],
-                    'var' = var, 'dwel' = results[['diff']][['combo']][['abs']]$dwel,
-                    'room' = results[['diff']][['combo']][['abs']]$room,
-                    'weather' = results[['diff']][['combo']][['abs']]$weather)
-    results[['diff']][['combo']][['tb']][['abs']] =
-      rbind(results[['diff']][['combo']][['tb']][['abs']], df)
-    # relative difference of thermal balance between simplified and 'original' models
-    df = data.frame('val' = results[['diff']][['combo']][['rel']][, var],
-                    'var' = var, 'dwel' = results[['diff']][['combo']][['rel']]$dwel,
-                    'room' = results[['diff']][['combo']][['rel']]$room,
-                    'weather' = results[['diff']][['combo']][['rel']]$weather)
-    results[['diff']][['combo']][['tb']][['rel']] =
-      rbind(results[['diff']][['combo']][['tb']][['rel']], df)
+  # write result files
+  if (write_results == T) {
+    for (i in 1:length(results[['combo']])) {
+      for (j in 1:length(results[['combo']][[i]])) {
+        write.csv(results[['combo']][[i]][[j]],
+                  paste0(output_dir, '/', labels[['base']]$typo[1], '_v',
+                         ifelse(names(results[['combo']][[i]])[j] == 'base',
+                                labels[['base']]$simp[1], labels[['simp']]$simp[1]), '_',
+                         labels[['base']]$wrap[1], '_', labels[['base']]$storey[1], '_',
+                         labels[['base']]$cond[1], '_', names(results[['combo']])[i],
+                         ifelse(names(results[['combo']])[i] == 'raw', '',
+                                paste0('_', names(results[['combo']][[i]])[j])),
+                         '.csv'), row.names = F)
+      }
+    }
+  } else {
+    return(results)
   }
-  results[['combo']][['tb']] = subset(results[['combo']][['tb']], !is.na(val))
-  
-  if (!is.null(output_dir)) {
-    write.csv(results[['combo']][['raw']], paste0(output_dir, typo, '_', wrap, '_v', simp, '_',
-                                                  storey, '_raw.csv'))
-    write.csv(results[['combo']][['tb']], paste0(output_dir, typo, '_', wrap, '_v', simp, '_',
-                                                 storey, '_tb.csv'))
-    write.csv(results[['diff']][['combo']][['abs']], paste0(output_dir, typo, '_', wrap, '_v',
-                                                            simp, '_', storey, '_diff_abs.csv'))
-    write.csv(results[['diff']][['combo']][['rel']], paste0(output_dir, typo, '_', wrap, '_v',
-                                                            simp, '_', storey, '_diff_rel.csv'))
-  }
-  
-  return(results)
 }
 
+
 # application ####
-conds = c('hvac')
 typos = c('hyp')
-simps = c('01', '02')
+simps = c('01', '02', '03')
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
-m = 1
-for (cond in conds) {
-  n = 0
-  for (typo in typos) {
-    for (simp in simps) {
+conds = c('afn', 'hvac')
+m = 0
+for (typo in typos) {
+  for (simp in simps) {
+    n = 0
+    for (wrap in wraps) {
       o = 0
-      for (wrap in wraps) {
-        print(paste(toupper(cond), '/', Hmisc::capitalize(typo), '/', simp, '/', toupper(wrap)))
+      for (storey in storeys) {
         p = 0
-        for (storey in storeys) {
-          print(Hmisc::capitalize(storey))
+        for (cond in conds) {
+          print(paste(Hmisc::capitalize(typo), '/', simp, '/', toupper(wrap), '/',
+                      Hmisc::capitalize(storey), '/', toupper(cond)))
           valid(
-            input_dirs = list('base' = paste0('/home/rodox/01.going_on/00.hive/0', m, '.', cond,
-                                              '/0', n, '.', typo, '/00/0', o, '.', wrap, '/0', p,
-                                              '.', storey, '/'),
-                              'simp' = paste0('/home/rodox/01.going_on/00.hive/0', m, '.', cond,
-                                              '/0', n, '.', typo, '/', simp, '/0', o, '.', wrap,
-                                              '/0', p, '.', storey, '/')),
-            cond = cond, storey = storey, typo = typo, wrap = wrap,
-            simp = simp, df_area = paste0('/home/rodox/00.git/00.master_ufsc/02.model/0', m,
-                                          '.', cond, '/0', n, '.', typo, '/area_', typo,
-                                          '.csv'),
-            output_dir = paste0('/home/rodox/00.git/00.master_ufsc/03.result/', simp, '/'))
+            input_dirs = list('base' = paste0('/media/rodox/HD_EXTERNO/00.hive/0', m, '.', typo,
+                                              '/00/0', n, '.', wrap, '/0', o, '.', storey,
+                                              '/0', p, '.', cond, '/'),
+                              'simp' = paste0('/media/rodox/HD_EXTERNO/00.hive/0', m, '.', typo,
+                                              '/', simp, '/0', n, '.', wrap, '/0', o, '.', storey,
+                                              '/0', p, '.', cond, '/')),
+            df_area = paste0('/home/rodox/00.git/00.master_ufsc/02.model/0', m, '.', typo,
+                             '/area_', typo, '.csv'),
+            write_results = T,
+            output_dir = paste0('/home/rodox/00.git/00.master_ufsc/03.result/')
+            )
           gc()
           p = p + 1
         }
         o = o + 1
       }
+      n = n + 1
     }
-    n = n + 1
   }
   m = m + 1
 }

@@ -11,3 +11,11 @@ v03
 v04
 	only one thermal zone
 		if the surface isn't outdoors, it's adiabatic
+
+
+v98
+	extended hive
+		consider all adjacents zones
+v99
+	extended hive
+		consider only adjacents zones with oposite occupation

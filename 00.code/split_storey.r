@@ -30,7 +30,6 @@ split_storey = function(input_dir, pattern = NULL, zone_names, ignored_zones = N
       # select the columns related to each interested zone
       df_zone = df[, grepl('Date/Time', colnames(df)) |
                      grepl('Environment:Site Outdoor Air Drybulb', colnames(df)) |
-                     grepl(paste0('^', toupper(zone)), colnames(df)) |
                      grepl(paste0('_', toupper(zone)), colnames(df))]
       # save '.csv' file for each zone
       file_path = paste0(output_dir, csv_names[i], '_', zone, '.csv')
@@ -40,30 +39,29 @@ split_storey = function(input_dir, pattern = NULL, zone_names, ignored_zones = N
     }
   }
 }
-
+  
 # application ####
-simps = c('02')
+simps = c('00', '01')
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
-conds = c('afn')
+conds = c('hvac')
 for (simp in simps) {
   m = 0
   for (wrap in wraps) {
     n = 0
     for (storey in storeys) {
-      o = 0
+      o = 1
       for (cond in conds) {
-        print(paste(simp, '/', toupper(wrap), '/', toupper(cond)))
-        split_storey(input_dir = c(paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp,
-                                          '/0', m, '.', wrap, '/0', n, '.', storey, '/0',
-                                          o, '.', cond, '/')),
-                     pattern = '',
+        print(paste(simp, '/', toupper(wrap), '/', toupper(storey), '/', toupper(cond)))
+        split_storey(input_dir = c(paste0('/media/rodox/HD_EXTERNO/00.hive/00.hyp/', simp,
+                                          '/0', m, '.', wrap, '/')),
+                     pattern = paste0('hyp_', wrap, '_v', simp, '_', storey, '_', cond),
                      zone_names = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv',
                                     'se_dorm_1', 'e_dorm_s', 'e_liv', 'e_dorm_n', 'ne_dorm_1',
                                     'ne_liv', 'ne_dorm_2', 'nw_dorm_2', 'nw_liv', 'nw_dorm_1',
                                     'w_dorm_n', 'w_liv', 'w_dorm_s'),
                      ignored_zones = NULL,
-                     output_dir = c(paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp,
+                     output_dir = c(paste0('/media/rodox/HD_EXTERNO/00.hive/00.hyp/', simp,
                                            '/0', m, '.', wrap, '/0', n, '.', storey, '/0',
                                            o, '.', cond, '/')))
         gc()

@@ -21,9 +21,9 @@ split_building = function(input_dir, pattern = NULL, storey_id, output_dir) {
     # split the floor in zones
     for (j in 1:length(storey_id[[1]])) {
       # select the columns related to each interested storey
-      df_floor = df[, grepl('Date/Time', colnames(df)) |
+      df_storey = df[, grepl('Date/Time', colnames(df)) |
                      grepl('Environment:Site Outdoor Air Drybulb', colnames(df)) |
-                     grepl(paste0('^', toupper(storey_id[[1]][j])), colnames(df))]
+                     grepl(toupper(storey_id[[1]][j]), colnames(df))]
       # save '.csv' file for each storey
       if (grepl('afn', csv_names[i])) {
         file_path = paste0(output_dir, sub('_afn', '', csv_names[i]),
@@ -32,7 +32,7 @@ split_building = function(input_dir, pattern = NULL, storey_id, output_dir) {
         file_path = paste0(output_dir, sub('_hvac', '', csv_names[i]),
                            '_', storey_id[[2]][j], '_hvac.csv')
       }
-      write.csv(df_floor, file_path)
+      write.csv(df_storey, file_path)
       # print '.csv' file name
       print(file_path)
     }
@@ -42,17 +42,17 @@ split_building = function(input_dir, pattern = NULL, storey_id, output_dir) {
 # application ####
 simps = c('00', '01')
 wraps = c('c10', 'tv', 'sf')
-conds = c('afn', 'hvac')
-m = 0
+conds = c('hvac')
 for (simp in simps) {
+  m = 0
   for (wrap in wraps) {
     for (cond in conds) {
       print(paste(simp, '/', toupper(wrap), '/', toupper(cond)))
-      split_building(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp, '/0', m,
+      split_building(input_dir = paste0('/media/rodox/HD_EXTERNO/00.hive/00.hyp/', simp, '/0', m,
                                         '.', wrap, '/'),
                      pattern = cond,
                      storey_id = list(c('F1', 'F3', 'F5'), c('floor', 'inter', 'roof')),
-                     output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp, '/0', m,
+                     output_dir = paste0('/media/rodox/HD_EXTERNO/00.hive/00.hyp/', simp, '/0', m,
                                          '.', wrap, '/'))
     }
     m = m + 1

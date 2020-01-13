@@ -15,7 +15,7 @@ def basic_sim_runner(sim_file, epw_file, output_dir = 'input_dir', convert = Fal
 	return;
 
 # application
-basic_sim_runner(sim_file = '/home/rodox/Desktop/hyp_c10_v03_inter_afn.epJSON',
+basic_sim_runner(sim_file = '/home/rodox/Desktop/hyp_c10_v98_floor_afn_e_dorm_n.epJSON',
 				 epw_file = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/br_rio_de_janeiro_rj_santos_dumont_ap_tmy_2003-2017.epw',
 				 convert = False)
 

@@ -1598,12 +1598,12 @@
             "reporting_frequency": "Timestep",
             "variable_name": "Zone People Occupant Count"
         },
-        "output_zones_occup_count": {
+        "output_zones_afn_air_change": {
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 3,
             "key_value": "*",
             "reporting_frequency": "Timestep",
-            "variable_name": "Zone Infiltration Air Change Rate"
+            "variable_name": "AFN Zone Infiltration Air Change Rate"
         },
         "output_surf_conv_hge": {
             "idf_max_extensible_fields": 0,

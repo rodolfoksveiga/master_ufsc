@@ -1,8 +1,8 @@
 # cp_calc = function(ratio = 1, build_type = 'low_rise', azimuth = 0) {
   
 # test
-ratio = 1
-build_type = 'high_rise'
+ratio = 0.5
+build_type = 'low_rise'
 azimuth = 0
 
   cp_values = list()
@@ -14,7 +14,7 @@ azimuth = 0
                     c(0.60, 0.44, -0.26, -0.70, -0.53, -0.32,
                       -0.22, -0.32, -0.53, -0.70, -0.26, 0.44))
   
-  surfs = c('wall_s', 'wall_e', 'wall_n', 'wall_w')
+  surfs = c('afn_cp_surf_s', 'afn_cp_surf_e', 'afn_cp_surf_n', 'afn_cp_surf_w')
   
   for (i in 1:length(surfs)) {
     cp_values[[surfs[i]]] = list(

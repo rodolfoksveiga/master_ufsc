@@ -14,6 +14,6 @@ def basic_sim_runner(sim_file, epw_file, output_dir = 'input_dir', convert = Fal
 	return;
 
 # application
-basic_sim_runner(sim_file = '/home/rodox/Desktop/test/EMS_SP_R02.idf',
+basic_sim_runner(sim_file = '/home/rodox/Desktop/AirflowNetwork3zVent.idf',
 				 epw_file = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/br_sao_paulo_sp_congonhas_ap_tmy_2003-2017.epw',
 				 convert = True)
