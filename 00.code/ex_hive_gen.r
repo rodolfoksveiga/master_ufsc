@@ -163,7 +163,7 @@ zone_adj = function(side, n, lx, ly) {
 # hive_gen()
   # loads a seed file filled with all possible surfaces, fenestrations and conditioning system
     # ('hvac' and 'afn') objects and sorting them out
-hive_gen = function(seed, cond, storey, lx, ly, lz, alt, room, bounds, wrap, output_dir,
+hive_gen = function(seed_path, cond, storey, lx, ly, lz, alt, room, bounds, wrap, output_dir,
                     model_name) {
   # seed - epJSON's file full path filled with constant values
   # cond - air conditioning type
@@ -193,7 +193,7 @@ hive_gen = function(seed, cond, storey, lx, ly, lz, alt, room, bounds, wrap, out
   # pre-process
   
   # load seed file
-  seed = rjson::fromJSON(file = seed)
+  seed = rjson::fromJSON(file = seed_path)
   # create variable with main boundary information to do the loops
   bounds = lapply(bounds, function(x) append(paste0('hive_', paste0(x[1], '1')), x))
   hives = bounds
@@ -929,7 +929,7 @@ hive_gen = function(seed, cond, storey, lx, ly, lz, alt, room, bounds, wrap, out
 
 # application ####
 prop = list(
-  '98' = list(
+  '06' = list(
     'sw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
                        list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
                             c('w', 'dorm', 0))),
@@ -985,7 +985,7 @@ prop = list(
                       list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'living', 0),
                            c('w', 'outdoors', 0)))
   ),
-  '99' = list(
+  '07' = list(
     'sw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
                        list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
                             c('w', 'adiabatic', 0))),
@@ -1043,9 +1043,9 @@ prop = list(
   )
 )
 
-conds = c('afn', 'hvac')
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
+conds = c('afn', 'hvac')
 # create 'epjsons'
 for (i in 1:length(prop)) {
   for (wrap in wraps) {

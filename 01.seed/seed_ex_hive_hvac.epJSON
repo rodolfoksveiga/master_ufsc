@@ -298,7 +298,7 @@
         }
     },
     "Building": {
-        "single_zone_hive": {
+        "extended_hive": {
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 8,
             "loads_convergence_tolerance_value": 0.04,
