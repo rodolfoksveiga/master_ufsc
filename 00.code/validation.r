@@ -572,7 +572,7 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
 typos = c('hyp')
 simps = c('01', '02', '03', '04', '05', '06', '07')
 wraps = c('c10', 'tv', 'sf')
-storeys = c('terreo', 'inter', 'roof')
+storeys = c('floor', 'inter', 'roof')
 m = 0
 for (typo in typos) {
   for (simp in simps) {
