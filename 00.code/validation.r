@@ -341,9 +341,9 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
   # input_dirs - 
   # df_area - 
   # output_dir - 
-  # write_results - if it's f' the results are assigned to a variable, if it's 't' the results are
+  # write_results - if it's 'f' the results are assigned to a variable, if it's 't' the results are
     # writen into 'csv' files
-
+  
   # create a data frame with simplification labels
   labels = labels(input_dirs)
 
@@ -381,7 +381,9 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
     for (j in 1:length(csv_names[[i]])) {
       for (k in 1:length(csv_names[[i]][[j]])) {
         # count the files while they're loaded
-        print(paste(names(csv_names)[i], '/', names(csv_names[[i]])[j], '/ k =', k))
+        print(paste(Hmisc::capitalize(ifelse(names(csv_names)[i] == 'base', names(csv_names)[i],
+                                             paste0(names(csv_names)[i], '.'))),
+                    '/', toupper(names(csv_names[[i]])[j]), '/ k =', k))
         # load the files themselves
         csv_files[[i]][[j]][[k]] = as.data.frame(data.table::fread(paste0(input_dirs[[i]][[j]],
                                                                      csv_names[[i]][[j]][k])))
@@ -403,14 +405,23 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
     mult_base_dorm_cn = 8
     mult_base_ew_liv_cn = 10
     mult_base_sn_liv_cn = 11
-    if (labels[['simp']][[1]]$simp[1] == '01' | labels[['simp']][[1]]$simp[1] == '03') {
+    if (labels[['simp']][[1]]$simp[1] == '01' | labels[['simp']][[1]]$simp[1] == '03' |
+        labels[['simp']][[1]]$simp[1] == '04') {
       mult_simp_dorm_cn = 8
       mult_simp_ew_liv_cn = 9
       mult_simp_sn_liv_cn = 10
-    } else if (labels[['simp']][[1]]$simp[1] == '02') {
+    } else if (labels[['simp']][[1]]$simp[1] == '02' | labels[['simp']][[1]]$simp[1] == '05') {
       mult_simp_dorm_cn = 8
       mult_simp_ew_liv_cn = 10
       mult_simp_sn_liv_cn = 11
+    } else if (labels[['simp']][[1]]$simp[1] == '06') {
+      mult_simp_dorm_cn = 9
+      mult_simp_ew_liv_cn = 9
+      mult_simp_sn_liv_cn = 9
+    } else if (labels[['simp']][[1]]$simp[1] == '07') {
+      mult_simp_dorm_cn = 8
+      mult_simp_ew_liv_cn = 9
+      mult_simp_sn_liv_cn = 9
     }
   }
   base_dorm_cn = base_ew_liv_cn = base_sn_liv_cn = simp_dorm_cn = simp_ew_liv_cn = simp_sn_liv_cn =
@@ -490,13 +501,10 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
   results[['combo']][['raw']] = vector('list', length = length(csv_files))
   names(results[['combo']][['raw']]) = names(csv_files)
   for (i in 1:length(csv_files)) {
-    # i = 1
     results[['combo']][['raw']][[i]] = vector('list', length = length(input_dirs[[i]]))
     names(results[['combo']][['raw']][[i]]) = names(csv_files[[i]])
     for (j in 1:length(csv_files[[i]])) {
-      # j = 1
       for (k in 1:length(csv_files[[i]][[j]])) {
-        # k = 1
         if (labels[[i]][[j]]$cond[1] == 'afn') {
           results[[i]][[j]][[k]] = report(csv_afn = csv_files[[i]][['afn']][[k]], cond = 'afn')
           results[[i]][[j]][[k]][['df']][, 1:12] =
@@ -562,10 +570,9 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
 
 # application ####
 typos = c('hyp')
-simps = c('01', '02', '03')
+simps = c('01', '02', '03', '04', '05', '06', '07')
 wraps = c('c10', 'tv', 'sf')
-storeys = c('floor', 'inter', 'roof')
-conds = c('afn', 'hvac')
+storeys = c('terreo', 'inter', 'roof')
 m = 0
 for (typo in typos) {
   for (simp in simps) {
@@ -573,25 +580,27 @@ for (typo in typos) {
     for (wrap in wraps) {
       o = 0
       for (storey in storeys) {
-        p = 0
-        for (cond in conds) {
-          print(paste(Hmisc::capitalize(typo), '/', simp, '/', toupper(wrap), '/',
-                      Hmisc::capitalize(storey), '/', toupper(cond)))
-          valid(
-            input_dirs = list('base' = paste0('/media/rodox/HD_EXTERNO/00.hive/0', m, '.', typo,
+        print(paste(Hmisc::capitalize(typo), '/', simp, '/', toupper(wrap), '/',
+                    Hmisc::capitalize(storey)))
+        valid(
+          input_dirs = list('base' = c(paste0('/home/rodox/01.going_on/00.hive/0', m, '.', typo,
                                               '/00/0', n, '.', wrap, '/0', o, '.', storey,
-                                              '/0', p, '.', cond, '/'),
-                              'simp' = paste0('/media/rodox/HD_EXTERNO/00.hive/0', m, '.', typo,
+                                              '/00.afn/'),
+                                       paste0('/home/rodox/01.going_on/00.hive/0', m, '.', typo,
+                                              '/00/0', n, '.', wrap, '/0', o, '.', storey,
+                                              '/01.hvac/')),
+                            'simp' = c(paste0('/home/rodox/01.going_on/00.hive/0', m, '.', typo,
                                               '/', simp, '/0', n, '.', wrap, '/0', o, '.', storey,
-                                              '/0', p, '.', cond, '/')),
-            df_area = paste0('/home/rodox/00.git/00.master_ufsc/02.model/0', m, '.', typo,
-                             '/area_', typo, '.csv'),
-            write_results = T,
-            output_dir = paste0('/home/rodox/00.git/00.master_ufsc/03.result/')
-            )
-          gc()
-          p = p + 1
-        }
+                                              '/00.afn/'),
+                                       paste0('/home/rodox/01.going_on/00.hive/0', m, '.', typo,
+                                              '/', simp, '/0', n, '.', wrap, '/0', o, '.', storey,
+                                              '/01.hvac/'))),
+          df_area = paste0('/home/rodox/00.git/00.master_ufsc/02.model/0', m, '.', typo,
+                           '/area_', typo, '.csv'),
+          write_results = T,
+          output_dir = paste0('/home/rodox/00.git/00.master_ufsc/03.result/')
+        )
+        gc()
         o = o + 1
       }
       n = n + 1
