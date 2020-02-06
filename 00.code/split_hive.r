@@ -29,7 +29,7 @@ split_hive = function(input_dir, pattern = NULL, zone_name = 'hive_c', output_di
 }
 
 # application ####
-simps = c('05')
+simps = c('05', '06', '07')
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
 conds = c('afn', 'hvac')
