@@ -410,11 +410,11 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
       mult_simp_dorm_cn = 8
       mult_simp_ew_liv_cn = 9
       mult_simp_sn_liv_cn = 10
-    } else if (labels[['simp']][[1]]$simp[1] == '02' | labels[['simp']][[1]]$simp[1] == '05') {
+    } else if (labels[['simp']][[1]]$simp[1] == '02') {
       mult_simp_dorm_cn = 8
       mult_simp_ew_liv_cn = 10
       mult_simp_sn_liv_cn = 11
-    } else if (labels[['simp']][[1]]$simp[1] == '06') {
+    } else if (labels[['simp']][[1]]$simp[1] == '05' | labels[['simp']][[1]]$simp[1] == '06') {
       mult_simp_dorm_cn = 9
       mult_simp_ew_liv_cn = 9
       mult_simp_sn_liv_cn = 9
@@ -570,7 +570,7 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
 
 # application ####
 typos = c('hyp')
-simps = c('01', '02', '03', '04', '05', '06', '07')
+simps = c('05', '06', '07')
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
 m = 0
