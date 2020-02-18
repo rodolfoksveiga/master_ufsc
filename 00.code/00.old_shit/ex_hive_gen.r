@@ -163,8 +163,8 @@ zone_adj = function(side, n, lx, ly) {
 # hive_gen()
   # loads a seed file filled with all possible surfaces, fenestrations and conditioning system
     # ('hvac' and 'afn') objects and sorting them out
-hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, abs_walls, abs_roof,
-                    bounds, shgc, u_window, vf, shut, proj, output_dir, model_name) {
+hive_gen = function(seed_path, cond, storey, lx, ly, lz, alt, room, bounds, wrap, output_dir,
+                    model_name) {
   # seed - epJSON's file full path filled with constant values
   # cond - air conditioning type
     # possible values: 'hvac' and 'afn'
