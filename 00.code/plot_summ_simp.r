@@ -55,7 +55,7 @@ bp_comf = function(df, rel = F, output_dir) {
   
   # start plotting
   # associate conditions to plot and name the plot and name the plot
-  plot_name = ifelse(rel == F, 'phot_diff_abs.png', 'phot_diff_rel.png')
+  plot_name = ifelse(rel == F, 'phto_diff_abs.png', 'phto_diff_rel.png')
   png(filename = paste0(output_dir, plot_name), width = 33.8, height = 19, units = 'cm', res = 500)
   plot(
     # plot characteristics
@@ -66,10 +66,7 @@ bp_comf = function(df, rel = F, output_dir) {
       geom_boxplot(outlier.shape = NA) +
       geom_jitter(aes(colour = wrap, shape = room)) +
       # define labs (title, x and y labs)
-      labs(title = paste('Diferença', ifelse(rel == F, 'Absoluta', 'Relativa'),
-                         'do Percentual de Horas com Temperatura Operativa entre 18°C e 26°C'),
-           subtitle = 'Comparação com a simplificação n° 0',
-           x = 'Simplificação',
+      labs(x = 'Simplificação',
            y = ifelse(rel == F, 'Diff. Abs. PHTO18-26 (%)', 'Diff. Rel. PHTO18-26 (%)'),
            colour = 'Envoltória:',
            shape = 'Ambiente:') +
@@ -79,8 +76,6 @@ bp_comf = function(df, rel = F, output_dir) {
       theme(legend.text = element_text(size = 14),
             legend.title = element_text(size = 15),
             legend.position = 'bottom',
-            plot.title = element_text(size = 20, hjust = 0.5),
-            plot.subtitle = element_text(size = 16, hjust = 0.5),
             axis.title.x = element_text(size = 15),
             axis.title.y = element_text(size = 15),
             axis.text.x = element_text(size = 14),
@@ -114,10 +109,7 @@ bp_cgt = function(df, rel = F, output_dir) {
       geom_boxplot(outlier.shape = NA) +
       geom_jitter(aes(colour = wrap, shape = room)) +
       # define labs (title, x and y labs)
-      labs(title = paste('Diferença', ifelse(rel == F, 'Absoluta', 'Relativa'),
-                         'da Carga Térmica de Resfriamento'),
-           subtitle = 'Comparação com a simplificação n° 0',
-           x = 'Simplificação',
+      labs(x = 'Simplificação',
            y = ifelse(rel == F, 'Diff. Abs. CTR (kWh/m²)', 'Diff. Rel. CTR (%)'),
            colour = 'Envoltória:',
            shape = 'Ambiente:') +
@@ -127,8 +119,6 @@ bp_cgt = function(df, rel = F, output_dir) {
       theme(legend.text = element_text(size = 14),
             legend.title = element_text(size = 15),
             legend.position = 'bottom',
-            plot.title = element_text(size = 20, hjust = 0.5),
-            plot.subtitle = element_text(size = 16, hjust = 0.5),
             axis.title.x = element_text(size = 15),
             axis.title.y = element_text(size = 15),
             axis.text.x = element_text(size = 14),
@@ -141,7 +131,7 @@ bp_cgt = function(df, rel = F, output_dir) {
 }
 
 # table functions ####
-create_table = function(data, output_dir) {
+summ_table = function(data, output_dir) {
   df = as.data.frame(matrix(nrow = 7*2*6, ncol = 12))
   data_summ = data.frame('afn_inf_sens' = data$combo$afn$raw$afn_inf_sens_hge +
                            data$combo$afn$raw$afn_inf_sens_hle,
@@ -180,6 +170,7 @@ create_table = function(data, output_dir) {
   write.csv(df, paste0(output_dir, 'summary_table_raw.csv'))
 }
 
+
 # application ####
 data = process('/home/rodox/00.git/00.master_ufsc/03.result/')
 bp_comf(df = data$combo$afn$diff_abs, rel = F,
@@ -187,4 +178,37 @@ bp_comf(df = data$combo$afn$diff_abs, rel = F,
 bp_cgt(df = data$combo$hvac$diff_abs, rel = F,
        output_dir = '/home/rodox/00.git/00.master_ufsc/04.plot/')
 create_table(data, output_dir = '/home/rodox/00.git/00.master_ufsc/04.plot/')
+
+
+
+
+
+# scatter plot!
+
+data$combo$afn$raw$room = ifelse(grepl('Dorm', data$combo$afn$raw$room), 'Dorm', 'Sala')
+
+ggplot(data = subset(data$combo$afn$raw, simp == 6)) +
+  # create one grid for each weather
+  facet_grid(storey ~ weather) +
+  # insert a bar box plot using 'total cooling load x dweling'
+  geom_point(aes(x = subset(data$combo$afn$raw, simp == 0)$comf,
+                 y = subset(data$combo$afn$raw, simp == 6)$comf,
+                 colour = wrap, shape = room)) +
+  geom_abline(intercept = 0, slope = 1, colour = 'black', linetype = 'dashed') +
+  # define labs (title, x and y labs)
+  labs(x = 'PHTO18-26 (%) - Simulação',
+       y = 'PHTO18-26 (%) - Simplificação',
+       colour = 'Envoltória:',
+       shape = 'Ambiente:') +
+  scale_shape_manual(values = c(4, 19)) +
+  # edit all kind of text in the plot
+  theme(legend.text = element_text(size = 14),
+        legend.title = element_text(size = 15),
+        legend.position = 'bottom',
+        axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        strip.text.x = element_text(size = 17),
+        strip.text.y = element_text(size = 17))
 

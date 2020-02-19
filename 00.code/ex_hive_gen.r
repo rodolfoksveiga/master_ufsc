@@ -163,7 +163,7 @@ zone_adj = function(side, n, lx, ly) {
 # hive_gen()
   # loads a seed file filled with all possible surfaces, fenestrations and conditioning system
     # ('hvac' and 'afn') objects and sorting them out
-hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, abs_walls, abs_roof,
+hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, abs_wall, abs_roof,
                     bounds, shgc, u_window, vf, shut, proj, output_dir, model_name) {
   # seed - epJSON's file full path filled with constant values
   # cond - air conditioning type
@@ -189,7 +189,29 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
     # possible values: 'c10' (concreto de 10 cm), 'tv' (tijolo vazado) and 'sf' (steel frame)
   # output_dir - directory where the model is saved
   # model_name - name of the file (model) to be saved
+  
+  # test
+  seed_path = '/home/rodox/00.git/00.master_ufsc/01.seed/seed_ex_hive_hvac.epJSON'
+  cond = 'hvac'
+  room = 'dorm'
+  storey = 'inter'
+  lx = 4
+  ly = 3
+  lz = 2.7
+  alt = 0
+  azi = 270
+  wrap = 'c10'
+  abs_wall = 0.2
+  abs_roof = 0.2
+  bounds = list(c('s', 'outdoors', 0.2), c('e', 'living', 0),
+                c('n', 'adiabatic', 0), c('w', 'dorm', 0))
+  shgc = 0.7
+  u_window = 5.7
+  vf = 0.4
+  output_dir = '/home/rodox/00.git/00.master_ufsc/05.sample/'
+  model_name = 'sw_dorm_1'
 
+  
   # pre-process
   
   # load seed file
@@ -209,68 +231,69 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
   vertices = c('vertex_1_x', 'vertex_1_y', 'vertex_1_z', 'vertex_2_x', 'vertex_2_y', 'vertex_2_z',
                'vertex_3_x', 'vertex_3_y', 'vertex_3_z', 'vertex_4_x', 'vertex_4_y', 'vertex_4_z')
   
-  # construction
+  # azimuth and altitude
+  seed$'Building'$'extended_hive'$'north_axis' = azi
   
-  # if - walls are constructed with concreto de 10 cm
-  if (wrap == 'c10') {
+  # construction
+  if (wrap == 'c10') { # walls are constructed with concreto de 10 cm
     for (wall in c('ext_wall', 'int_wall')) {
-      seed[['Construction']][[wall]]$outside_layer = 'concreto_10cm'
-      seed[['Construction']][[wall]]$idf_max_fields = 2
+      seed$'Construction'[[wall]]$'outside_layer' = 'concreto_10cm'
+      seed$'Construction'[[wall]]$'idf_max_fields' = 2
     }
-  }
-  # else if - walls are constructed with tijolo vazado
-  else if (wrap == 'tv') {
-    seed[['Construction']][['ext_wall']]$outside_layer = 'argamassa_externa'
-    seed[['Construction']][['int_wall']]$outside_layer = 'argamassa_interna'
+  } else if (wrap == 'tv') { # walls are constructed with tijolo vazado
+    seed$'Construction'$'ext_wall'$'outside_layer' = 'argamassa_externa'
+    seed$'Construction'$'int_wall'$'outside_layer' = 'argamassa_interna'
     for (wall in c('ext_wall', 'int_wall')) {
-      seed[['Construction']][[wall]]$idf_max_fields = 6
-      seed[['Construction']][[wall]]$layer_2 = 'tijolo_9x19x19'
-      seed[['Construction']][[wall]]$layer_3 = 'camara_parede'
-      seed[['Construction']][[wall]]$layer_4 = 'tijolo_9x19x19'
-      seed[['Construction']][[wall]]$layer_5 = 'argamassa_interna'
+      seed$'Construction'[[wall]]$'idf_max_fields' = 6
+      seed$'Construction'[[wall]]$'layer_2' = 'tijolo_9x19x19'
+      seed$'Construction'[[wall]]$'layer_3' = 'camara_parede'
+      seed$'Construction'[[wall]]$'layer_4' = 'tijolo_9x19x19'
+      seed$'Construction'[[wall]]$'layer_5' = 'argamassa_interna'
     }
-  }
-  # else if - walls are constructed with tijolo vazado
-  else if (wrap == 'sf') {
-    seed[['Construction']][['ext_wall']]$outside_layer = 'placa_cimenticia'
-    seed[['Construction']][['int_wall']]$outside_layer = 'gesso'
+  } else if (wrap == 'sf') { # walls are constructed with tijolo vazado
+    seed$'Construction'$'ext_wall'$'outside_layer' = 'placa_cimenticia'
+    seed$'Construction'$'int_wall'$'outside_layer' = 'gesso'
     for (wall in c('ext_wall', 'int_wall')) {
-      seed[['Construction']][[wall]]$idf_max_fields = 4
-      seed[['Construction']][[wall]]$layer_2 = 'la_vidro_5cm'
-      seed[['Construction']][[wall]]$layer_3 = 'gesso'
+      seed$'Construction'[[wall]]$'idf_max_fields' = 4
+      seed$'Construction'[[wall]]$'layer_2' = 'la_vidro_5cm'
+      seed$'Construction'[[wall]]$'layer_3' = 'gesso'
     }
-  }
-  # else - a warns about the absence of material
-  else {
+  } else { # an warning about the absence of material
     print('Warning: material not selected!')
   }
   
-  # for all boundary conditions
-  for (bound in bounds) {
-
+  # materials thermal absorptance
+  seed$'Material'[[seed$'Construction'$'ext_wall'$'outside_layer']]$
+    'thermal_absorptance' = abs_wall
+  seed$'Material'[[seed$'Construction'$'roof'$'outside_layer']]$
+    'thermal_absorptance' = abs_roof
+  
+  # solar heat gain coefficient (shgc)
+  seed$'WindowMaterial:SimpleGlazingSystem'$'vidro_simples_0.87'$
+    'solar_heat_gain_coefficient' = shgc
+  # window's thermal transmittance
+  seed$'WindowMaterial:SimpleGlazingSystem'$'vidro_simples_0.87'$'u_factor' = u_window
+  
+  # ventilation factor
+  seed$'AirflowNetwork:MultiZone:Component:DetailedOpening'$'window_opening'$
+    'width_factor_for_opening_factor_2' = vf
+  
+  for (bound in bounds) { # for all boundary conditions
     # zone
       # the core zone only needs the z origin, because the x and y are 0 and 0, respectively
-    
-    # core
-    if (bound[[1]][2] == 'c') {
+    if (bound[[1]][2] == 'c') { # core
       # 'z' origin vertex
       seed$'Zone'[[bound[[1]][1]]]$'z_origin' = alt
-    }
-    # hive
-    else {
-      # run for interior and exterior hives
-      for (n in 1:2) {
-        # boundary is a room ('living' or 'dorm')
-        if (is_room(bound[[n]][3])) {
+    } else { # hive
+      for (n in 1:2) { # run for interior and exterior hives
+        if (is_room(bound[[n]][3])) { # boundary is a room ('living' or 'dorm')
           # 'x' origin vertex
           seed$'Zone'[[bound[[n]][1]]]$'x_origin' = zone_adj(bound[[1]][2], n, lx, ly)[1]
           # 'y' origin vertex
           seed$'Zone'[[bound[[n]][1]]]$'y_origin' = zone_adj(bound[[1]][2], n, lx, ly)[2]
           # 'z' origin vertex
           seed$'Zone'[[bound[[n]][1]]]$'z_origin' = alt
-        }
-        # boundary is adiabatic or outdoors
-        else {
+        } else { # boundary is adiabatic or outdoors
           # remove all the zone objects
           seed$'Zone'[[bound[[n]][1]]] = NULL
         }
@@ -278,11 +301,8 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
     }
     
     # building surface (boundary conditions) - floors and roofs
-    
-    # core
-    if (bound[[1]][2] == 'c') {
-      # if - storey is a floor
-      if (storey == 'floor') {
+    if (bound[[1]][2] == 'c') { # core
+      if (storey == 'floor') { # storey is a floor
         # floor properties
         seed$'BuildingSurface:Detailed'$'hive_c_floor'$
           'outside_boundary_condition' = 'OtherSideConditionsModel'
@@ -294,25 +314,20 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
         seed$'BuildingSurface:Detailed'$'hive_c_roof'$'outside_boundary_condition' = 'Adiabatic'
         seed$'BuildingSurface:Detailed'$'hive_c_roof'$'sun_exposure' = 'NoSun'
         seed$'BuildingSurface:Detailed'$'hive_c_roof'$'wind_exposure' = 'NoWind'
-      }
-      # else - storey is an inter pav. or a roof
-      else {
+      } else { # storey is an inter pav. or a roof
         # floor properties
         seed$'BuildingSurface:Detailed'$'hive_c_floor'$'outside_boundary_condition' = 'Adiabatic'
         seed$'Site:GroundDomain:Slab' = NULL
         seed$'Site:GroundTemperature:Undisturbed:FiniteDifference' = NULL
         seed$'SurfaceProperty:OtherSideConditionsModel' = NULL
-        # if - storey is an inter pav.
-        if (storey == 'inter') {
+        if (storey == 'inter') { # storey is an inter pav.
           # ceiling properties
           seed$'BuildingSurface:Detailed'$'hive_c_roof'$'construction_name' = 'ceiling'
           seed$'BuildingSurface:Detailed'$'hive_c_roof'$'surface_type' = 'Ceiling'
           seed$'BuildingSurface:Detailed'$'hive_c_roof'$'outside_boundary_condition' = 'Adiabatic'
           seed$'BuildingSurface:Detailed'$'hive_c_roof'$'sun_exposure' = 'NoSun'
           seed$'BuildingSurface:Detailed'$'hive_c_roof'$'wind_exposure' = 'NoWind'
-        }
-        # if - storey is a roof
-        else {
+        } else { # storey is a roof
           # roof properties
           seed$'BuildingSurface:Detailed'$'hive_c_roof'$'construction_name' = 'roof'
           seed$'BuildingSurface:Detailed'$'hive_c_roof'$'surface_type' = 'Roof'
@@ -321,13 +336,9 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
           seed$'BuildingSurface:Detailed'$'hive_c_roof'$'wind_exposure' = 'WindExposed'
         }
       }
-    }
-    # hive
-    else {
-      # run for interior and exterior hives
-      for (n in 1:2) {
-        # if - storey is a floor
-        if (storey == 'floor') {
+    } else { # hive
+      for (n in 1:2) { # run for interior and exterior hives
+        if (storey == 'floor') { # storey is a floor
           # floor properties
           seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_floor')]]$
             'outside_boundary_condition' = 'OtherSideConditionsModel'
@@ -344,14 +355,11 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
             'sun_exposure' = 'NoSun'
           seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
             'wind_exposure' = 'NoWind'
-        }
-        # else - storey is an inter pav. or a roof
-        else {
+        } else { # storey is an inter pav. or a roof
           # floor properties
           seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_floor')]]$
             'outside_boundary_condition' = 'Adiabatic'
-          # if - storey is an inter pav.
-          if (storey == 'inter') {
+          if (storey == 'inter') { # storey is an inter pav.
             # ceiling properties
             seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
               'construction_name' = 'ceiling'
@@ -363,9 +371,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
               'sun_exposure' = 'NoSun'
             seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
               'wind_exposure' = 'NoWind'
-          }
-          # else - storey is a roof
-          else {
+          } else { # storey is a roof
             # roof properties
             seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_roof')]]$
               'construction_name' = 'roof'
@@ -383,31 +389,22 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
     }
     
     # building surface (geometry) - walls
-    
-    # run for all the surfaces
-    for (surf in surfs) {
-      # core
-      if (bound[[1]][2] == 'c') {
+    for (surf in surfs) { # run for all the surfaces
+      if (bound[[1]][2] == 'c') { # core
         # surfaces geometry
         seed$'BuildingSurface:Detailed'[[paste0('hive_c_', surf)]]$
           'vertices' = build_surf(bound[[1]][2],
                                   ifelse(grepl('wall', surf), stringr::str_sub(surf, -1), surf),
                                   lx, ly, lz)
-      }
-      # hive
-      else {
-        # run for interior and exterior hives
-        for (n in 1:2) {
-          # boundary is a room ('living' or 'dorm')
-          if (is_room(bound[[n]][3])) {
+      } else { # hive
+        for (n in 1:2) { # run for interior and exterior hives
+          if (is_room(bound[[n]][3])) { # boundary is a room ('living' or 'dorm')
             # surfaces geometry
             seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_', surf)]]$
               'vertices' = build_surf(bound[[1]][2],
                                       ifelse(grepl('wall', surf), stringr::str_sub(surf, -1), surf),
                                       lx, ly, lz)
-          }
-          # boundary is outdoors or adiabatic
-          else {
+          } else { # boundary is outdoors or adiabatic
             # remove all the building surface objects
             seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_', surf)]] = NULL
           }
@@ -417,11 +414,8 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
     
     # building surface (boundary condition)
       # walls
-    
-    # core
-    if (bound[[1]][2] == 'c') {
-      # run for hives boundary conditions
-      for (hive in hives) {
+    if (bound[[1]][2] == 'c') { # core
+      for (hive in hives) { # run for hives boundary conditions
         # construction name
         seed$'BuildingSurface:Detailed'[[paste0('hive_c_wall_', hive[2])]]$
           'construction_name' = ifelse(hive[3] == 'outdoors', 'ext_wall', 'int_wall')
@@ -430,14 +424,11 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
           'outside_boundary_condition' = ifelse(hive[3] == 'outdoors', 'Outdoors',
                                                 ifelse(hive[3] == 'adiabatic', 'Adiabatic',
                                                        'Surface'))
-        # if - boundary is a room ('living' or 'dorm')
-        if (is_room(hive[3])) {
+        if (is_room(hive[3])) { # boundary is a room ('living' or 'dorm')
           # outside boundary condition object
           seed$'BuildingSurface:Detailed'[[paste0('hive_c_wall_', hive[2])]]$
             'outside_boundary_condition_object' = paste0(hive[1], '_wall_', opos_side(hive[2]))
-        }
-        # else - boundary is outdoors or adiabatic
-        else {
+        } else { # boundary is outdoors or adiabatic
           # outside boundary condition object
           seed$'BuildingSurface:Detailed'[[paste0('hive_c_wall_', hive[2])]]$
             'outside_boundary_condition_object' = NULL
@@ -449,16 +440,13 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
         seed$'BuildingSurface:Detailed'[[paste0('hive_c_wall_', hive[2])]]$
           'wind_exposure' = ifelse(hive[3] == 'outdoors', 'WindExposed', 'NoWind')
       }
-    }
-    # hive
-    else {
+    } else { # hive
       # run for both adjacent sides
         # e.g. 'north' boundary has 'east' and 'west'
       for (a in 1:2) {
-        # if - adjacent boundary is a room ('living' or 'dorm')
-        if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3])) { 
-          # if - boundary is outdoors
-          if (bound[[1]][3] == 'outdoors') {
+        if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3])) {
+            # adjacent boundary is a room ('living' or 'dorm')
+          if (bound[[1]][3] == 'outdoors') { # boundary is outdoors
             # construction name
             seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[a],
                                                     '1_wall_', bound[[1]][2])]]$
@@ -467,7 +455,6 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
             seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[a],
                                                     '1_wall_', bound[[1]][2])]]$
               'outside_boundary_condition' = 'Outdoors'
-            
             # sun exposure
             seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[a],
                                                     '1_wall_', bound[[1]][2])]]$
@@ -476,9 +463,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
             seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[a],
                                                     '1_wall_', bound[[1]][2])]]$
               'wind_exposure' = 'WindExposed'
-          }
-          # else - boundary is a room ('living' or 'dorm') or adiabatic
-          else {
+          } else { # boundary is a room ('living' or 'dorm') or adiabatic
             # construction name
             seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[a],
                                                     '1_wall_', bound[[1]][2])]]$
@@ -501,15 +486,10 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
     }
     
     # fenestration surface (geometry)
-    
-    # core
-    if (bound[[1]][2] == 'c') {
-      # run for hives boundary conditions
-      for (hive in hives) {
-        # if - boundary is a room ('living' or 'dorm')
-        if (is_room(hive[3])) {
-          # run for the 9 vertices
-          for (i in 1:length(vertices)) {
+    if (bound[[1]][2] == 'c') { # core
+      for (hive in hives) { # run for hives boundary conditions
+        if (is_room(hive[3])) { # boundary is a room ('living' or 'dorm')
+          for (i in 1:length(vertices)) { # run for the 9 vertices
             # there is a door on this surface
             seed$'FenestrationSurface:Detailed'[[paste0('hive_c_door_',
                                                         hive[2])]][[paste0(vertices[i],
@@ -518,9 +498,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
           }
           # there is no window on this surface
           seed$'FenestrationSurface:Detailed'[[paste0('hive_c_window_', hive[2])]] = NULL
-        }
-        # else if - boundary is outdoor and there is a window
-        else if (hive[3] == 'outdoors' & hive[4] > 0) {
+        } else if (hive[3] == 'outdoors' & hive[4] > 0) { # boundary is outdoor and there is a window
           # there is no door on this surface
           seed$'FenestrationSurface:Detailed'[[paste0('hive_c_door_', hive[2])]] = NULL
           for (i in 1:length(vertices)) { # run for the 9 vertices
@@ -530,24 +508,17 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
                                                                            '_coordinate')]] =
               fen_surf('window', hive[2], lx, ly, lz, num(hive[4]))[i]
           }
-        }
-        # else - boundary is outdoors with no window or adiabatic
-        else {
+        } else { # boundary is outdoors with no window or adiabatic
           # there is no door
           seed$'FenestrationSurface:Detailed'[[paste0('hive_c_door_', hive[2])]] = NULL
           # there is no window
           seed$'FenestrationSurface:Detailed'[[paste0('hive_c_window_', hive[2])]] = NULL
         }
       }
-    }
-    # hive
-    else {
-      # if - boundary is a room
-      if (is_room(bound[[1]][3])) {
-        # run for interior and exterior hives and both adjacent sides
-        for (na in 1:2) {
-          # run for the 9 vertices
-          for (i in 1:length(vertices)) {
+    } else { # hive
+      if (is_room(bound[[1]][3])) { # boundary is a room
+        for (na in 1:2) { # run for interior and exterior hives and both adjacent sides
+          for (i in 1:length(vertices)) { # run for the 9 vertices
             # there is a door on the interior and exterior hives oposite surfaces
               # e.g. wall 'north' is a room, there is a door on 'south' surface of the interior and
                 # exterior 'north' hives
@@ -564,8 +535,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
           seed$'FenestrationSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[na],
                                                       '1_window_', bound[[1]][2])]] = NULL
         }
-        # run for the 9 vertices
-        for (i in 1:length(vertices)) {
+        for (i in 1:length(vertices)) { # run for the 9 vertices
           # there is a door on this surface of the interior hive
             # e.g. wall 'north' is a room, there is a door on 'north' surface of the interior
               # 'north' hive
@@ -585,9 +555,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
             fen_surf('window', bound[[1]][2], ifelse(is_csn(bound[[1]][2]), lx, ly),
                      ifelse(is_csn(bound[[1]][2]), lx, ly), lz, 0.17)[i]
         }
-      }
-      # else - boundary is outdoors or adiabatic
-      else {
+      } else { # else - boundary is outdoors or adiabatic
         # there is no door on this surface of the interior hive
           # e.g. wall 'north' outdoors or adiabatic, there is no door on 'north' surface of the
             # interior 'north' hive
@@ -596,8 +564,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
           # e.g. wall 'north' outdoors or adiabatic, there is no window on 'north' surface of the
             # exterior 'north' hive
         seed$'FenestrationSurface:Detailed'[[paste0(bound[[2]][1], '_window_', bound[[1]][2])]] = NULL
-        # run for interior and exterior hives and both adjacent sides
-        for (na in 1:2) {
+        for (na in 1:2) { # run for interior and exterior hives and both adjacent sides
           # there is no door on the interior and exterior hives oposite surfaces
             # e.g. wall 'north' is a room, there is no door on 'south' surface of the interior and
               # exterior 'north' hives
@@ -610,20 +577,15 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
             # of course, there is no room on this boundary!
           seed$'FenestrationSurface:Detailed'[[paste0(bound[[1]][1], '_window_',
                                                       adj_side(bound[[1]][2]))[na]]] = NULL
-          # if - boundary is adiabatic
-          if (bound[[1]][3] == 'adiabatic') {
+          if (bound[[1]][3] == 'adiabatic') { # boundary is adiabatic
             # there is no window on this surface of the adjacent interior hives
               # e.g. wall 'north' is a room, there is no window on 'north' surface of the interior
                 # 'east' and 'west' hives
             seed$'FenestrationSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[na],
                                                         '1_window_', bound[[1]][2])]] = NULL
-          }
-          # boundary surface is outdoors
-          else {
-            # if - adjacent boundary is a room
-            if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[na])]][[1]][3])) {
-              # run for the 9 vertices
-              for (i in 1:length(vertices)) {
+          } else { # boundary surface is outdoors
+            if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[na])]][[1]][3])) { # adjacent boundary is a room
+              for (i in 1:length(vertices)) { # run for the 9 vertices
                 # there is a window on this surface of the adjacent interior hives
                   # e.g. wall 'north' is a room, there is a window on 'north' surface of the interior
                     # 'east' and 'west' hives
@@ -634,9 +596,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
                   fen_surf('window', bound[[1]][2], ifelse(is_csn(adj_side(bound[[1]][2])[na]), lx, ly),
                            ifelse(is_csn(adj_side(bound[[1]][2])[na]), lx, ly), lz, 0.17)[i]
               }
-            }
-            # else - djacent boundary is adiabatic or outdoors
-            else {
+            } else { # adjacent boundary is adiabatic or outdoors
               # there is a window on this surface of the adjacent interior hives
                 # e.g. wall 'north' is a room, there is a window on 'north' surface of the interior
                   # 'east' and 'west' hives
