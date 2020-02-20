@@ -168,25 +168,34 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
   # seed - epJSON's file full path filled with constant values
   # cond - air conditioning type
     # possible values: 'hvac' and 'afn'
+  # room - type of room's occupation
+    # possible values: 'living' and 'dorm'
   # storey - storey level
     # possible values: 'floor', 'inter' and 'roof'
   # lx - zone's width
   # ly - zone's depth
   # lz - zone's heigth
   # alt - altitude of the zone
-  # room - type of room's occupation
-    # possible values: 'living' and 'dorm'
-  # bounds - a list containing orientation, boundary condition and wfr (window to floor ratio)
+  # azi - azimuth (north axis)
+  # wrap - combination of wall and roof construction materials
+    # possible values: 'c10' (10 cm of concrete), 'tv' (hollow brick) and 'sf' (steel frame)
+  # abs_wall - wall's thermal absorptance
+  # abs_roof - roof's thermal absorptance
+  # bounds - a list containing orientation, boundary condition and 'wfr' (window to floor ratio)
     # possible for boundary conditions: 'outdoors', 'adiabatic', 'dorm' and 'living'
-  # wfr - window to floor ratio
-    # possible values for wfr: from 0 to the value correspondent to ('window area' / 'floor area')
-    # wfr equation: wfr = (sum('glass area') / 'floor_area')
-    # obs.: the columns of the data frame must have the all the orientations labelled as follow:
-      # 's', 'e', 'n' and 'w'
+    # wfr - window to floor ratio
+      # possible values for wfr: from 0 to the value correspondent to ('window area' / 'floor area')
+      # wfr equation: wfr = (sum('glass area') / 'floor_area')
+      # obs.: the columns of the data frame must have the all the orientations labelled as follow:
+        # 's', 'e', 'n' and 'w'
     # e.g.: bounds = list(c('s', 'outdoors', 0.1), c('e', 'outdoors', 0.05),
                         # c('n', 'dorm', 0), c('w', 'living', 0))
-  # wrap - refeers to the wall materials
-    # possible values: 'c10' (concreto de 10 cm), 'tv' (tijolo vazado) and 'sf' (steel frame)
+  # shgc - window's solar heat gain coefficient
+  # u_window - window's thermal transmittance
+  # vf - ventilation factor
+  # shut - shutter
+    # possible values: 0 (no shutter) and 1 (using shutter)
+  # proj - projection of balcony or marquee
   # output_dir - directory where the model is saved
   # model_name - name of the file (model) to be saved
   
@@ -441,11 +450,9 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
           'wind_exposure' = ifelse(hive[3] == 'outdoors', 'WindExposed', 'NoWind')
       }
     } else { # hive
-      # run for both adjacent sides
-        # e.g. 'north' boundary has 'east' and 'west'
-      for (a in 1:2) {
-        if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3])) {
-            # adjacent boundary is a room ('living' or 'dorm')
+      for (a in 1:2) { # run for both adjacent sides
+          # e.g. 'north' boundary has 'east' and 'west'
+        if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3])) { # adjacent boundary is a room ('living' or 'dorm')
           if (bound[[1]][3] == 'outdoors') { # boundary is outdoors
             # construction name
             seed$'BuildingSurface:Detailed'[[paste0('hive_', adj_side(bound[[1]][2])[a],
@@ -555,7 +562,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
             fen_surf('window', bound[[1]][2], ifelse(is_csn(bound[[1]][2]), lx, ly),
                      ifelse(is_csn(bound[[1]][2]), lx, ly), lz, 0.17)[i]
         }
-      } else { # else - boundary is outdoors or adiabatic
+      } else { # boundary is outdoors or adiabatic
         # there is no door on this surface of the interior hive
           # e.g. wall 'north' outdoors or adiabatic, there is no door on 'north' surface of the
             # interior 'north' hive
@@ -614,78 +621,53 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
         # be removed if it's necessary
       # when there is no window or door, there's no need to use airflow network
       # when there is no zone, both airflow network surface and zone objects can be removed
-    
-    # core
-    if (bound[[1]][2] == 'c') {
-      # run for hives boundary conditions
-      for (hive in hives) {
-        # if - boundary is a room ('living' or 'dorm')
-        if (is_room(hive[3])) {
+    if (bound[[1]][2] == 'c') { # core
+      for (hive in hives) { # run for hives boundary conditions
+        if (is_room(hive[3])) { # boundary is a room ('living' or 'dorm')
           # no window on this surface
           seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_c_window_', hive[2])]] = NULL
-        }
-        # else if - boundary is adiabatic
-        else if (hive[3] == 'adiabatic') {
+        } else if (hive[3] == 'adiabatic') { # boundary is adiabatic
           # no door on this surface
           seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_c_door_', hive[2])]] = NULL
           # no window on this surface
           seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_c_window_', hive[2])]] = NULL
-        }
-        # else - boundary is outdoors
-        else {
+        } else { # boundary is outdoors
           # no door on this surface
           seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_c_door_', hive[2])]] = NULL
-          # if - boundary surface has a window
-          if (hive[4] > 0) {
-            # if - zone is conditioned by naturally
-            if (cond == 'afn') {
-              # if - room is a 'living'
-              if (room == 'living') {
+          if (hive[4] > 0) { # boundary surface has a window
+            if (cond == 'afn') { # zone is conditioned by naturally
+              if (room == 'living') { # room is a 'living'
                 seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_c_window_', hive[2])]]$
                   'venting_availability_schedule_name' = 'sch_afn_living'
-              }
-              # else - room is a 'dorm'
-              else {
+              } else { # room is a 'dorm'
                 seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_c_window_', hive[2])]]$
                   'venting_availability_schedule_name' = 'sch_afn_dorm'
               }
             }
-          }
-          # else - boundary surface has no window
-          else {
+          } else { # boundary surface has no window
             # no window on this surface
             seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_c_window_', hive[2])]] = NULL
           }
         }
       }
-    }
-    # hive
-    else {
-      # if - boundary is a room ('living' or 'dorm')
-      if (is_room(bound[[1]][3])) {
-        # if - boundary is a room ('living'
-        if (bound[[2]][3] == 'living') {
+    } else { # hive
+      if (is_room(bound[[1]][3])) { # boundary is a room ('living' or 'dorm')
+        if (bound[[2]][3] == 'living') { # boundary is a room ('living'
           seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[2]][1],
                                                           '_window_', bound[[1]][2])]]$
             'venting_availability_schedule_name' = 'sch_afn_living'
-        }
-        # else - boundary is a room ('living'
-        else {
+        } else { # boundary is a room ('living'
           seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[2]][1],
                                                           '_window_', bound[[1]][2])]]$
             'venting_availability_schedule_name' = 'sch_afn_dorm'
-        }
-        # run for both adjacent surfaces
-        for (a in 1:2) {
+        } for (a in 1:2) { # run for both adjacent surfaces
           # there is no window on this surface of the adjacent interior hives
             # e.g. wall 'north' is a room, there is no window on 'north' surface of the interior
               # 'east' and 'west' hives
           seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[a],
                                                           '1_window_', bound[[1]][2])]] = NULL
         }
-      }
-      # else - boundary surface is outdoors or adiabatic
-      else {
+      } else { # boundary surface is outdoors or adiabatic
         # there is no door on this surface of the interior hive
           # e.g. wall 'north' outdoors or adiabatic, there is no door on 'north' surface of the
             # interior 'north' hive
@@ -698,8 +680,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
           # of course, there is no room on this adjacent boundary!
         seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[2]][1], '_window_',
                                                         bound[[1]][2])]] = NULL
-        # run for interior and exterior hives and both adjacent surfaces
-        for (na in 1:2) {
+        for (na in 1:2) { # run for interior and exterior hives and both adjacent surfaces
           # there is no window on the interior hive adjacent surfaces
             # e.g. wall 'north' is a outdoors, there is no window on 'south' surface of the interior
               # and exterior 'north' hives
@@ -709,28 +690,19 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
           # there is no windows or doors on this hives
             # therefore, no airflow network
           seed$'AirflowNetwork:MultiZone:Zone'[[paste0('afn_', bound[[na]][1])]] = NULL
-        }
-        # if - boundary surface is outdoors
-        if (bound[[1]][3] == 'outdoors') {
-          # run for both adjacent surfaces
-          for (a in 1:2) {
-            # if - adjacent boundary is a room
-            if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3])) {
-              # if - adjacent boundary is a 'living'
-              if (bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3] == 'living') {
+        } if (bound[[1]][3] == 'outdoors') { # boundary surface is outdoors
+          for (a in 1:2) { # run for both adjacent surfaces
+            if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3])) { # adjacent boundary is a room
+              if (bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3] == 'living') { # adjacent boundary is a 'living'
                 seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[a],
                                                                 '1_window_', bound[[1]][2])]]$
                   'venting_availability_schedule_name' = 'sch_afn_living'
-              }
-              # else - adjacent boundary is a 'dorm'
-              else {
+              } else { # adjacent boundary is a 'dorm'
                 seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[a],
                                                                 '1_window_', bound[[1]][2])]]$
                   'venting_availability_schedule_name' = 'sch_afn_dorm'
               }
-            }
-            # else - adjacent boundary is a outdoors or adiabatic
-            else {
+            } else { # adjacent boundary is a outdoors or adiabatic
               # there is no window on this surface of the adjacent interior hives
                 # e.g. wall 'north' is a room, there is no window on 'north' surface of the interior
                   # 'east' and 'west' hives
@@ -740,10 +712,10 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
             }
           }
         } else { # boundary surface is adiabatic
-          for (a in 1:2) {
+          for (a in 1:2) { # run for both adjacent surfaces
             # there is no window on this surface of the adjacent interior hives
-            # e.g. wall 'north' is a room, there is no window on 'north' surface of the interior
-            # 'east' and 'west' hives
+              # e.g. wall 'north' is a room, there is no window on 'north' surface of the interior
+                # 'east' and 'west' hives
             seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_hive_', adj_side(bound[[1]][2])[a],
                                                             '1_window_', bound[[1]][2])]] = NULL
           }
@@ -752,11 +724,8 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
     }
     
     # internal load (people, lights, electric equipment)
-    
-    # core
-    if (bound[[1]][2] == 'c') {
-      # core is a living room
-      if (bound[[1]][3] == 'living') {
+    if (bound[[1]][2] == 'c') { # core
+      if (bound[[1]][3] == 'living') { # core is a living room
         # number of occupants
         seed$'People'[['people_hive_c']]$'number_of_people' = 4
         # activity level schedule
@@ -767,9 +736,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
         seed$'Lights'[['lights_hive_c']]$'schedule_name' = 'sch_ilum_living'
         # equipment schedule
         seed$'ElectricEquipment'[['equip_hive_c']]$'schedule_name' = 'sch_equip_living'
-      }
-      # core is a dormitory
-      else {
+      } else { # core is a dormitory
         # number of occupants
         seed$'People'[['people_hive_c']]$'number_of_people' = 2
         # activity level schedule
@@ -781,13 +748,9 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
         # equipment schedule
         seed$'ElectricEquipment'[['equip_hive_c']] = NULL 
       }
-    }
-    # hive
-    else {
-      # run for interior and exterior hives
-      for (n in 1:2) {
-        # if - boundary is a living room
-        if (bound[[n]][3] == 'living') {
+    } else { # hive
+      for (n in 1:2) { # run for interior and exterior hives
+        if (bound[[n]][3] == 'living') { # boundary is a living room
           # number of occupants
           seed$'People'[[paste0('people_', bound[[n]][1])]]$'number_of_people' = 4
           # activity level schedule
@@ -801,9 +764,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
           # equipment schedule
           seed$'ElectricEquipment'[[paste0('equip_', bound[[n]][1])]]$'schedule_name' =
             'sch_equip_living'
-        }
-        # else if - boundary is a dormitory
-        else if (bound[[n]][3] == 'dorm') {
+        } else if (bound[[n]][3] == 'dorm') { # boundary is a dormitory
           # number of occupants
           seed$'People'[[paste0('people_', bound[[n]][1])]]$'number_of_people' = 2
           # activity level schedule
@@ -817,9 +778,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
             'sch_ilum_dorm'
           # equipment schedule
           seed$'ElectricEquipment'[[paste0('equip_', bound[[n]][1])]] = NULL
-        }
-        # else - boundary is outdoors or adiabatic
-        else {
+        } else { # boundary is outdoors or adiabatic
           # remove people internal loads
           seed$'People'[[paste0('people_', bound[[n]][1])]] = NULL
           # remove lights internal loads
@@ -830,43 +789,29 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
       }
     }
     
-    # hvac
-    
-    # if - zone is conditioned artificially
-    if (cond == 'hvac') {
-      # core
-      if (bound[[1]][2] == 'c') {
-        # if - core is a 'living'
-        if (bound[[1]][3] == 'living') {
+    # zone is conditioned artificially
+    if (cond == 'hvac') { # hvac
+      if (bound[[1]][2] == 'c') { # core
+        if (bound[[1]][3] == 'living') { # core is a 'living'
           # hvac availability schedule
           seed$'ZoneHVAC:IdealLoadsAirSystem'[['hvac_hive_c']]$
             'availability_schedule_name' = 'sch_hvac_living'
-        }
-        # else core is a 'dorm'
-        else {
+        } else { # else core is a 'dorm'
           seed$'ZoneHVAC:IdealLoadsAirSystem'[['hvac_hive_c']]$
             'availability_schedule_name' = 'sch_hvac_dorm'
         }
-      }
-      # hive
-      else {
-        # run for interior and exterior hives
-        for (n in 1:2) {
-          # if - boundary is a 'living'
-          if (bound[[n]][3] == 'living') {
+      } else { # hive
+        for (n in 1:2) { # run for interior and exterior hives
+          if (bound[[n]][3] == 'living') {  # boundary is a 'living'
             # hvac availability schedule
             seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[[n]][1])]]$
               'availability_schedule_name' = 'sch_hvac_living'
-          }
-          # else if - boundary is a 'dorm'
-          else if (bound[[n]][3] == 'dorm') {
+          } else if (bound[[n]][3] == 'dorm') { # boundary is a 'dorm'
             # hvac availability schedule
             seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[[n]][1])]]$
               'availability_schedule_name' = 'sch_hvac_dorm'
-          }
-          # else - boundary is outdoors or adiabatic
-            # remove all the expanded hvac objects
-          else {
+          } else { # boundary is outdoors or adiabatic
+              # remove all the expanded hvac objects
             # thermostat
             seed$'ZoneControl:Thermostat'[[paste0('thermostat_', bound[[n]][1])]] = NULL
             # equipment connections
