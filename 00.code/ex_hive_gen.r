@@ -1,3 +1,6 @@
+# load libraries ####
+library(stringr)
+
 # base functions ####
 # adj_side()
 adj_side = function(side) {
@@ -163,8 +166,8 @@ zone_adj = function(side, n, lx, ly) {
 # hive_gen()
   # loads a seed file filled with all possible surfaces, fenestrations and conditioning system
     # ('hvac' and 'afn') objects and sorting them out
-hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, abs_wall, abs_roof,
-                    bounds, shgc, u_window, vf, shut, proj, output_dir, model_name) {
+ex_hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, abs_wall,
+                       abs_roof, bounds, shgc, u_window, vf, output_dir, model_name) {
   # seed - epJSON's file full path filled with constant values
   # cond - air conditioning type
     # possible values: 'hvac' and 'afn'
@@ -198,28 +201,6 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
   # proj - projection of balcony or marquee
   # output_dir - directory where the model is saved
   # model_name - name of the file (model) to be saved
-  
-  # test
-  seed_path = '/home/rodox/00.git/00.master_ufsc/01.seed/seed_ex_hive_hvac.epJSON'
-  cond = 'hvac'
-  room = 'dorm'
-  storey = 'inter'
-  lx = 4
-  ly = 3
-  lz = 2.7
-  alt = 0
-  azi = 270
-  wrap = 'c10'
-  abs_wall = 0.2
-  abs_roof = 0.2
-  bounds = list(c('s', 'outdoors', 0.2), c('e', 'living', 0),
-                c('n', 'adiabatic', 0), c('w', 'dorm', 0))
-  shgc = 0.7
-  u_window = 5.7
-  vf = 0.4
-  output_dir = '/home/rodox/00.git/00.master_ufsc/05.sample/'
-  model_name = 'sw_dorm_1'
-
   
   # pre-process
   
@@ -403,7 +384,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
         # surfaces geometry
         seed$'BuildingSurface:Detailed'[[paste0('hive_c_', surf)]]$
           'vertices' = build_surf(bound[[1]][2],
-                                  ifelse(grepl('wall', surf), stringr::str_sub(surf, -1), surf),
+                                  ifelse(grepl('wall', surf), str_sub(surf, -1), surf),
                                   lx, ly, lz)
       } else { # hive
         for (n in 1:2) { # run for interior and exterior hives
@@ -411,7 +392,7 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
             # surfaces geometry
             seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_', surf)]]$
               'vertices' = build_surf(bound[[1]][2],
-                                      ifelse(grepl('wall', surf), stringr::str_sub(surf, -1), surf),
+                                      ifelse(grepl('wall', surf), str_sub(surf, -1), surf),
                                       lx, ly, lz)
           } else { # boundary is outdoors or adiabatic
             # remove all the building surface objects
@@ -660,7 +641,8 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
           seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[2]][1],
                                                           '_window_', bound[[1]][2])]]$
             'venting_availability_schedule_name' = 'sch_afn_dorm'
-        } for (a in 1:2) { # run for both adjacent surfaces
+        }
+        for (a in 1:2) { # run for both adjacent surfaces
           # there is no window on this surface of the adjacent interior hives
             # e.g. wall 'north' is a room, there is no window on 'north' surface of the interior
               # 'east' and 'west' hives
@@ -690,7 +672,8 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
           # there is no windows or doors on this hives
             # therefore, no airflow network
           seed$'AirflowNetwork:MultiZone:Zone'[[paste0('afn_', bound[[na]][1])]] = NULL
-        } if (bound[[1]][3] == 'outdoors') { # boundary surface is outdoors
+        }
+        if (bound[[1]][3] == 'outdoors') { # boundary surface is outdoors
           for (a in 1:2) { # run for both adjacent surfaces
             if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3])) { # adjacent boundary is a room
               if (bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3] == 'living') { # adjacent boundary is a 'living'
@@ -833,144 +816,197 @@ hive_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, a
 }
 
 # application ####
-prop = list(
-  '06' = list(
-    'sw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                       list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
-                            c('w', 'dorm', 0))),
-    'sw_liv' = list('living' = c(5, 4, 2.7, 0),
-                    list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
-                         c('w', 'dorm', 0))),
-    'sw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                       list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
-                            c('w', 'living', 0))),
-    'se_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                       list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
-                            c('w', 'dorm', 0))),
-    'se_liv' = list('living' = c(5, 4, 2.7, 0),
-                    list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
-                         c('w', 'dorm', 0))),
-    'se_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                       list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
-                            c('w', 'living', 0))),
-    'e_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
-                      list(c('s', 'outdoors', 0.2), c('e', 'outdoors', 0), c('n', 'living', 0),
-                           c('w', 'dorm', 0))),
-    'e_liv' = list('living' = c(3, 5, 2.7, 0),
-                   list(c('s', 'dorm', 0), c('e', 'outdoors', 0.2), c('n', 'dorm', 0),
-                        c('w', 'adiabatic', 0))),
-    'e_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
-                      list(c('s', 'living', 0), c('e', 'outdoors', 0), c('n', 'outdoors', 0.2),
-                           c('w', 'dorm', 0))),
-    'ne_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                       list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                            c('w', 'living', 0))),
-    'ne_liv' = list('living' = c(5, 4, 2.7, 0),
-                    list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                         c('w', 'dorm', 0))),
-    'ne_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                       list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
-                            c('w', 'dorm', 0))),
-    'nw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                       list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                            c('w', 'living', 0))),
-    'nw_liv' = list('living' = c(5, 4, 2.7, 0),
-                    list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                         c('w', 'dorm', 0))),
-    'nw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                       list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
-                            c('w', 'dorm', 0))),
-    'w_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
-                      list(c('s', 'living', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                           c('w', 'outdoors', 0))),
-    'w_liv' = list('living' = c(3, 5, 2.7, 0),
-                   list(c('s', 'dorm', 0), c('e', 'adiabatic', 0), c('n', 'dorm', 0),
-                        c('w', 'outdoors', 0.2))),
-    'w_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
-                      list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'living', 0),
-                           c('w', 'outdoors', 0)))
-  ),
-  '07' = list(
-    'sw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                       list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
-                            c('w', 'adiabatic', 0))),
-    'sw_liv' = list('living' = c(5, 4, 2.7, 0),
-                    list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
-                         c('w', 'dorm', 0))),
-    'sw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                       list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
-                            c('w', 'living', 0))),
-    'se_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                       list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
-                            c('w', 'adiabatic', 0))),
-    'se_liv' = list('living' = c(5, 4, 2.7, 0),
-                    list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
-                         c('w', 'dorm', 0))),
-    'se_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                       list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
-                            c('w', 'living', 0))),
-    'e_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
-                      list(c('s', 'outdoors', 0.2), c('e', 'outdoors', 0), c('n', 'living', 0),
-                           c('w', 'adiabatic', 0))),
-    'e_liv' = list('living' = c(3, 5, 2.7, 0),
-                   list(c('s', 'dorm', 0), c('e', 'outdoors', 0.2), c('n', 'dorm', 0),
-                        c('w', 'adiabatic', 0))),
-    'e_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
-                      list(c('s', 'living', 0), c('e', 'outdoors', 0), c('n', 'outdoors', 0.2),
-                           c('w', 'adiabatic', 0))),
-    'ne_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                       list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
-                            c('w', 'living', 0))),
-    'ne_liv' = list('living' = c(5, 4, 2.7, 0),
-                    list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                         c('w', 'dorm', 0))),
-    'ne_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                       list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
-                            c('w', 'adiabatic', 0))),
-    'nw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
-                       list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
-                            c('w', 'living', 0))),
-    'nw_liv' = list('living' = c(5, 4, 2.7, 0),
-                    list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
-                         c('w', 'dorm', 0))),
-    'nw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
-                       list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
-                            c('w', 'adiabatic', 0))),
-    'w_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
-                      list(c('s', 'living', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
-                           c('w', 'outdoors', 0))),
-    'w_liv' = list('living' = c(3, 5, 2.7, 0),
-                   list(c('s', 'dorm', 0), c('e', 'adiabatic', 0), c('n', 'dorm', 0),
-                        c('w', 'outdoors', 0.2))),
-    'w_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
-                      list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'living', 0),
-                           c('w', 'outdoors', 0)))
-  )
-)
+# # simplifications
+# prop = list(
+#   '06' = list(
+#     'sw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+#                        list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
+#                             c('w', 'dorm', 0))),
+#     'sw_liv' = list('living' = c(5, 4, 2.7, 0),
+#                     list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
+#                          c('w', 'dorm', 0))),
+#     'sw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+#                        list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
+#                             c('w', 'living', 0))),
+#     'se_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+#                        list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
+#                             c('w', 'dorm', 0))),
+#     'se_liv' = list('living' = c(5, 4, 2.7, 0),
+#                     list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
+#                          c('w', 'dorm', 0))),
+#     'se_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+#                        list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
+#                             c('w', 'living', 0))),
+#     'e_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
+#                       list(c('s', 'outdoors', 0.2), c('e', 'outdoors', 0), c('n', 'living', 0),
+#                            c('w', 'dorm', 0))),
+#     'e_liv' = list('living' = c(3, 5, 2.7, 0),
+#                    list(c('s', 'dorm', 0), c('e', 'outdoors', 0.2), c('n', 'dorm', 0),
+#                         c('w', 'adiabatic', 0))),
+#     'e_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
+#                       list(c('s', 'living', 0), c('e', 'outdoors', 0), c('n', 'outdoors', 0.2),
+#                            c('w', 'dorm', 0))),
+#     'ne_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+#                        list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
+#                             c('w', 'living', 0))),
+#     'ne_liv' = list('living' = c(5, 4, 2.7, 0),
+#                     list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
+#                          c('w', 'dorm', 0))),
+#     'ne_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+#                        list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
+#                             c('w', 'dorm', 0))),
+#     'nw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+#                        list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
+#                             c('w', 'living', 0))),
+#     'nw_liv' = list('living' = c(5, 4, 2.7, 0),
+#                     list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
+#                          c('w', 'dorm', 0))),
+#     'nw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+#                        list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
+#                             c('w', 'dorm', 0))),
+#     'w_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
+#                       list(c('s', 'living', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
+#                            c('w', 'outdoors', 0))),
+#     'w_liv' = list('living' = c(3, 5, 2.7, 0),
+#                    list(c('s', 'dorm', 0), c('e', 'adiabatic', 0), c('n', 'dorm', 0),
+#                         c('w', 'outdoors', 0.2))),
+#     'w_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
+#                       list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'living', 0),
+#                            c('w', 'outdoors', 0)))
+#   ),
+#   '07' = list(
+#     'sw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+#                        list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
+#                             c('w', 'adiabatic', 0))),
+#     'sw_liv' = list('living' = c(5, 4, 2.7, 0),
+#                     list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
+#                          c('w', 'dorm', 0))),
+#     'sw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+#                        list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
+#                             c('w', 'living', 0))),
+#     'se_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+#                        list(c('s', 'outdoors', 0.2), c('e', 'living', 0), c('n', 'adiabatic', 0),
+#                             c('w', 'adiabatic', 0))),
+#     'se_liv' = list('living' = c(5, 4, 2.7, 0),
+#                     list(c('s', 'outdoors', 0.2), c('e', 'dorm', 0), c('n', 'adiabatic', 0),
+#                          c('w', 'dorm', 0))),
+#     'se_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+#                        list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'adiabatic', 0),
+#                             c('w', 'living', 0))),
+#     'e_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
+#                       list(c('s', 'outdoors', 0.2), c('e', 'outdoors', 0), c('n', 'living', 0),
+#                            c('w', 'adiabatic', 0))),
+#     'e_liv' = list('living' = c(3, 5, 2.7, 0),
+#                    list(c('s', 'dorm', 0), c('e', 'outdoors', 0.2), c('n', 'dorm', 0),
+#                         c('w', 'adiabatic', 0))),
+#     'e_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
+#                       list(c('s', 'living', 0), c('e', 'outdoors', 0), c('n', 'outdoors', 0.2),
+#                            c('w', 'adiabatic', 0))),
+#     'ne_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+#                        list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
+#                             c('w', 'living', 0))),
+#     'ne_liv' = list('living' = c(5, 4, 2.7, 0),
+#                     list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
+#                          c('w', 'dorm', 0))),
+#     'ne_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+#                        list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
+#                             c('w', 'adiabatic', 0))),
+#     'nw_dorm_2' = list('dorm' = c(3, 4, 2.7, 0),
+#                        list(c('s', 'adiabatic', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
+#                             c('w', 'living', 0))),
+#     'nw_liv' = list('living' = c(5, 4, 2.7, 0),
+#                     list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
+#                          c('w', 'dorm', 0))),
+#     'nw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
+#                        list(c('s', 'adiabatic', 0), c('e', 'living', 0), c('n', 'outdoors', 0.2),
+#                             c('w', 'adiabatic', 0))),
+#     'w_dorm_n' = list('dorm' = c(3, 3, 2.7, 0),
+#                       list(c('s', 'living', 0), c('e', 'adiabatic', 0), c('n', 'outdoors', 0.2),
+#                            c('w', 'outdoors', 0))),
+#     'w_liv' = list('living' = c(3, 5, 2.7, 0),
+#                    list(c('s', 'dorm', 0), c('e', 'adiabatic', 0), c('n', 'dorm', 0),
+#                         c('w', 'outdoors', 0.2))),
+#     'w_dorm_s' = list('dorm' = c(3, 3, 2.7, 0),
+#                       list(c('s', 'outdoors', 0.2), c('e', 'adiabatic', 0), c('n', 'living', 0),
+#                            c('w', 'outdoors', 0)))
+#   )
+# )
+# 
+# wraps = c('c10', 'tv', 'sf')
+# storeys = c('floor', 'inter', 'roof')
+# conds = c('afn', 'hvac')
+# # create 'epjsons'
+# for (i in 1:length(prop)) {
+#   for (wrap in wraps) {
+#     for (storey in storeys) {
+#       m = 0
+#       for (cond in conds) {
+#         for (j in 1:length(prop[[i]])) {
+#           hive_gen(seed = paste0('/home/rodox/00.git/00.master_ufsc/01.seed/seed_ex_hive_', cond,
+#                                  '.epJSON'),
+#                    lx = prop[[i]][[j]][[1]][1], ly = prop[[i]][[j]][[1]][2],
+#                    lz = prop[[i]][[j]][[1]][3], alt = prop[[i]][[j]][[1]][4],
+#                    room = names(prop[[i]][[j]])[1], bounds = prop[[i]][[j]][[2]],
+#                    cond = cond, wrap = wrap, storey = storey,
+#                    model_name = paste0('hyp_', wrap, '_v', names(prop)[i], '_', storey, '_', cond,
+#                                        '_', names(prop[[i]])[j]),
+#                    output_dir = paste0('/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/',
+#                                        names(prop)[i], '/'))
+#         }
+#         m = m + 1
+#       }
+#     }
+#   }
+# }
 
-wraps = c('c10', 'tv', 'sf')
-storeys = c('floor', 'inter', 'roof')
+# sample
+bounds = function(sample) {
+  # sample - 
+  
+  bounds = vector('list', length = dim(sample)[1])
+  for (i in 1:length(bounds)) {
+    bounds[[i]] = list(c('s', sample[i, 'bound_s'],
+                         ifelse(str_starts(sample[i, 'op'], 's'),
+                                sample[i, 'wwr_1'],
+                                ifelse(str_ends(sample[i, 'op'], 's'),
+                                       sample[i, 'wwr_2'], 0))),
+                       c('e', sample[i, 'bound_e'],
+                         ifelse(str_starts(sample[i, 'op'], 'e'),
+                                sample[i, 'wwr_1'],
+                                ifelse(str_ends(sample[i, 'op'], 'e'),
+                                       sample[i, 'wwr_2'], 0))),
+                       c('n', sample[i, 'bound_n'],
+                         ifelse(str_starts(sample[i, 'op'], 'n'),
+                                sample[i, 'wwr_1'],
+                                ifelse(str_ends(sample[i, 'op'], 'n'),
+                                       sample[i, 'wwr_2'], 0))),
+                       c('w', sample[i, 'bound_w'],
+                         ifelse(str_starts(sample[i, 'op'], 'w'),
+                                sample[i, 'wwr_1'],
+                                ifelse(str_ends(sample[i, 'op'], 'w'),
+                                       sample[i, 'wwr_2'], 0))))
+  }
+  
+  return(bounds)
+}
+
+sample = read.csv('/home/rodox/00.git/00.master_ufsc/05.sample/first_sample.csv',
+                  stringsAsFactors = FALSE)
+sample[, 1] = NULL
+bounds = bounds(sample)
+
+seed_path = c('/home/rodox/00.git/00.master_ufsc/01.seed/seed_ex_hive_xxxxx.epJSON')
 conds = c('afn', 'hvac')
-# create 'epjsons'
-for (i in 1:length(prop)) {
-  for (wrap in wraps) {
-    for (storey in storeys) {
-      m = 0
-      for (cond in conds) {
-        for (j in 1:length(prop[[i]])) {
-          hive_gen(seed = paste0('/home/rodox/00.git/00.master_ufsc/01.seed/seed_ex_hive_', cond,
-                                 '.epJSON'),
-                   lx = prop[[i]][[j]][[1]][1], ly = prop[[i]][[j]][[1]][2],
-                   lz = prop[[i]][[j]][[1]][3], alt = prop[[i]][[j]][[1]][4],
-                   room = names(prop[[i]][[j]])[1], bounds = prop[[i]][[j]][[2]],
-                   cond = cond, wrap = wrap, storey = storey,
-                   model_name = paste0('hyp_', wrap, '_v', names(prop)[i], '_', storey, '_', cond,
-                                       '_', names(prop[[i]])[j]),
-                   output_dir = paste0('/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/',
-                                       names(prop)[i], '/'))
-        }
-        m = m + 1
-      }
-    }
+for (cond in conds) {
+  for (i in 1:length(bounds)) {
+    ex_hive_gen(sub('xxxxx', cond, seed_path), cond, sample$room[i], sample$storey[i],
+                sample$lx[i], sample$ly[i], sample$lz[i], sample$alt[i], sample$azi[i],
+                sample$wrap[i], sample$abs_wall[i], sample$abs_roof[i], bounds[[i]],
+                sample$shgc[i], sample$u_window[i], sample$vf[i],
+                '/home/rodox/00.git/00.master_ufsc/02.model/01.first_sample/',
+                paste0('case_', str_pad(i, 4, 'left', 0), '_', cond)
+                )
   }
 }
+
+

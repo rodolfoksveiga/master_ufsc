@@ -6,9 +6,9 @@ import pandas as pd
 
 # define the input number, its names and limits
 problem = {
-    'num_vars': 16,
+    'num_vars': 15,
     'names': ['lx', 'ly', 'lz', 'alt', 'azi', 'room', 'storey', 'wrap', 'abs_wall',
-              'abs_roof', 'shgc', 'u_window', 'vf', 'weather', 'app', 'wwr_1'],
+              'abs_roof', 'shgc', 'u_window', 'vf', 'app', 'wwr_1'],
     'bounds': [[2, 20],
                [2, 20],
                [2, 5.5],
@@ -22,7 +22,6 @@ problem = {
                [0.1, 1],
                [2.5, 5.8],
                [0.4, 1],
-               [0, 3],
                [0, 6],
                [0.15, 0.85]]
 }
@@ -34,9 +33,9 @@ df.to_csv('/home/rodox/00.git/00.master_ufsc/05.sample/saltelli_sample_11.csv')
 
 # define the input number, its names and limits
 problem = {
-    'num_vars': 17,
+    'num_vars': 16,
     'names': ['lx', 'ly', 'lz', 'alt', 'azi', 'room', 'storey', 'wrap', 'abs_wall',
-              'abs_roof', 'shgc', 'u_window', 'vf', 'weather', 'app', 'wwr_1', 'op'],
+              'abs_roof', 'shgc', 'u_window', 'vf', 'app', 'wwr_1', 'op'],
     'bounds': [[2, 20],
                [2, 20],
                [2, 5.5],
@@ -50,7 +49,6 @@ problem = {
                [0.1, 1],
                [2.5, 5.8],
                [0.4, 1],
-               [0, 3],
                [0, 3],
                [0.15, 0.85],
                [0, 2]]
@@ -63,9 +61,9 @@ df.to_csv('/home/rodox/00.git/00.master_ufsc/05.sample/saltelli_sample_21.csv')
 
 # define the input number, its names and limits
 problem = {
-    'num_vars': 17,
+    'num_vars': 16,
     'names': ['lx', 'ly', 'lz', 'alt', 'azi', 'room', 'storey', 'wrap', 'abs_wall',
-              'abs_roof', 'shgc', 'u_window', 'vf', 'weather', 'app', 'wwr_1', 'wwr_2'],
+              'abs_roof', 'shgc', 'u_window', 'vf', 'app', 'wwr_1', 'wwr_2'],
     'bounds': [[2, 20],
                [2, 20],
                [2, 5.5],
@@ -79,7 +77,6 @@ problem = {
                [0.1, 1],
                [2.5, 5.8],
                [0.4, 1],
-               [0, 3],
                [0, 3],
                [0.15, 0.85],
                [0.15, 0.85]]
@@ -92,9 +89,9 @@ df.to_csv('/home/rodox/00.git/00.master_ufsc/05.sample/saltelli_sample_22.csv')
 
 # define the input number, its names and limits
 problem = {
-    'num_vars': 16,
+    'num_vars': 15,
     'names': ['lx', 'ly', 'lz', 'alt', 'azi', 'room', 'storey', 'wrap', 'abs_wall',
-              'abs_roof', 'shgc', 'u_window', 'vf', 'weather', 'app', 'wwr_1'],
+              'abs_roof', 'shgc', 'u_window', 'vf', 'app', 'wwr_1'],
     'bounds': [[2, 20],
                [2, 20],
                [2, 5.5],
@@ -108,7 +105,6 @@ problem = {
                [0.1, 1],
                [2.5, 5.8],
                [0.4, 1],
-               [0, 3],
                [0, 3],
                [0.15, 0.85]]
 }
@@ -120,9 +116,9 @@ df.to_csv('/home/rodox/00.git/00.master_ufsc/05.sample/saltelli_sample_31.csv')
 
 # define the input number, its names and limits
 problem = {
-    'num_vars': 17,
+    'num_vars': 16,
     'names': ['lx', 'ly', 'lz', 'alt', 'azi', 'room', 'storey', 'wrap', 'abs_wall',
-              'abs_roof', 'shgc', 'u_window', 'vf', 'weather', 'app', 'wwr_1', 'wwr_2'],
+              'abs_roof', 'shgc', 'u_window', 'vf', 'app', 'wwr_1', 'wwr_2'],
     'bounds': [[2, 20],
                [2, 20],
                [2, 5.5],
@@ -136,7 +132,6 @@ problem = {
                [0.1, 1],
                [2.5, 5.8],
                [0.4, 1],
-               [0, 3],
                [0, 3],
                [0.15, 0.85],
                [0.15, 0.85]]
@@ -149,9 +144,9 @@ df.to_csv('/home/rodox/00.git/00.master_ufsc/05.sample/saltelli_sample_32.csv')
 
 # define the input number, its names and limits
 problem = {
-    'num_vars': 16,
+    'num_vars': 15,
     'names': ['lx', 'ly', 'lz', 'alt', 'azi', 'room', 'storey', 'wrap', 'abs_wall',
-              'abs_roof', 'shgc', 'u_window', 'vf', 'weather', 'wwr_1', 'op'],
+              'abs_roof', 'shgc', 'u_window', 'vf', 'wwr_1', 'op'],
     'bounds': [[2, 20],
                [2, 20],
                [2, 5.5],
@@ -165,7 +160,6 @@ problem = {
                [0.1, 1],
                [2.5, 5.8],
                [0.4, 1],
-               [0, 3],
                [0.15, 0.85],
                [0, 3]]
 }
@@ -177,9 +171,9 @@ df.to_csv('/home/rodox/00.git/00.master_ufsc/05.sample/saltelli_sample_41.csv')
 
 # define the input number, its names and limits
 problem = {
-    'num_vars': 17,
+    'num_vars': 16,
     'names': ['lx', 'ly', 'lz', 'alt', 'azi', 'room', 'storey', 'wrap', 'abs_wall',
-              'abs_roof', 'shgc', 'u_window', 'vf', 'weather', 'wwr_1', 'wwr_2', 'op'],
+              'abs_roof', 'shgc', 'u_window', 'vf', 'wwr_1', 'wwr_2', 'op'],
     'bounds': [[2, 20],
                [2, 20],
                [2, 5.5],
@@ -193,7 +187,6 @@ problem = {
                [0.1, 1],
                [2.5, 5.8],
                [0.4, 1],
-               [0, 3],
                [0.15, 0.85],
                [0.15, 0.85],
                [0, 3]]

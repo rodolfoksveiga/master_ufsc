@@ -40,9 +40,9 @@ fix_sample = function(sample){
   sample$wrap = ifelse(sample$wrap <= 1, 'c10',
                        ifelse(sample$wrap <= 2, 'tv',
                               'sf'))
-  sample$weather = ifelse(sample$weather <= 1, 'pr',
-                          ifelse(sample$weather <= 2, 'rj',
-                                 'sp'))
+  # sample$weather = ifelse(sample$weather <= 1, 'pr',
+  #                         ifelse(sample$weather <= 2, 'rj',
+  #                                'sp'))
   sample$app = ifelse(str_starts(sample$t, '1'),
                       ifelse(sample$app <= 1, 'e',
                              ifelse(sample$app <= 2, 'n',
@@ -90,39 +90,6 @@ boundaries = function(sample) {
   return(sample)
 }
 
-
-# bounds ####
-bounds = function(sample) {
-  # sample - 
-  
-  bounds = vector('list', length = dim(sample)[1])
-  for (i in 1:length(bounds)) {
-    bounds[[i]] = list(c('s', sample[i, 'bound_s'],
-                         ifelse(str_starts(sample[i, 'op'], 's'),
-                                sample[i, 'wwr_1'],
-                                ifelse(str_ends(sample[i, 'op'], 's'),
-                                       sample[i, 'wwr_2'], 0))),
-                       c('e', sample[i, 'bound_e'],
-                         ifelse(str_starts(sample[i, 'op'], 'e'),
-                                sample[i, 'wwr_1'],
-                                ifelse(str_ends(sample[i, 'op'], 'e'),
-                                       sample[i, 'wwr_2'], 0))),
-                       c('n', sample[i, 'bound_n'],
-                         ifelse(str_starts(sample[i, 'op'], 'n'),
-                                sample[i, 'wwr_1'],
-                                ifelse(str_ends(sample[i, 'op'], 'n'),
-                                       sample[i, 'wwr_2'], 0))),
-                       c('w', sample[i, 'bound_w'],
-                         ifelse(str_starts(sample[i, 'op'], 'w'),
-                                sample[i, 'wwr_1'],
-                                ifelse(str_ends(sample[i, 'op'], 'w'),
-                                       sample[i, 'wwr_2'], 0))))
-  }
-  
-  return(bounds)
-}
-
-
 # application ####
 sample = bind_samples(c('/home/rodox/00.git/00.master_ufsc/05.sample/saltelli_sample_11.csv',
                         '/home/rodox/00.git/00.master_ufsc/05.sample/saltelli_sample_21.csv',
@@ -133,10 +100,4 @@ sample = bind_samples(c('/home/rodox/00.git/00.master_ufsc/05.sample/saltelli_sa
                         '/home/rodox/00.git/00.master_ufsc/05.sample/saltelli_sample_42.csv'))
 sample = fix_sample(sample)
 sample = boundaries(sample)
-
-bounds = bounds(sample)
-
-
-
-
-
+write.csv(sample, '/home/rodox/00.git/00.master_ufsc/05.sample/sample.csv')

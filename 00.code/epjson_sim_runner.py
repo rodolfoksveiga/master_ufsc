@@ -17,7 +17,7 @@ def epjson_sim_runner(epjson_dir, pattern, output_dir, epw_dir, weather_names):
 	# weather_names - the names of the weathers (in alphabetic order and using underlines as spaces)
 		# to be simulated (they must be in a numpy array)
 		
-	epjson_files = glob.glob(epjson_dir + pattern + '*.epJSON')
+	epjson_files = glob.glob(epjson_dir + '*' + pattern + '*.epJSON')
 	list.sort(epjson_files)
 	
 	epjson_names = map(str,np.empty([len(epjson_files)]))
@@ -182,25 +182,13 @@ for count_1, value_1 in enumerate(wraps):
 							  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
 							  weather_names = np.array(['curitiba', 'rio_de_janeiro', 'sao_paulo']))
 '''
+# first model
+cond = 'hvac'
+count = '1'
+epjson_sim_runner(epjson_dir = '/home/rodox/01.going_on/01.first_model/00.sample/',
+				  pattern = cond,
+				  output_dir = '/home/rodox/01.going_on/01.first_model/01.result/0' +
+							   count + '.' + cond + '/',
+				  epw_dir = '/home/rodox/00.git/00.master_ufsc/06.source/00.epw/pr/',
+				  weather_names = np.array(['curitiba']))
 
-
-wraps = np.array(['sf']) # count_1
-storeys = np.array(['roof']) # count_2
-conds = np.array(['afn']) # count_3
-count_1 = 2
-for value_1 in wraps:
-	count_2 = 2
-	for value_2 in storeys:
-		count_3 = 0
-		for value_3 in conds:
-			epjson_sim_runner(epjson_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/98/',
-							  pattern = 'hyp_' + value_1 + '_v98_' + value_2 + '_' + value_3,
-							  output_dir = '/home/rodox/Desktop/98/0' +
-										   str(count_1) + '.' + value_1 + '/0' + str(count_2) + '.'
-										   + value_2 + '/0' + str(count_3) + '.' + value_3 + '/',
-							  epw_dir = '/home/rodox/00.git/00.master_ufsc/05.source/00.epw/',
-							  weather_names = np.array(['curitiba', 'rio_de_janeiro', 'sao_paulo']))
-			count_3 = count_3 + 1
-		count_2 = count_2 + 1
-	count_1 = count_1 + 1
-							
