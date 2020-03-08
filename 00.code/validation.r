@@ -216,7 +216,8 @@ report = function(csv_afn, csv_hvac, cond, timestep = 6, unit = 'kwh') {
     report[['mean_temp']] = mean_temp
     report[['comf']] = comf
     report[['afn_air_change']] = afn_air_change
-    cond_vars = c('afn_air_change', 'uncomf_hot', 'uncomf_cold', 'comf', 'temp_max', 'temp_95')
+    cond_vars = c('afn_air_change', 'uncomf_hot', 'uncomf_cold', 'comf',
+                  'max_op_temp', 'min_op_temp')
     report[['df']] = as.data.frame(matrix(NA, 12, length(report) + 3))
     colnames(report[['df']]) =
       c('int_conv_he', 'conv_hge_floor', 'conv_hge_roof', 'conv_hge_wall_s', 'conv_hge_wall_e',
@@ -237,9 +238,8 @@ report = function(csv_afn, csv_hvac, cond, timestep = 6, unit = 'kwh') {
                                                     feel = 'cold')
       report[['df']][month, 'comf'] =
         100 - (report[['df']][month, 'uncomf_hot'] + report[['df']][month, 'uncomf_cold'])
-      report[['df']][month, 'temp_max'] = max(report[['comf']][year[[month]], 'op_temp'])
-      report[['df']][month, 'temp_95'] = quantile(report[['mean_temp']][year[[month]]],
-                                                  probs = 0.95, names = F)
+      report[['df']][month, 'max_op_temp'] = max(report[['comf']][year[[month]], 'op_temp'])
+      report[['df']][month, 'min_op_temp'] = min(report[['comf']][year[[month]], 'op_temp'])
     }
     report[['df']]['year', 1:12] = apply(report[['df']][, 1:12], 2, sum)
     report[['df']]['year', 'afn_air_change'] = mean(report[['df']][1:12, 'afn_air_change'])
@@ -249,8 +249,8 @@ report = function(csv_afn, csv_hvac, cond, timestep = 6, unit = 'kwh') {
                                                    feel = 'cold')
     report[['df']]['year', 'comf'] =
       100 - (report[['df']]['year', 'uncomf_hot'] + report[['df']]['year', 'uncomf_cold'])
-    report[['df']]['year', 'temp_max'] = max(report[['df']][1:12, 'temp_max'])
-    report[['df']]['year', 'temp_95'] = quantile(report[['mean_temp']], probs = 0.95, names = F)
+    report[['df']]['year', 'max_op_temp'] = max(report[['df']][1:12, 'max_op_temp'])
+    report[['df']]['year', 'min_op_temp'] = min(report[['df']][1:12, 'min_op_temp'])
   } else {
     report[['hvac_sens_he']] = hvac_sens_he
     report[['hvac_sens_ce']] = hvac_sens_ce
@@ -300,11 +300,13 @@ surf_rename = function(col_name) {
                        ifelse(grepl('WALL', col_name), '_wall',
                               ifelse(grepl('WINDOW', col_name), '_window',
                                      ifelse(grepl('DOOR', col_name), '_door', '')))))
-  side = ifelse(grepl('_S\\:', col_name) & !grepl('M_S\\:', col_name), '_s',
-                ifelse(grepl('_E\\:', col_name), '_e',
-                       ifelse(grepl('_N\\:', col_name) & !grepl('M_N\\:', col_name), '_n',
-                              ifelse(grepl('_W\\:', col_name), '_w',
-                                     ''))))
+  side = ifelse((grepl('_S\\:', col_name) | grepl('_S[0-9]\\:', col_name)) &
+                  !grepl('M_S\\:', col_name), '_s',
+                ifelse((grepl('_E\\:', col_name) | grepl('_E[0-9]\\:', col_name)), '_e',
+                       ifelse((grepl('_N\\:', col_name) | grepl('_N[0-9]\\:', col_name)) &
+                                !grepl('M_N\\:', col_name), '_n',
+                              ifelse((grepl('_W\\:', col_name) | grepl('_W[0-9]\\:', col_name)),
+                                     '_w', ''))))
   surf_rename = paste0(surf, side)
   return(surf_rename)
 }
@@ -568,9 +570,19 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
 }
 
 
+# test
+data = valid(
+  input_dirs = list('base' = c('/home/rodox/01.going_on/00.hive/00.hyp/00/01.tv/01.inter/00.afn/',
+                               '/home/rodox/01.going_on/00.hive/00.hyp/00/01.tv/01.inter/01.hvac/'),
+                    'simp' = c('/home/rodox/01.going_on/00.hive/00.hyp/03/01.tv/01.inter/00.afn/',
+                               '/home/rodox/01.going_on/00.hive/00.hyp/03/01.tv/01.inter/01.hvac/')),
+  df_area = paste0('/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/area_hyp.csv')
+)
+
+
 # application ####
 typos = c('hyp')
-simps = c('05', '06', '07')
+simps = c('01', '02', '03', '04', '05', '06', '07')
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
 m = 0
