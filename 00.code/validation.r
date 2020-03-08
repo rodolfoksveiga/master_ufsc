@@ -1,3 +1,7 @@
+# load libraries ####
+library(Hmisc)
+library(data.table)
+
 # base functions ####
 # cap_str()
   # capitalize all the words in a string
@@ -5,7 +9,7 @@ cap_str = function(str) {
   # str - string to capitalize
   
   spl = strsplit(str, ' ')[[1]]
-  cap_spl = Hmisc::capitalize(spl)
+  cap_spl = capitalize(spl)
   cap_str = cap_spl[1]
   for (s in cap_spl[-1]) {
     cap_str = paste(cap_str, s)
@@ -383,11 +387,11 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
     for (j in 1:length(csv_names[[i]])) {
       for (k in 1:length(csv_names[[i]][[j]])) {
         # count the files while they're loaded
-        print(paste(Hmisc::capitalize(ifelse(names(csv_names)[i] == 'base', names(csv_names)[i],
+        print(paste(capitalize(ifelse(names(csv_names)[i] == 'base', names(csv_names)[i],
                                              paste0(names(csv_names)[i], '.'))),
                     '/', toupper(names(csv_names[[i]])[j]), '/ k =', k))
         # load the files themselves
-        csv_files[[i]][[j]][[k]] = as.data.frame(data.table::fread(paste0(input_dirs[[i]][[j]],
+        csv_files[[i]][[j]][[k]] = as.data.frame(fread(paste0(input_dirs[[i]][[j]],
                                                                      csv_names[[i]][[j]][k])))
         # define proper names to the list
         names(csv_files[[i]][[j]])[k] = sub(paste0('_', labels[[i]][[j]]$typo[1], '_',
@@ -592,8 +596,7 @@ for (typo in typos) {
     for (wrap in wraps) {
       o = 0
       for (storey in storeys) {
-        print(paste(Hmisc::capitalize(typo), '/', simp, '/', toupper(wrap), '/',
-                    Hmisc::capitalize(storey)))
+        print(paste(capitalize(typo), '/', simp, '/', toupper(wrap), '/', capitalize(storey)))
         valid(
           input_dirs = list('base' = c(paste0('/home/rodox/01.going_on/00.hive/0', m, '.', typo,
                                               '/00/0', n, '.', wrap, '/0', o, '.', storey,
