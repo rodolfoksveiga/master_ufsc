@@ -26,10 +26,6 @@ process = function(input_dir, cond = c('afn', 'hvac'),
   # cond - 
   # pattern - 'raw', 'diff_abs' or 'diff_rel'
   
-  input_dir = '/home/rodox/00.git/00.master_ufsc/03.result/'
-  cond = c('afn', 'hvac')
-  pattern = c('raw', 'diff_abs', 'diff_rel', 'red')
-  
   # create empty lists to be filled with results files
   data = vector('list', length(cond))
   data = lapply(data, function(x) x = vector('list', length = length(pattern)))
@@ -289,7 +285,7 @@ bar_plot_tb = function(df, si, wr, st, we, dw, ro, output_dir) {
       geom_bar(stat = 'identity', position = 'dodge') +
       # define labs (x and y labs)
       labs(x = NULL,
-           y = 'Carga (kWh)') +
+           y = 'Carga Térmica (kWh/m²)') +
       # edit legend
       scale_fill_discrete(name = 'Troca de calor:',
                           labels = c('Cargas Internas', 'Piso', 'Cobertura', 'Parede Sul',
@@ -402,8 +398,6 @@ summ_simp = function(df, output_dir) {
   # df - 
   # output_dir - 
   
-  df = data$combo$afn$diff_abs
-  
   summ_simp = df %>%
     group_by(simp) %>%
     summarize('min' = min(comf),
@@ -421,8 +415,6 @@ summ_simp = function(df, output_dir) {
   
   write.csv(summ_simp, paste0(output_dir, 'summ_table_simp.csv'))
 }
-
-
 
 # # working on animation function ####
 # animation_scatter = function(df, output_dir) {
