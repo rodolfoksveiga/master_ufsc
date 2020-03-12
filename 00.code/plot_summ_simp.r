@@ -492,3 +492,12 @@ colours = c('wrap', 'storey', 'weather')
 for (colour in colours) {
   scatter_plot_comf(data$combo$afn$red, output_dir, col = colour)
 }
+
+for (case in tb_cases) {
+  print(filter(data$combo$afn$diff_abs, simp == as.numeric(case[1]) & wrap == case[2] &
+                 storey == case[3] & weather == case[4] & dwel == case[5] & room == case[6]))
+  print('--------------')
+  print('--------------')
+  print('--------------')
+}
+
