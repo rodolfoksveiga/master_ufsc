@@ -29,10 +29,12 @@ split_hive = function(input_dir, pattern = NULL, zone_name = 'hive_c', output_di
 }
 
 # application ####
-simps = c('05', '06', '07')
+# simps = c('05', '06', '07', '08')
+simps = '08'
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
-conds = c('afn', 'hvac')
+# conds = c('afn', 'hvac')
+conds = 'afn'
 for (simp in simps) {
   m = 0
   for (wrap in wraps) {
@@ -45,6 +47,9 @@ for (simp in simps) {
                                       '/0', m, '.', wrap, '/0', n, '.', storey, '/0',
                                       o, '.', cond, '/'),
                    pattern = paste0('hyp_', wrap, '_v', simp, '_', storey, '_', cond),
+                   zone_name = ifelse(simp != '08', 'hive_c',
+                                      ifelse(storey == 'floor', 'hive_bc',
+                                             ifelse(storey == 'inter', 'hive_mc', 'hive_tc'))),
                    output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp,
                                        '/0', m, '.', wrap, '/0', n, '.', storey, '/0',
                                        o, '.', cond, '/'))
@@ -56,4 +61,3 @@ for (simp in simps) {
     m = m + 1
   }
 }
-  
