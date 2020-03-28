@@ -1,6 +1,5 @@
 # load libraries ####
 library(ggplot2)
-library(gganimate)
 library(dplyr)
 
 # base function ####
@@ -101,7 +100,7 @@ box_plot_comf = function(df, output_dir) {
            colour = 'Envoltória:',
            shape = 'Ambiente:') +
       scale_shape_manual(values = c(4, 19)) +
-      scale_x_continuous(breaks = 0:7) +
+      scale_x_continuous(breaks = 0:8) +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 11),
             legend.title = element_text(size = 12),
@@ -146,7 +145,7 @@ box_plot_diff_comf_stor = function(df, output_dir, rel = F) {
            colour = 'Envoltória:',
            shape = 'Ambiente:') +
       scale_shape_manual(values = c(4, 19)) +
-      scale_x_continuous(breaks = 1:7) +
+      scale_x_continuous(breaks = 1:8) +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 11),
             legend.title = element_text(size = 12),
@@ -181,7 +180,7 @@ box_plot_diff_comf = function(df, output_dir, rel = F) {
     # plot characteristics
     ggplot(data = df, aes(x = simp, y = comf, group = simp)) +
       # create one grid for each weather
-      facet_grid(storey ~ .) +
+      facet_grid(storey ~ weather) +
       # insert a bar box plot using 'total cooling load x dweling'
       geom_boxplot(outlier.shape = NA) +
       geom_jitter(aes(colour = wrap, shape = room)) +
@@ -191,7 +190,7 @@ box_plot_diff_comf = function(df, output_dir, rel = F) {
            colour = 'Envoltória:',
            shape = 'Ambiente:') +
       scale_shape_manual(values = c(4, 19)) +
-      scale_x_continuous(breaks = 1:7) +
+      scale_x_continuous(breaks = 1:8) +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 11),
             legend.title = element_text(size = 12),
@@ -236,7 +235,7 @@ box_plot_diff_cgt = function(df, rel = F, output_dir) {
            colour = 'Envoltória:',
            shape = 'Ambiente:') +
       scale_shape_manual(values = c(4, 19)) +
-      scale_x_continuous(breaks = 1:7) +
+      scale_x_continuous(breaks = 1:8) +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 11),
             legend.title = element_text(size = 12),
@@ -370,7 +369,7 @@ summ_table = function(df, output_dir) {
   # df - 
   # output_dir - 
   
-  summ_raw = as.data.frame(matrix(nrow = 7*2*6, ncol = 13))
+  summ_raw = as.data.frame(matrix(nrow = 8*2*6, ncol = 13))
   data_summ = df[, c(1:3, 8:17, 19, 24)]
   colnames(summ_raw) = colnames(data_summ[, 1:13])
   data_summ$room = ifelse(grepl('Dorm', data_summ$room), 'Dormitório', 'Sala')
@@ -416,53 +415,6 @@ summ_simp = function(df, output_dir) {
   write.csv(summ_simp, paste0(output_dir, 'summ_table_simp.csv'))
 }
 
-# # working on animation function ####
-# animation_scatter = function(df, output_dir) {
-#   # df - 
-#   # rel - 
-#   
-#   df = data$combo$afn$red
-#   
-#   df_simp = filter(df, simp != 0)[, c('simp', 'comf', 'room', 'wrap', 'storey', 'weather')]
-#   colnames(df_simp)[2] = 'comf_simp'
-#   df_base = filter(df, simp == 0)[, c('simp', 'comf')]
-#   df = cbind('comf_base' = df_base[, 2], df_simp)
-#   df$simp = paste('Simp.', as.character(df$simp))
-#   
-#   # some pre-process
-#   df$room = ifelse(grepl('Dorm', df$room), 'Dormitório', 'Sala')
-#   
-#   # start plotting
-#   # associate conditions to plot and name the plot and name the plot
-#   plot_name = 'red_phft_simp_anim.gif'
-#   # plot characteristics
-# anim = ggplot(data = df, aes(x = comf_base, y = comf_simp)) +
-#     # create one grid for each weather
-#     # insert a bar box plot using 'total cooling load x dweling'
-#     geom_point(aes(colour = wrap, shape = room)) +
-#     geom_abline(intercept = 0, slope = 1, colour = 'black', linetype = 'dashed') +
-#     # define labs (title, x and y labs)
-#     labs(x = 'Redução do PHFT da simulação (%)',
-#          y = 'Redução do PHFT das simplificações (%)',
-#          colour = 'Pavimento:',
-#          shape = 'Ambiente:') +
-#     scale_shape_manual(values = c(4, 19)) +
-#     scale_colour_manual(values = c('purple', 'yellow')) +
-#     # edit all kind of text in the plot
-#     theme(legend.text = element_text(size = 14),
-#           legend.title = element_text(size = 15),
-#           legend.position = 'bottom',
-#           axis.title.x = element_text(size = 15),
-#           axis.title.y = element_text(size = 15),
-#           axis.text.x = element_text(size = 14),
-#           axis.text.y = element_text(size = 14),
-#           strip.text.x = element_text(size = 17),
-#           strip.text.y = element_text(size = 17)) +
-#     transition_states(wrap) +
-#     ggtitle('{closest_state}')
-#   anim_save('animation.gif', animation = last_animation(), path = output_dir)
-# }
-
 # application ####
 output_dir = '/home/rodox/00.git/00.master_ufsc/04.plot_table/'
 data = process('/home/rodox/00.git/00.master_ufsc/03.result/')
@@ -473,6 +425,10 @@ box_plot_diff_comf(df = data$combo$afn$diff_abs, rel = F, output_dir)
 box_plot_diff_comf(df = data$combo$afn$diff_rel, rel = T, output_dir)
 box_plot_diff_comf_stor(df = data$combo$afn$diff_abs, rel = F, output_dir)
 box_plot_diff_comf_stor(df = data$combo$afn$diff_rel, rel = T, output_dir)
+colours = c('wrap', 'storey', 'weather')
+for (colour in colours) {
+  scatter_plot_comf(data$combo$afn$red, output_dir, col = colour)
+}
 tb_cases = list(
   c('1', 'C10', 'Intermediário', 'Rio de Janeiro', 'SE', 'Sala'),
   c('2', 'SF', 'Térreo', 'São Paulo', 'NO', 'Sala'),
@@ -488,11 +444,6 @@ for (case in tb_cases) {
   bar_plot_tb(data$combo$afn$raw, as.numeric(case[1]), case[2],
               case[3], case[4], case[5], case[6], output_dir)
 }
-colours = c('wrap', 'storey', 'weather')
-for (colour in colours) {
-  scatter_plot_comf(data$combo$afn$red, output_dir, col = colour)
-}
-
 for (case in tb_cases) {
   print(filter(data$combo$afn$diff_abs, simp == as.numeric(case[1]) & wrap == case[2] &
                  storey == case[3] & weather == case[4] & dwel == case[5] & room == case[6]))

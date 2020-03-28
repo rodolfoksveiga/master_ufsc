@@ -93,8 +93,10 @@ labels = function(input_dirs) {
         labels[[i]][[j]]$simp = rep('05', 2)
       } else if (grepl('/06/', input_dirs[[i]][j])) {
         labels[[i]][[j]]$simp = rep('06', 2)
-      } else {
+      } else if (grepl('/07/', input_dirs[[i]][j])) {
         labels[[i]][[j]]$simp = rep('07', 2)
+      } else {
+        labels[[i]][[j]]$simp = rep('08', 2)
       }
       if (grepl('/00.c10/', input_dirs[[i]][j])) {
         labels[[i]][[j]]$wrap = c('c10', 'C10')
@@ -420,7 +422,8 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
       mult_simp_dorm_cn = 8
       mult_simp_ew_liv_cn = 10
       mult_simp_sn_liv_cn = 11
-    } else if (labels[['simp']][[1]]$simp[1] == '05' | labels[['simp']][[1]]$simp[1] == '06') {
+    } else if (labels[['simp']][[1]]$simp[1] == '05' | labels[['simp']][[1]]$simp[1] == '06' |
+               labels[['simp']][[1]]$simp[1] == '08') {
       mult_simp_dorm_cn = 9
       mult_simp_ew_liv_cn = 9
       mult_simp_sn_liv_cn = 9
@@ -573,20 +576,10 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
   }
 }
 
-
-# test
-data = valid(
-  input_dirs = list('base' = c('/home/rodox/01.going_on/00.hive/00.hyp/00/01.tv/01.inter/00.afn/',
-                               '/home/rodox/01.going_on/00.hive/00.hyp/00/01.tv/01.inter/01.hvac/'),
-                    'simp' = c('/home/rodox/01.going_on/00.hive/00.hyp/03/01.tv/01.inter/00.afn/',
-                               '/home/rodox/01.going_on/00.hive/00.hyp/03/01.tv/01.inter/01.hvac/')),
-  df_area = paste0('/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/area_hyp.csv')
-)
-
-
 # application ####
 typos = c('hyp')
-simps = c('01', '02', '03', '04', '05', '06', '07')
+# simps = c('01', '02', '03', '04', '05', '06', '07', '08')
+simps = '08'
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
 m = 0
@@ -603,13 +596,13 @@ for (typo in typos) {
                                               '/00.afn/'),
                                        paste0('/home/rodox/01.going_on/00.hive/0', m, '.', typo,
                                               '/00/0', n, '.', wrap, '/0', o, '.', storey,
-                                              '/01.hvac/')),
+                                              '/00.afn/')),
                             'simp' = c(paste0('/home/rodox/01.going_on/00.hive/0', m, '.', typo,
                                               '/', simp, '/0', n, '.', wrap, '/0', o, '.', storey,
                                               '/00.afn/'),
                                        paste0('/home/rodox/01.going_on/00.hive/0', m, '.', typo,
                                               '/', simp, '/0', n, '.', wrap, '/0', o, '.', storey,
-                                              '/01.hvac/'))),
+                                              '/00.afn/'))),
           df_area = paste0('/home/rodox/00.git/00.master_ufsc/02.model/0', m, '.', typo,
                            '/area_', typo, '.csv'),
           write_results = T,
