@@ -42,18 +42,16 @@ split_building = function(input_dir, pattern = NULL, storey_id, output_dir) {
 # application ####
 simps = c('00', '01')
 wraps = c('c10', 'tv', 'sf')
-conds = c('hvac')
+conds = c('afn', 'hvac')
 for (simp in simps) {
   m = 0
   for (wrap in wraps) {
     for (cond in conds) {
       print(paste(simp, '/', toupper(wrap), '/', toupper(cond)))
-      split_building(input_dir = paste0('/media/rodox/HD_EXTERNO/00.hive/00.hyp/', simp, '/0', m,
-                                        '.', wrap, '/'),
+      split_building(input_dir = '~/Desktop/tv_pr/',
                      pattern = cond,
                      storey_id = list(c('F1', 'F3', 'F5'), c('floor', 'inter', 'roof')),
-                     output_dir = paste0('/media/rodox/HD_EXTERNO/00.hive/00.hyp/', simp, '/0', m,
-                                         '.', wrap, '/'))
+                     output_dir = paste0('~/Desktop/tv_pr/'))
     }
     m = m + 1
   }

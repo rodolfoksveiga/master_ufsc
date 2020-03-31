@@ -44,11 +44,11 @@ split_storey = function(input_dir, pattern = NULL, zone_names, ignored_zones = N
 simps = c('00', '01')
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
-conds = c('hvac')
+conds = c('afn', 'hvac')
 for (simp in simps) {
-  m = 0
+  m = 1
   for (wrap in wraps) {
-    n = 0
+    n = 1
     for (storey in storeys) {
       o = 1
       for (cond in conds) {
