@@ -56,7 +56,7 @@ FixColNames = function(df) {
 }
 
 OrgDF = function(df, simp) {
-  df$simp = ifelse(simp, 'Simplificação', 'Modelo Base')
+  df$simp = ifelse(simp == 0, 'Modelo Base', paste('Simplificação n°', as.character(simp)))
   df = reshape2::melt(df, id.vars = c('date_time', 'simp'),
                       measure.vars = colnames(df)[c(2:9)])
   df$variable = factor(df$variable,
@@ -176,20 +176,14 @@ PlotSch = function(input_path, output_dir, save_plot = T) {
   }
 }
 
-PlotTemp = function(input_paths, zone_name, output_dir, save_plot = T) {
-  input_paths = c('~/Desktop/case_6b.csv',
-                  '~/Desktop/case_6s.csv')
-  zone_name = 'sw_liv'
-  output_dir = '~/Desktop/'
-  save_plot = F
-  
+PlotTemp = function(input_paths, zone_name, simp, output_dir, save_plot = T) {
   dfs_list = lapply(input_paths, function(x) as.data.frame(data.table::fread(x)))
   colnames(dfs_list[[2]]) = sub('HIVE_C', toupper(zone_name), colnames(dfs_list[[2]]))
   dfs_list = lapply(dfs_list, PickCols, zone_name)
   dfs_list = lapply(dfs_list, RmDoubleWalls)
   dfs_list = lapply(dfs_list, FixColNames)
   dfs_list = lapply(dfs_list, SplApril3rd)
-  dfs_list = mapply(OrgDF, dfs_list, c(F, T), SIMPLIFY = FALSE)
+  dfs_list = mapply(OrgDF, dfs_list, c(0, simp), SIMPLIFY = FALSE)
   df = rbind(dfs_list[[1]], dfs_list[[2]])
   
   plot = plot(
@@ -198,7 +192,7 @@ PlotTemp = function(input_paths, zone_name, output_dir, save_plot = T) {
       facet_wrap(. ~ simp) +
       labs(x = 'Hora do dia (03-04/04)',
            y = 'Temperatura (°C)') +
-      scale_x_datetime(date_breaks = '3 hour', date_labels = '%Hh') +
+      scale_x_datetime(date_breaks = '6 hour', date_labels = '%Hh') +
       scale_colour_manual(name = 'Temperatura:',
                           labels = c('Externa', 'Zona', 'Piso', 'Cobertura', 'Parede Sul',
                                      'Parede Leste', 'Parede Norte', 'Parede Oeste'),
@@ -214,8 +208,9 @@ PlotTemp = function(input_paths, zone_name, output_dir, save_plot = T) {
             strip.text.x = element_text(size = 17),
             strip.text.y = element_text(size = 17))
   )
+  
   if (save_plot) {
-    SavePlot(plot, sub('.csv', '', basename(input_path)), output_dir)
+    SavePlot(plot, paste0('case_', as.character(simp)), output_dir)
   } else {
     return(plot)
   }
@@ -228,6 +223,9 @@ PlotHVACCount(c('', ''), '~/00.git/00.master_ufsc/04.plot_table')
 PlotSch('~/00.git/00.master_ufsc/04.plot_table/schedules.csv',
         '~/00.git/00.master_ufsc/04.plot_table')
 # temperature analysis
-PlotTemp('~/Desktop/case_3.csv', 'nw_liv', '~/00.git/00.master_ufsc/04.plot_table/')
-PlotTemp('~/Desktop/case_4.csv', 'sw_dorm_1', '~/00.git/00.master_ufsc/04.plot_table/')
-PlotTemp('~/Desktop/case_6.csv', 'sw_liv', '~/00.git/00.master_ufsc/04.plot_table/')
+PlotTemp(c('~/Desktop/case_3b.csv', '~/Desktop/case_3s.csv'), 'nw_liv', 3,
+         '~/00.git/00.master_ufsc/04.plot_table/')
+PlotTemp(c('~/Desktop/case_4b.csv', '~/Desktop/case_4s.csv'), 'sw_dorm_1', 4,
+         '~/00.git/00.master_ufsc/04.plot_table/')
+PlotTemp(c('~/Desktop/case_6b.csv', '~/Desktop/case_6s.csv'), 'sw_liv', 6,
+         '~/00.git/00.master_ufsc/04.plot_table/')
