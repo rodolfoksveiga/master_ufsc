@@ -95,8 +95,10 @@ labels = function(input_dirs) {
         labels[[i]][[j]]$simp = rep('06', 2)
       } else if (grepl('/07/', input_dirs[[i]][j])) {
         labels[[i]][[j]]$simp = rep('07', 2)
-      } else {
+      } else if (grepl('/08/', input_dirs[[i]][j])) {
         labels[[i]][[j]]$simp = rep('08', 2)
+      } else if (grepl('/09/', input_dirs[[i]][j])) {
+        labels[[i]][[j]]$simp = rep('09', 2)
       }
       if (grepl('/00.c10/', input_dirs[[i]][j])) {
         labels[[i]][[j]]$wrap = c('c10', 'C10')
