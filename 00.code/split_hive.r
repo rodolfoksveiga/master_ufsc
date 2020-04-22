@@ -29,8 +29,8 @@ split_hive = function(input_dir, pattern = NULL, zone_name = 'hive_c', output_di
 }
 
 # application ####
-# simps = c('05', '06', '07', '08')
-simps = '08'
+# simps = c('05', '06', '07', '08', '09')
+simps = '09'
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
 # conds = c('afn', 'hvac')
@@ -43,16 +43,12 @@ for (simp in simps) {
       o = 0
       for (cond in conds) {
         print(paste(simp, '/', toupper(wrap), '/', toupper(storey), '/', toupper(cond)))
-        split_hive(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp,
-                                      '/0', m, '.', wrap, '/0', n, '.', storey, '/0',
-                                      o, '.', cond, '/'),
+        split_hive(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp, '/'),
                    pattern = paste0('hyp_', wrap, '_v', simp, '_', storey, '_', cond),
-                   zone_name = ifelse(simp != '08', 'hive_c',
+                   zone_name = ifelse(simp != '08' & simp != '09', 'hive_c',
                                       ifelse(storey == 'floor', 'hive_bc',
                                              ifelse(storey == 'inter', 'hive_mc', 'hive_tc'))),
-                   output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp,
-                                       '/0', m, '.', wrap, '/0', n, '.', storey, '/0',
-                                       o, '.', cond, '/'))
+                   output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp, '/split/'))
         gc()
         o = o + 1
       }
