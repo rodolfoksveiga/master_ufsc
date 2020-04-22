@@ -4,11 +4,13 @@ lapply(pkgs, library, character.only = T)
 
 # base functions ####
 # compile errors into one file
-CompErrs = function(dir, ind, comp_path) {
+CompErrs = function(dir, ind,
+                    comp_name = 'errors_description.txt') {
   # dir: error files directory
   # ind: terminal errors count index
   # comp_path: compilation file path
   
+  comp_path = paste0(dir, comp_name)
   errs_path = dir(dir, '.err', full.names = TRUE)
   file.create(comp_path)
   sapply(errs_path, LabelErr)
@@ -16,12 +18,16 @@ CompErrs = function(dir, ind, comp_path) {
 }
 
 # count terminal and simulation errors
-CountErrs = function(dir, ind, comp_path, summ_path) {
+CountErrs = function(dir, ind, comp_path,
+                     comp_name = 'errors_description.txt',
+                     summ_name = 'errors_summary.txt') {
   # dir: error files directory
   # ind: terminal errors count index
   # comp_path: compilation file path
   # summ_path: summary file path
   
+  comp_path = paste0(dir, comp_name)
+  summ_path = paste0(dir, summ_name)
   file.create(summ_path)
   sum_errs = mapply(SumErrs, list('sev' = 'Warning\\; ',
                                   'warn' = 'Successfully\\-\\- '),
@@ -78,13 +84,16 @@ RnmFile <- function(path) {
 }
 
 # remove unsefull files
-RmUnsFiles <- function(dir, rm_all_but) {
+RmUnsFiles <- function(dir, rm_all_but = c('.csv', '.err'),
+                       rm_also = c('sqlite.err', 'tbl.csv',
+                                   'ssz.csv', 'zsz.csv')) {
   # dir: files directory
   # rm_all_but: files that shouldn't be removed
   
   rm_all_but = str_flatten(rm_all_but, collapse = '|')
+  rm_also = str_flatten(rm_also, collapse = '|')
   files_path = dir(dir, full.names = TRUE)
-  index = !grepl(rm_all_but, files_path) | grepl('tbl.csv|sqlite.err', files_path)
+  index = !grepl(rm_all_but, files_path) | grepl(rm_also, files_path)
   files_path = files_path[index]
   file.remove(files_path)
 }
@@ -117,9 +126,7 @@ RunEPSim <- function(model_path, epw_path, weather, output_dir) {
 
 # main function ####
 ProcessEPSims = function(models_dir, epws_dir, weathers, output_dir,
-                         form = '.epJSON',
-                         comp_name = 'errors_description.txt',
-                         summ_name = 'errors_summary.txt') {
+                         form = '.epJSON') {
   # models_dir:
   # epws_dir:
   # weathers: 
@@ -134,26 +141,20 @@ ProcessEPSims = function(models_dir, epws_dir, weathers, output_dir,
   errs_ind = mcmapply(RunEPSim, sims_grid$model, sims_grid$epw,
                       sims_grid$weather, output_dir, mc.cores = detectCores())
   # remove all files but .csv and .err
-  RmUnsFiles(output_dir, rm_all_but = c('.csv', '.err'))
+  RmUnsFiles(output_dir)
   # list and rename the outputs left
   files_path = dir(output_dir, full.names = TRUE)
   sapply(files_path, RnmFile)
   # compile errors
-  err_comp_path = paste0(output_dir, comp_name)
-  CompErrs(output_dir, errs_ind, err_comp_path)
+  CompErrs(output_dir, errs_ind)
   # remove .err files
   RmUnsFiles(output_dir, rm_all_but = c('.csv', '.txt'))
   # count terminal and severe errors and warnings
-  err_summ_path = paste0(output_dir, summ_name)
-  CountErrs(output_dir, errs_ind, err_comp_path, err_summ_path)
+  CountErrs(output_dir, errs_ind)
 }
 
 # application ####
-ProcessEPSims(models_dir = '',
-             epws_dir = '',
-             weathers = c(''),
-             output_dir = '')
-
-
-
-
+ProcessEPSims(models_dir = '/home/rodox/00.git/02.commercial_model/02.model/',
+              epws_dir = '/home/rodox/00.git/02.commercial_model/05.source/00.epw/',
+              weathers = paste0('zb', c(1:8)),
+              output_dir = '/home/rodox/00.git/02.commercial_model/04.output/')

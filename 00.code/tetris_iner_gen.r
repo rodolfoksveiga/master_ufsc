@@ -178,10 +178,9 @@ zone_adj = function(side, n, lx, ly) {
 # tetris_gen()
 # loads a seed file filled with all possible surfaces, fenestrations and conditioning system
 # ('hvac' and 'afn') objects and sorting them out
-tetris_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap, abs_wall,
+tetris_gen = function(seed_path, room, storey, lx, ly, lz, alt, azi, wrap, abs_wall,
                       abs_roof, bounds, shgc, u_window, vf, output_dir, model_name) {
   # seed - epJSON's file full path filled with constant values
-  # cond - air conditioning type
   # possible values: 'hvac' and 'afn'
   # room - type of room's occupation
   # possible values: 'liv' and 'dorm'
@@ -214,6 +213,27 @@ tetris_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap,
   # output_dir - directory where the model is saved
   # model_name - name of the file (model) to be saved
   
+  
+# # test
+# seed_path = '/home/rodox/00.git/00.master_ufsc/01.seed/seed_tetris_afn.epJSON'
+# room = 'dorm'
+# storey = 'floor'
+# lx = 4
+# ly = 3
+# lz = 2.7
+# alt = 0
+# model_name = 'ne_dorm_1'
+# bounds = list(c('s', 'adiabatic', 0), c('e', 'dorm', 0), c('n', 'outdoors', 0.2),
+#               c('w', 'liv', 0))
+# wrap = 'c10'
+# azi = 0
+# abs_wall = 0.5
+# abs_roof = 0.5
+# shgc = 0.87
+# u_window = 5.7
+# vf = 0.45
+
+
   # pre-process
   # load seed file
   seed = rjson::fromJSON(file = seed_path)
@@ -329,24 +349,35 @@ tetris_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap,
         # 'z' origin vertex
         seed$'Zone'[[bound[[1]][1]]]$'z_origin' = alt
       } else { # hive
-        for (n in 1:2) { # run for interior and exterior hives
-          if (is_room(bound[[n]][3])) { # boundary is a room ('liv' or 'dorm')
-            # 'x' origin vertex
-            seed$'Zone'[[bound[[n]][1]]]$'x_origin' = zone_adj(bound[[1]][2], n, lx, ly)[1]
-            # 'y' origin vertex
-            seed$'Zone'[[bound[[n]][1]]]$'y_origin' = zone_adj(bound[[1]][2], n, lx, ly)[2]
-            # 'z' origin vertex
-            seed$'Zone'[[bound[[n]][1]]]$'z_origin' = alt
-          } else { # boundary is adiabatic or outdoors
-            # remove all the zone objects
-            seed$'Zone'[[bound[[n]][1]]] = NULL
+        if (bound[[1]][3] == 'adiabatic') {
+          # 'x' origin vertex
+          seed$'Zone'[[bound[[1]][1]]]$'x_origin' = zone_adj(bound[[1]][2], 1, lx, ly)[1]
+          # 'y' origin vertex
+          seed$'Zone'[[bound[[1]][1]]]$'y_origin' = zone_adj(bound[[1]][2], 1, lx, ly)[2]
+          # 'z' origin vertex
+          seed$'Zone'[[bound[[1]][1]]]$'z_origin' = alt
+          # remove all the zone objects
+          seed$'Zone'[[bound[[2]][1]]] = NULL
+        } else {
+          for (n in 1:2) { # run for interior and exterior hives
+            if (bound[[n]][3] != 'outdoors') { # boundary is not outdoors
+              # 'x' origin vertex
+              seed$'Zone'[[bound[[n]][1]]]$'x_origin' = zone_adj(bound[[1]][2], n, lx, ly)[1]
+              # 'y' origin vertex
+              seed$'Zone'[[bound[[n]][1]]]$'y_origin' = zone_adj(bound[[1]][2], n, lx, ly)[2]
+              # 'z' origin vertex
+              seed$'Zone'[[bound[[n]][1]]]$'z_origin' = alt
+            } else { # boundary is outdoors
+              # remove all the zone objects
+              seed$'Zone'[[bound[[n]][1]]] = NULL
+            }
           }
         }
       }
       
       # building surface (geometry)
       # floor and roof
-      if (lvl == 'm') { # if - tetris storey is in the middle
+      if (lvl == 'm') { # if - tetris storey is in the mid
         if (storey == 'floor') { # if - zone storey is a floor
           for (n in 1:2) { # run for interior and exterior hives
             # floor
@@ -420,16 +451,26 @@ tetris_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap,
                                     ifelse(grepl('wall', surf), str_sub(surf, -1), surf),
                                     lx, ly, lz)
         } else { # hive
-          for (n in 1:2) { # run for interior and exterior hives
-            if (is_room(bound[[n]][3])) { # boundary is a room ('liv' or 'dorm')
-              # surface geometry
-              seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_', surf)]]$
-                'vertices' = build_surf(bound[[1]][2],
-                                        ifelse(grepl('wall', surf), str_sub(surf, -1), surf),
-                                        lx, ly, lz)
-            } else { # boundary is outdoors or adiabatic
-              # remove all the building surface objects
-              seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_', surf)]] = NULL
+          if (bound[[1]][3] == 'adiabatic') {
+            # surface geometry
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[1]][1], '_', surf)]]$
+              'vertices' = build_surf(bound[[1]][2],
+                                      ifelse(grepl('wall', surf), str_sub(surf, -1), surf),
+                                      lx, ly, lz)
+            # remove all the building surface objects
+            seed$'BuildingSurface:Detailed'[[paste0(bound[[2]][1], '_', surf)]] = NULL
+          } else {
+            for (n in 1:2) { # run for interior and exterior hives
+              if (bound[[n]][3] != 'outdoors') { # boundary is not outdoors
+                # surface geometry
+                seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_', surf)]]$
+                  'vertices' = build_surf(bound[[1]][2],
+                                          ifelse(grepl('wall', surf), str_sub(surf, -1), surf),
+                                          lx, ly, lz)
+              } else { # boundary is outdoors
+                # remove all the building surface objects
+                seed$'BuildingSurface:Detailed'[[paste0(bound[[n]][1], '_', surf)]] = NULL
+              }
             }
           }
         }
@@ -447,11 +488,11 @@ tetris_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap,
             'outside_boundary_condition' = ifelse(hive[3] == 'outdoors', 'Outdoors',
                                                   ifelse(hive[3] == 'adiabatic', 'Adiabatic',
                                                          'Surface'))
-          if (is_room(hive[3])) { # boundary is a room ('liv' or 'dorm')
+          if (hive[3] != 'outdoors') { # boundary is not outdoors
             # outside boundary condition object
             seed$'BuildingSurface:Detailed'[[paste0(bound[[1]][1], '_wall_', hive[2])]]$
               'outside_boundary_condition_object' = paste0(hive[1], '_wall_', opos_side(hive[2]))
-          } else { # boundary is outdoors or adiabatic
+          } else { # boundary is outdoors
             # outside boundary condition object
             seed$'BuildingSurface:Detailed'[[paste0(bound[[1]][1], '_wall_', hive[2])]]$
               'outside_boundary_condition_object' = NULL
@@ -464,44 +505,95 @@ tetris_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap,
             'wind_exposure' = ifelse(hive[3] == 'outdoors', 'WindExposed', 'NoWind')
         }
       } else { # hive
-        for (a in 1:2) { # run for both adjacent sides
-          # e.g. 'north' boundary has 'east' and 'west'
-          if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3])) {
-            # adjacent boundary is a room ('liv' or 'dorm')
-            if (bound[[1]][3] == 'outdoors') { # boundary is outdoors
-              # construction name
-              seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
-                                                      '1_wall_', bound[[1]][2])]]$
-                'construction_name' = 'ext_wall'
-              # outside boundary condition
-              seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
-                                                      '1_wall_', bound[[1]][2])]]$
-                'outside_boundary_condition' = 'Outdoors'
-              # sun exposure
-              seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
-                                                      '1_wall_', bound[[1]][2])]]$
-                'sun_exposure' = 'SunExposed'
-              # wind exposure
-              seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
-                                                      '1_wall_', bound[[1]][2])]]$
-                'wind_exposure' = 'WindExposed'
-            } else { # boundary is a room ('liv' or 'dorm') or adiabatic
-              # construction name
-              seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
-                                                      '1_wall_', bound[[1]][2])]]$
-                'construction_name' = 'int_wall'
-              # outside boundary condition
-              seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
-                                                      '1_wall_', bound[[1]][2])]]$
-                'outside_boundary_condition' = 'Adiabatic'
-              # sun exposure
-              seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
-                                                      '1_wall_', bound[[1]][2])]]$
-                'sun_exposure' = 'NoSun'
-              # wind exposure
-              seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
-                                                      '1_wall_', bound[[1]][2])]]$
-                'wind_exposure' = 'NoWind'
+        if (bound[[1]][3] == 'adiabatic') {
+          # construction name
+          seed$'BuildingSurface:Detailed'[[paste0(bound[[1]][1], '_wall_', bound[[1]][2])]]$
+            'construction_name' = 'ext_wall'
+          # outside boundary condition
+          seed$'BuildingSurface:Detailed'[[paste0(bound[[1]][1], '_wall_', bound[[1]][2])]]$
+            'outside_boundary_condition' = 'Outdoors'
+          seed$'BuildingSurface:Detailed'[[paste0(bound[[1]][1], '_wall_', bound[[1]][2])]]$
+            'outside_boundary_condition_object' = NULL
+          # sun exposure
+          seed$'BuildingSurface:Detailed'[[paste0(bound[[1]][1], '_wall_', bound[[1]][2])]]$
+            'sun_exposure' = 'SunExposed'
+          # wind exposure
+          seed$'BuildingSurface:Detailed'[[paste0(bound[[1]][1], '_wall_', bound[[1]][2])]]$
+            'wind_exposure' = 'WindExposed'
+          for (a in 1:2) {
+            # construction name
+            seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, bound[[1]][2],
+                                                    '1_wall_', adj_side(bound[[1]][2])[a])]]$
+              'construction_name' = 'int_wall'
+            # outside boundary condition
+            seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, bound[[1]][2],
+                                                    '1_wall_', adj_side(bound[[1]][2])[a])]]$
+              'outside_boundary_condition' = 'Adiabatic'
+            # sun exposure
+            seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, bound[[1]][2],
+                                                    '1_wall_', adj_side(bound[[1]][2])[a])]]$
+              'sun_exposure' = 'NoSun'
+            # wind exposure
+            seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, bound[[1]][2],
+                                                    '1_wall_', adj_side(bound[[1]][2])[a])]]$
+              'wind_exposure' = 'NoWind'
+            # construction name
+            seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                    '1_wall_', bound[[1]][2])]]$
+              'construction_name' = 'int_wall'
+            # outside boundary condition
+            seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                    '1_wall_', bound[[1]][2])]]$
+              'outside_boundary_condition' = 'Adiabatic'
+            # sun exposure
+            seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                    '1_wall_', bound[[1]][2])]]$
+              'sun_exposure' = 'NoSun'
+            # wind exposure
+            seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                    '1_wall_', bound[[1]][2])]]$
+              'wind_exposure' = 'NoWind'
+          }
+        } else {
+          for (a in 1:2) { # run for both adjacent sides
+            # e.g. 'north' boundary has 'east' and 'west'
+            if (is_room(bounds[[paste0('hive_', adj_side(bound[[1]][2])[a])]][[1]][3])) {
+              # adjacent boundary is a room ('liv' or 'dorm')
+              if (bound[[1]][3] == 'outdoors') { # if - boundary is outdoors
+                # construction name
+                seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                        '1_wall_', bound[[1]][2])]]$
+                  'construction_name' = 'ext_wall'
+                # outside boundary condition
+                seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                        '1_wall_', bound[[1]][2])]]$
+                  'outside_boundary_condition' = 'Outdoors'
+                # sun exposure
+                seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                        '1_wall_', bound[[1]][2])]]$
+                  'sun_exposure' = 'SunExposed'
+                # wind exposure
+                seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                        '1_wall_', bound[[1]][2])]]$
+                  'wind_exposure' = 'WindExposed'
+              } else if (is_room(bound[[1]][3])) { # boundary is a room ('liv' or 'dorm') or adiabatic
+                # construction name
+                seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                        '1_wall_', bound[[1]][2])]]$
+                  'construction_name' = 'int_wall'
+                # outside boundary condition
+                seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                        '1_wall_', bound[[1]][2])]]$
+                  'outside_boundary_condition' = 'Adiabatic'
+                # sun exposure
+                seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                        '1_wall_', bound[[1]][2])]]$
+                  'sun_exposure' = 'NoSun'
+                # wind exposure
+                seed$'BuildingSurface:Detailed'[[paste0('hive_', lvl, adj_side(bound[[1]][2])[a],
+                                                        '1_wall_', bound[[1]][2])]]$
+                  'wind_exposure' = 'NoWind'
+              }
             }
           }
         }
@@ -663,7 +755,6 @@ tetris_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap,
             seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[1]][1],
                                                             '_door_', hive[2])]] = NULL
             if (hive[4] > 0) { # boundary surface has a window
-              if (cond == 'afn') { # zone is conditioned by naturally
                 if (room == 'liv') { # room is a 'liv'
                   seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[1]][1],
                                                                   '_window_', hive[2])]]$
@@ -673,7 +764,6 @@ tetris_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap,
                                                                   '_window_', hive[2])]]$
                     'venting_availability_schedule_name' = 'sch_afn_dorm'
                 }
-              }
             } else { # boundary surface has no window
               # no window on this surface
               seed$'AirflowNetwork:MultiZone:Surface'[[paste0('afn_', bound[[1]][1],
@@ -841,43 +931,6 @@ tetris_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap,
           }
         }
       }
-      
-      # artificial air conditioning
-      if (cond == 'hvac') { # hvac
-        if (bound[[1]][2] == 'c') { # core
-          if (bound[[1]][3] == 'liv') { # core is a 'liv'
-            # hvac availability schedule
-            seed$'ZoneHVAC:IdealLoadsAirSystem'[['hvac_', bound[[1]][1]]]$
-              'availability_schedule_name' = 'sch_hvac_liv'
-          } else { # else core is a 'dorm'
-            seed$'ZoneHVAC:IdealLoadsAirSystem'[['hvac_', bound[[1]][1]]]$
-              'availability_schedule_name' = 'sch_hvac_dorm'
-          }
-        } else { # hive
-          for (n in 1:2) { # run for interior and exterior hives
-            if (bound[[n]][3] == 'liv') {  # boundary is a 'liv'
-              # hvac availability schedule
-              seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[[n]][1])]]$
-                'availability_schedule_name' = 'sch_hvac_liv'
-            } else if (bound[[n]][3] == 'dorm') { # boundary is a 'dorm'
-              # hvac availability schedule
-              seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[[n]][1])]]$
-                'availability_schedule_name' = 'sch_hvac_dorm'
-            } else { # boundary is outdoors or adiabatic
-              # remove all the expanded hvac objects
-              # thermostat
-              seed$'ZoneControl:Thermostat'[[paste0('thermostat_', bound[[n]][1])]] = NULL
-              # equipment connections
-              seed$'ZoneHVAC:EquipmentConnections'[[paste0('hvac_equip_connect_',
-                                                           bound[[n]][1])]] = NULL
-              # equipment list
-              seed$'ZoneHVAC:EquipmentList'[[paste0('hvac_equip_', bound[[n]][1])]] = NULL
-              # ideal loads air system
-              seed$'ZoneHVAC:IdealLoadsAirSystem'[[paste0('hvac_', bound[[n]][1])]] = NULL
-            }
-          }
-        }
-      }
     }
     
     # add zones hight for upper storey zones
@@ -893,7 +946,7 @@ tetris_gen = function(seed_path, cond, room, storey, lx, ly, lz, alt, azi, wrap,
 # application ####
 # simplifications
 prop = list(
-  '08' = list(
+  '09' = list(
     'sw_dorm_1' = list('dorm' = c(4, 3, 2.7, 0),
                        list(c('s', 'outdoors', 0.2), c('e', 'liv', 0), c('n', 'adiabatic', 0),
                             c('w', 'dorm', 0))),
@@ -963,7 +1016,7 @@ for (i in 1:length(prop)) {
         for (j in 1:length(prop[[i]])) {
           tetris_gen(seed = paste0('/home/rodox/00.git/00.master_ufsc/01.seed/seed_tetris_',
                                    cond, '.epJSON'),
-                     cond = cond, room = names(prop[[i]][[j]])[1], storey = storey,
+                     room = names(prop[[i]][[j]])[1], storey = storey,
                      lx = prop[[i]][[j]][[1]][1], ly = prop[[i]][[j]][[1]][2],
                      lz = prop[[i]][[j]][[1]][3],
                      alt = ifelse(storey == 'floor',
