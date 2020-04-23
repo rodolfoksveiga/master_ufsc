@@ -154,7 +154,7 @@ ProcessEPSims = function(models_dir, epws_dir, weathers, output_dir,
 }
 
 # application ####
-ProcessEPSims(models_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/09/',
+ProcessEPSims(models_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/10/',
               epws_dir = '/home/rodox/00.git/00.master_ufsc/06.source/00.epw/',
               weathers = c('curitiba', 'rio_de_janeiro', 'sao_paulo'),
-              output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/09/')
+              output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/10/')
