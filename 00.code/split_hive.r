@@ -43,14 +43,14 @@ for (simp in simps) {
       o = 0
       for (cond in conds) {
         print(paste(simp, '/', toupper(wrap), '/', toupper(storey), '/', toupper(cond)))
-        split_hive(input_dir = paste0('/home/rodox/01.going_on/00.hive/0', m, '.', typo,
-                                      '/', simp, '/0', n, '.', wrap, '/0', o, '.', storey,
-                                      '/00.afn/'),
+        split_hive(input_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp, '/0',
+				      m, '.', wrap, '/0', n, '.', storey, '/00.afn/'),
                    pattern = paste0('hyp_', wrap, '_v', simp, '_', storey, '_', cond),
                    zone_name = ifelse(simp != '08' & simp != '09' & simp != '10', 'hive_c',
                                       ifelse(storey == 'floor', 'hive_bc',
                                              ifelse(storey == 'inter', 'hive_mc', 'hive_tc'))),
-                   output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp, '/split/'))
+                   output_dir = paste0('/home/rodox/01.going_on/00.hive/00.hyp/', simp, '/0',
+                                      m, '.', wrap, '/0', n, '.', storey, '/00.afn/'))
         gc()
         o = o + 1
       }
