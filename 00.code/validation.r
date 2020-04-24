@@ -587,7 +587,7 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
 # application ####
 typos = c('hyp')
 # simps = c('01', '02', '03', '04', '05', '06', '07', '08', '09', '10')
-simps = c('10')
+simps = c('09')
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
 m = 0
