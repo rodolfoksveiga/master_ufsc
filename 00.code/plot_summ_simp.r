@@ -145,7 +145,7 @@ box_plot_diff_comf_stor = function(df, output_dir, rel = F) {
            colour = 'Envoltória:',
            shape = 'Ambiente:') +
       scale_shape_manual(values = c(4, 19)) +
-      scale_x_continuous(breaks = 1:8) +
+      scale_x_continuous(breaks = 1:10) +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 11),
             legend.title = element_text(size = 12),
@@ -190,7 +190,7 @@ box_plot_diff_comf = function(df, output_dir, rel = F) {
            colour = 'Envoltória:',
            shape = 'Ambiente:') +
       scale_shape_manual(values = c(4, 19)) +
-      scale_x_continuous(breaks = 1:8) +
+      scale_x_continuous(breaks = 1:10) +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 11),
             legend.title = element_text(size = 12),
@@ -235,7 +235,7 @@ box_plot_diff_cgt = function(df, rel = F, output_dir) {
            colour = 'Envoltória:',
            shape = 'Ambiente:') +
       scale_shape_manual(values = c(4, 19)) +
-      scale_x_continuous(breaks = 1:8) +
+      scale_x_continuous(breaks = 1:10) +
       # edit all kind of text in the plot
       theme(legend.text = element_text(size = 11),
             legend.title = element_text(size = 12),

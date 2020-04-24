@@ -27,8 +27,8 @@ reduction = function(report_path, cond, write_results = T, output_dir) {
 
 # application ####
 typos = c('hyp')
-# simps = c('00', '01', '02', '03', '04', '05', '06', '07', '08')
-simps = '08'
+# simps = c('00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10')
+simps = c('09', '10')
 wraps = c('tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
 # conds = c('afn', 'hvac')

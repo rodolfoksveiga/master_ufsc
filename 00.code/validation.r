@@ -355,7 +355,7 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
   # output_dir - 
   # write_results - if it's 'f' the results are assigned to a variable, if it's 't' the results are
     # written into 'csv' files
-  
+
   # create a data frame with simplification labels
   labels = labels(input_dirs)
 
@@ -427,8 +427,7 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
       mult_simp_ew_liv_cn = 10
       mult_simp_sn_liv_cn = 11
     } else if (labels[['simp']][[1]]$simp[1] == '05' | labels[['simp']][[1]]$simp[1] == '06' |
-               labels[['simp']][[1]]$simp[1] == '08' | labels[['simp']][[1]]$simp[1] == '09' |
-               labels[['simp']][[1]]$simp[1] == '10') {
+               labels[['simp']][[1]]$simp[1] == '08' | labels[['simp']][[1]]$simp[1] == '09') {
       mult_simp_dorm_cn = 9
       mult_simp_ew_liv_cn = 9
       mult_simp_sn_liv_cn = 9
@@ -436,6 +435,10 @@ valid = function(input_dirs, df_area, write_results = F, output_dir) {
       mult_simp_dorm_cn = 8
       mult_simp_ew_liv_cn = 9
       mult_simp_sn_liv_cn = 9
+    } else if (labels[['simp']][[1]]$simp[1] == '10') {
+      mult_simp_dorm_cn = 9
+      mult_simp_ew_liv_cn = 10
+      mult_simp_sn_liv_cn = 10
     }
   }
   base_dorm_cn = base_ew_liv_cn = base_sn_liv_cn = simp_dorm_cn = simp_ew_liv_cn = simp_sn_liv_cn =
