@@ -154,8 +154,7 @@ ProcessEPSims = function(models_dir, output_dir, epws_dir, weathers,
 }
 
 # application ####
-models_dirs = paste0('/home/rodox/git/master_ufsc/model/new/',
-                     c('00', '01', '02', '03', '04'), '/')
+models_dirs = '/home/rodox/git/master_ufsc/model/new/02/'
 output_dirs = sub('git/master_ufsc/model', 'going_on', models_dirs)
 mapply(ProcessEPSims, models_dirs, output_dirs,
        MoreArgs = list(epws_dir = '/home/rodox/git/master_ufsc/source/epw/',

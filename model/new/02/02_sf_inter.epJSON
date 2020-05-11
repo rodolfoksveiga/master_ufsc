@@ -7079,15 +7079,6 @@
       "x_origin": 3,
       "y_origin": 3,
       "z_origin": 5.4
-    },
-    "core.1": {
-      "direction_of_relative_north": 0,
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 7,
-      "multiplier": 1,
-      "x_origin": 3,
-      "y_origin": 3,
-      "z_origin": 5.4
     }
   },
   "ZoneList": {
