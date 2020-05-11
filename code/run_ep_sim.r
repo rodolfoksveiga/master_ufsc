@@ -125,7 +125,7 @@ RunEPSim <- function(model_path, epw_path, weather, output_dir) {
 }
 
 # main function ####
-ProcessEPSims = function(models_dir, epws_dir, weathers, output_dir,
+ProcessEPSims = function(models_dir, output_dir, epws_dir, weathers,
                          form = '.epJSON') {
   # models_dir:
   # epws_dir:
@@ -154,7 +154,9 @@ ProcessEPSims = function(models_dir, epws_dir, weathers, output_dir,
 }
 
 # application ####
-ProcessEPSims(models_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/10/',
-              epws_dir = '/home/rodox/00.git/00.master_ufsc/06.source/00.epw/',
-              weathers = c('curitiba', 'rio_de_janeiro', 'sao_paulo'),
-              output_dir = '/home/rodox/01.going_on/00.hive/00.hyp/10/')
+models_dirs = paste0('/home/rodox/git/master_ufsc/model/new/',
+                     c('00', '01', '02', '03', '04'), '/')
+output_dirs = sub('git/master_ufsc/model', 'going_on', models_dirs)
+mapply(ProcessEPSims, models_dirs, output_dirs,
+       moreArgs = list(epws_dir = '/home/rodox/git/master_ufsc/source/epw/',
+                       weathers = c('curitiba', 'rio_de_janeiro', 'sao_paulo')))

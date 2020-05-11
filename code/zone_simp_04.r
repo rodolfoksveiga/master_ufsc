@@ -1,4 +1,5 @@
 # load libraries ####
+library(jsonlite)
 library(stringr)
 
 # base functions ####
@@ -89,7 +90,7 @@ simp = function(input_path, zone_name, cond, output_dir) {
   # output_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/04/'
   
   # load '.epjson' file
-  file = rjson::fromJSON(file = input_path)
+  file = read_json(input_path)
   
   # building surfaces
   adj_surfs = c()
@@ -372,31 +373,24 @@ simp = function(input_path, zone_name, cond, output_dir) {
   # write the 'epJSON' file
   output_path = paste0(output_dir, sub('3', '4', str_remove(basename(input_path), '.epJSON')),
                        '_', zone_name, '.epJSON')
-  jsonlite::write_json(file, output_path, pretty = T, auto_unbox = T)
+  write_json(file, output_path, pretty = T, auto_unbox = T)
   # print file name
   print(output_path)
 }
 
 # application ####
-typos = c('hyp', 'lin', 'h')
 wraps = c('c10', 'tv', 'sf')
 storeys = c('floor', 'inter', 'roof')
-conds = c('afn', 'hvac')
 zones = c('sw_dorm_1', 'sw_liv', 'sw_dorm_2', 'se_dorm_2', 'se_liv', 'se_dorm_1', 'e_dorm_s',
           'e_liv', 'e_dorm_n', 'ne_dorm_1', 'ne_liv', 'ne_dorm_2', 'nw_dorm_2', 'nw_liv',
           'nw_dorm_1', 'w_dorm_n', 'w_liv', 'w_dorm_s')
-for (typo in typos) {
-  for (wrap in wraps) {
-    for (storey in storeys) {
-      for (cond in conds) {
-        for (zone in zones) {
-          simp(input_path = paste0('/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/03/',
-                                   typo, '_', wrap, '_v03_', storey, '_', cond, '.epJSON'),
-               zone_name = zone, cond = cond,
-               output_dir = '/home/rodox/00.git/00.master_ufsc/02.model/00.hyp/04/')
-        }
-      }
+for (wrap in wraps) {
+  for (storey in storeys) {
+    for (zone in zones) {
+      simp(input_path = paste0('/home/rodox/git/master_ufsc/model/new/03/03_',
+                               wrap, '_', storey, '.epJSON'),
+           zone_name = zone, cond = 'afn',
+           output_dir = '/home/rodox/git/master_ufsc/model/new/04/')
     }
   }
 }
-
