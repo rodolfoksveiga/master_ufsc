@@ -1,0 +1,29 @@
+{
+	"Construction": {
+        "ext_wall": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 6,
+            "outside_layer": "argamassa",
+            "layer_2": "tijolo_9x19x19",
+            "layer_3": "camara_parede",
+            "layer_4": "tijolo_9x19x19",
+            "layer_5": "argamassa_0.5"
+        },
+        "int_wall": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 6,
+            "outside_layer": "argamassa_0.5",
+            "layer_2": "tijolo_9x19x19",
+            "layer_3": "camara_parede",
+            "layer_4": "tijolo_9x19x19",
+            "layer_5": "argamassa_0.5"
+        },
+        "roof": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 4,
+            "outside_layer": "telha_fibrocimento",
+            "layer_2": "camara_cobertura",
+            "layer_3": "concreto_10cm_0.5"
+        }
+	}
+}

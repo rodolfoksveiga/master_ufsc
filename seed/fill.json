@@ -1,0 +1,55 @@
+{
+    "AirflowNetwork:MultiZone:Surface": {
+	    "item": {
+		    "idf_max_extensible_fields": 0,
+		    "idf_max_fields": 12,
+            "window_door_opening_factor_or_crack_factor": 1
+	    }
+    },
+    "AirflowNetwork:MultiZone:Zone": {
+		"item": {
+			"idf_max_extensible_fields": 0,
+			"idf_max_fields": 8
+		}
+	},
+	"ElectricEquipment": {
+		"item": {
+			"design_level": 120,
+			"design_level_calculation_method": "EquipmentLevel",
+			"end_use_subcategory": "General",
+			"fraction_latent": 0,
+			"fraction_lost": 0,
+			"fraction_radiant": 0.3,
+			"idf_max_extensible_fields": 0,
+			"idf_max_fields": 11,
+			"schedule_name": "sch_equip_liv"
+		}
+	},
+	"Lights": {
+		"item": {
+			"design_level_calculation_method": "Watts/Area",
+			"end_use_subcategory": "GeneralLights",
+			"fraction_radiant": 0.32,
+			"fraction_replaceable": 0,
+			"fraction_visible": 0.23,
+			"idf_max_extensible_fields": 0,
+			"idf_max_fields": 12,
+			"return_air_fraction": 0,
+			"watts_per_zone_floor_area": 5
+		}
+	},
+	"People": {
+		"item": {
+			"fraction_radiant": 0.3,
+			"idf_max_extensible_fields": 0,
+			"idf_max_fields": 10,
+			"number_of_people_calculation_method": "People"
+		}
+	},
+	"ZoneList": {
+		"item": {
+			"zones": {
+			}
+		}
+	}
+}
