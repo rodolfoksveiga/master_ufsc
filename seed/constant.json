@@ -190,7 +190,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 9,
       "roughness": "MediumRough",
-      "solar_absorptance": 0.5,
+      "solar_absorptance": 0.6,
       "specific_heat": 840,
       "thermal_absorptance": 0.9,
       "thickness": 0.008,
@@ -304,6 +304,15 @@
       "idf_max_fields": 6,
       "roughness": "Smooth",
       "thermal_resistance": 1.25,
+      "thermal_absorptance": 0.9,
+      "solar_absorptance": 0.7,
+      "visible_absorptance": 0.7
+    },
+    "isolamento_cobertura_zb8": {
+      "idf_max_extensible_fields": 0,
+      "idf_max_fields": 6,
+      "roughness": "MediumSmooth",
+      "thermal_resistance": 0.67,
       "thermal_absorptance": 0.9,
       "solar_absorptance": 0.7,
       "visible_absorptance": 0.7

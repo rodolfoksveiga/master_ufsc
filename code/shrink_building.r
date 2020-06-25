@@ -1,11 +1,23 @@
-# load libraries and global environment ####
-# load libraries
+# load libraries ####
 pkgs = c('dplyr', 'jsonlite', 'parallel', 'stringr')
 lapply(pkgs, library, character.only = TRUE)
 
 # base functions ####
 # define coordinates according to orientation
 DefCoord = function(side) ifelse(side %in% c('s', 'n'), 'x', 'y')
+# define name pattern
+DefNamePattern = function(pattern) {
+  pattern = pattern %>%
+    str_split('\\|', simplify = TRUE) %>%
+    as.character() %>%
+    sort()
+    if (length(pattern) == 3) {
+      pattern = pattern[2]
+    } else {
+      pattern = ifelse(grepl('f1', pattern[1]), pattern[1], pattern[2])
+    }
+  return(pattern)
+}
 # define start and end points to calculate the width
 DefStartEnd = function(side) c(ifelse(IsSE(side), 3, 1), ifelse(IsSE(side), 1, 3))
 # edit airflow network surfaces
@@ -58,6 +70,21 @@ EditZoneList = function(group, zones) {
 IsSE = function(side) side %in% c('s', 'e')
 # label vertices
 LabelVert = function(verts, coord) paste0('vertex_', verts, '_', coord, '_coordinate')
+# pile habitations
+PileHabs = function(tag, n_strs) {
+  level = str_sub(tag, 2, 2)
+  if (level == 1) {
+    habs = str_replace(tag, 'f1', 'f2')
+  } else if (level < n_strs) {
+    habs = tag %>% str_sub(2, 2) %>% as.numeric()
+    habs = as.character(habs + c(-1, 1))
+    habs = sapply(habs, function(x, y) str_replace(y, '(?<=f)[0-9]', x), tag)
+  } else {
+    habs = str_replace(tag, paste0('f', n_strs), paste0('f', n_strs -1))
+  }
+  habs = tag %>% append(habs) %>% str_flatten(collapse = '|')
+  return(habs)
+}
 # remove boundary condition object
 RmBounds = function(object, zones) {
   if (object$outside_boundary_condition == 'Surface') {
@@ -134,11 +161,12 @@ SplitWindow = function(order, window, tag) {
   return(window)
 }
 
-# main function ####
+# main functions ####
+# shrink building
 ShrinkBuilding = function(seed_path, pattern, output_dir) {
   # load seed model
   model = read_json(seed_path)
-  # find zones associated to the dweling
+  # find zones associated to the habitation
   tags = names(model$'Zone')
   zones = tags[grep(pattern, tags)]
   model$'Zone' = model$'Zone'[zones]
@@ -168,25 +196,36 @@ ShrinkBuilding = function(seed_path, pattern, output_dir) {
   # ground domain
   model = RmGroundDomain(model, pattern)
   # write epJSON file
-  sim = ifelse(grepl('\\|', zones), '02', '03')
+  count = str_count(zones, '\\|')
+  if (count <= 4) {
+    sim = ifelse(count == 0, '03', '02')
+  } else {
+    sim = '04'
+    pattern = DefNamePattern(pattern)
+  }
   output_name = seed_path %>% basename() %>%
     str_remove('.epJSON') %>% str_replace('^..', sim)
   output_path = paste0(output_dir, output_name, '_', pattern, '.epJSON')
   write_json(model, output_path, pretty = T, auto_unbox = T)
   print(output_path)
 }
+# apply ShrinkBuilding()
+ApplyShkBuild = function(seed_dir, typo, n_strs, output_dir, cores_left,
+                         shells = c('ref17', 'ref8', 'tm', 'tv', 'sf'),
+                         rooms = c('liv', 'dorm1', 'dorm2')) {
+  if (typo == 'linear') {
+    habs = c('csw', 'msw', 'mse', 'cse', 'cne', 'mne', 'mnw', 'cnw')
+  }
+  habs = paste0('f', rep(c(1:n_strs), each = length(habs)), '_', habs)
+  piles = sapply(habs, PileHabs, n_strs)
+  patterns = c(habs, paste0(habs, '_', rep(rooms, each = length(habs))), piles)
+  seed_paths = paste0(seed_dir, '00_linear_', shells, '.epJSON')
+  grid = expand.grid('seed_path' = seed_paths, 'pattern' = patterns,
+                     stringsAsFactors = FALSE)
+  mcmapply(ShrinkBuilding, grid$seed_path, grid$pattern, output_dir,
+           mc.cores = detectCores() - cores_left)
+}
 
 # application ####
-dwels = c('csw', 'msw', 'mse', 'cse', 'cne', 'mne', 'mnw', 'cnw')
-n_strs = 5
-dwels = paste0('f', rep(c(1:n_strs), each = length(dwels)), '_', dwels)
-rooms = c('liv', 'dorm_1', 'dorm_2')
-patterns = c(dwels, paste0(dwels, '_', rep(rooms, each = length(dwels))))
-shells = c('ref', 'tm', 'tv', 'sf')
-seed_dir = '/home/rodox/git/master_ufsc/model/'
-seed_paths = paste0(seed_dir, '00_linear_', shells, '.epJSON')
-grid = expand.grid('seed_path' = seed_paths, 'pattern' = patterns,
-                   stringsAsFactors = FALSE)
-output_dir = '/home/rodox/git/master_ufsc/model/'
-mcmapply(ShrinkBuilding, grid$seed_path, grid$pattern, output_dir,
-         mc.cores = detectCores())
+ApplyShkBuild('/home/rodox/git/master_ufsc/model/', 'linear', 5,
+              '/home/rodox/git/master_ufsc/model/', 0)

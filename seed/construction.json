@@ -1,11 +1,10 @@
 {
-	"ref": {
+	"ref17": {
         "ext_wall": {
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 2,
-            "outside_layer": "concreto_10cm"
+            "outside_layer": "concreto_10cm_0.5"
         },
-
         "int_wall": {
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 2,
@@ -16,7 +15,27 @@
             "idf_max_fields": 4,
             "outside_layer": "telha_fibrocimento",
             "layer_2": "camara_cobertura",
-            "layer_3": "concreto_10cm_0.5"  
+            "layer_3": "concreto_10cm_0.5"
+        }
+	},
+	"ref8": {
+        "ext_wall": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "outside_layer": "concreto_10cm_0.5"
+        },
+        "int_wall": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 2,
+            "outside_layer": "concreto_10cm_0.5"
+        },
+        "roof": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 5,
+            "outside_layer": "telha_fibrocimento",
+            "layer_2": "camara_cobertura",
+            "layer_3": "isolamento_cobertura_zb8",
+            "layer_4": "concreto_10cm_0.5"
         }
 	},
 	"tm": {

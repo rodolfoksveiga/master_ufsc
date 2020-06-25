@@ -48,6 +48,9 @@ DefSimGrid = function(models_dir, epws_dir, weathers, form) {
   epws_path = dir(epws_dir, pattern, full.names = TRUE)
   sims_grid = expand.grid('model' = models_path, 'epw' = epws_path,
                           stringsAsFactors = FALSE)
+  cond17 = grepl('ref17', sims_grid$model) & grepl('rio_de_janeiro', sims_grid$epw)
+  cond8 = grepl('ref8', sims_grid$model) & !grepl('rio_de_janeiro', sims_grid$epw)
+  sims_grid = filter(sims_grid, !(cond17 | cond8))
   pattern = str_flatten(weathers, collapse = '|')
   sims_grid$weather = str_extract(sims_grid$epw, pattern)
   return(sims_grid)
@@ -102,9 +105,9 @@ RunEPSim = function(model_path, epw_path, weather, output_dir) {
 
 # main function ####
 ProcessEPSims = function(models_dir, output_dir, epws_dir, weathers,
-                         nc_left = 1, form = '.epJSON') {
-  # models_dir:
-  # epws_dir:
+                         cores_left = 1, form = '.epJSON') {
+  # models_dir: 
+  # epws_dir: 
   # weathers: 
   # output_dir: 
   # form: 
@@ -114,7 +117,7 @@ ProcessEPSims = function(models_dir, output_dir, epws_dir, weathers,
   sims_grid = DefSimGrid(models_dir, epws_dir, weathers, form)
   # run simulations in parallel
   errs_ind = mcmapply(RunEPSim, sims_grid$model, sims_grid$epw,
-                      sims_grid$weather, output_dir, mc.cores = detectCores() - nc_left)
+                      sims_grid$weather, output_dir, mc.cores = detectCores() - cores_left)
   # remove all files but .csv and .err
   RmUnsFiles(output_dir)
   # list and rename the outputs left
@@ -129,6 +132,5 @@ ProcessEPSims = function(models_dir, output_dir, epws_dir, weathers,
 }
 
 # application ####
-ProcessEPSims('~/git/master_ufsc/model/', '~/in_progress/master/',
-              '~/git/master_ufsc/source/epw/', nc_left = 0,
-              c('curitiba', 'rio_de_janeiro', 'sao_paulo'))
+ProcessEPSims('~/git/master_ufsc/model/', '~/in_progress/master/04/',
+              '~/git/master_ufsc/source/epw/', 'teresina')

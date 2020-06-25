@@ -66,7 +66,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cne_dorm_1_wall_w1_int",
+      "outside_boundary_condition_object": "cne_dorm1_wall_w1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -167,7 +167,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cne_dorm_2_wall_e2_int",
+      "outside_boundary_condition_object": "cne_dorm2_wall_e2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -195,7 +195,7 @@
       "wind_exposure": "NoWind",
       "zone_name": "cne_bwc"
     },
-    "cne_dorm_1_floor": {
+    "cne_dorm1_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -224,9 +224,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cne_dorm_1"
+      "zone_name": "cne_dorm1"
     },
-    "cne_dorm_1_roof": {
+    "cne_dorm1_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -253,9 +253,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "cne_dorm_1"
+      "zone_name": "cne_dorm1"
     },
-    "cne_dorm_1_wall_e_ext": {
+    "cne_dorm1_wall_e_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -286,9 +286,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cne_dorm_1"
+      "zone_name": "cne_dorm1"
     },
-    "cne_dorm_1_wall_n_ext": {
+    "cne_dorm1_wall_n_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -319,9 +319,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cne_dorm_1"
+      "zone_name": "cne_dorm1"
     },
-    "cne_dorm_1_wall_s1_int": {
+    "cne_dorm1_wall_s1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -353,9 +353,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cne_dorm_1"
+      "zone_name": "cne_dorm1"
     },
-    "cne_dorm_1_wall_s2_ext": {
+    "cne_dorm1_wall_s2_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -386,9 +386,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cne_dorm_1"
+      "zone_name": "cne_dorm1"
     },
-    "cne_dorm_1_wall_w1_int": {
+    "cne_dorm1_wall_w1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -420,9 +420,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cne_dorm_1"
+      "zone_name": "cne_dorm1"
     },
-    "cne_dorm_1_wall_w2_int": {
+    "cne_dorm1_wall_w2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -454,9 +454,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cne_dorm_1"
+      "zone_name": "cne_dorm1"
     },
-    "cne_dorm_2_floor": {
+    "cne_dorm2_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -485,9 +485,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cne_dorm_2"
+      "zone_name": "cne_dorm2"
     },
-    "cne_dorm_2_roof": {
+    "cne_dorm2_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -514,9 +514,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "cne_dorm_2"
+      "zone_name": "cne_dorm2"
     },
-    "cne_dorm_2_wall_e1_int": {
+    "cne_dorm2_wall_e1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -548,9 +548,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cne_dorm_2"
+      "zone_name": "cne_dorm2"
     },
-    "cne_dorm_2_wall_e2_int": {
+    "cne_dorm2_wall_e2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -582,9 +582,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cne_dorm_2"
+      "zone_name": "cne_dorm2"
     },
-    "cne_dorm_2_wall_n_ext": {
+    "cne_dorm2_wall_n_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -615,9 +615,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cne_dorm_2"
+      "zone_name": "cne_dorm2"
     },
-    "cne_dorm_2_wall_s_int": {
+    "cne_dorm2_wall_s_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -649,9 +649,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cne_dorm_2"
+      "zone_name": "cne_dorm2"
     },
-    "cne_dorm_2_wall_w1": {
+    "cne_dorm2_wall_w1": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -682,9 +682,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cne_dorm_2"
+      "zone_name": "cne_dorm2"
     },
-    "cne_dorm_2_wall_w2_int": {
+    "cne_dorm2_wall_w2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -716,7 +716,7 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cne_dorm_2"
+      "zone_name": "cne_dorm2"
     },
     "cne_liv_floor": {
       "idf_max_extensible_fields": 30,
@@ -877,7 +877,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cne_dorm_1_wall_w2_int",
+      "outside_boundary_condition_object": "cne_dorm1_wall_w2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -911,7 +911,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cne_dorm_2_wall_w2_int",
+      "outside_boundary_condition_object": "cne_dorm2_wall_w2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -945,7 +945,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cne_dorm_1_wall_s1_int",
+      "outside_boundary_condition_object": "cne_dorm1_wall_s1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -1013,7 +1013,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cne_dorm_2_wall_s_int",
+      "outside_boundary_condition_object": "cne_dorm2_wall_s_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -1114,7 +1114,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cne_dorm_2_wall_e1_int",
+      "outside_boundary_condition_object": "cne_dorm2_wall_e1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -1276,7 +1276,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cnw_dorm_2_wall_w1_int",
+      "outside_boundary_condition_object": "cnw_dorm2_wall_w1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -1377,7 +1377,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cnw_dorm_1_wall_e2_int",
+      "outside_boundary_condition_object": "cnw_dorm1_wall_e2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -1405,7 +1405,7 @@
       "wind_exposure": "NoWind",
       "zone_name": "cnw_bwc"
     },
-    "cnw_dorm_1_floor": {
+    "cnw_dorm1_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -1434,9 +1434,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cnw_dorm_1"
+      "zone_name": "cnw_dorm1"
     },
-    "cnw_dorm_1_roof": {
+    "cnw_dorm1_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -1463,9 +1463,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "cnw_dorm_1"
+      "zone_name": "cnw_dorm1"
     },
-    "cnw_dorm_1_wall_e1_int": {
+    "cnw_dorm1_wall_e1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1497,9 +1497,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cnw_dorm_1"
+      "zone_name": "cnw_dorm1"
     },
-    "cnw_dorm_1_wall_e2_int": {
+    "cnw_dorm1_wall_e2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1531,9 +1531,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cnw_dorm_1"
+      "zone_name": "cnw_dorm1"
     },
-    "cnw_dorm_1_wall_n_ext": {
+    "cnw_dorm1_wall_n_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1564,9 +1564,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cnw_dorm_1"
+      "zone_name": "cnw_dorm1"
     },
-    "cnw_dorm_1_wall_s1_ext": {
+    "cnw_dorm1_wall_s1_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1597,9 +1597,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cnw_dorm_1"
+      "zone_name": "cnw_dorm1"
     },
-    "cnw_dorm_1_wall_s2_int": {
+    "cnw_dorm1_wall_s2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1631,9 +1631,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cnw_dorm_1"
+      "zone_name": "cnw_dorm1"
     },
-    "cnw_dorm_1_wall_w_ext": {
+    "cnw_dorm1_wall_w_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1664,9 +1664,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cnw_dorm_1"
+      "zone_name": "cnw_dorm1"
     },
-    "cnw_dorm_2_floor": {
+    "cnw_dorm2_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -1695,9 +1695,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cnw_dorm_2"
+      "zone_name": "cnw_dorm2"
     },
-    "cnw_dorm_2_roof": {
+    "cnw_dorm2_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -1724,9 +1724,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "cnw_dorm_2"
+      "zone_name": "cnw_dorm2"
     },
-    "cnw_dorm_2_wall_e1_int": {
+    "cnw_dorm2_wall_e1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1758,9 +1758,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cnw_dorm_2"
+      "zone_name": "cnw_dorm2"
     },
-    "cnw_dorm_2_wall_e2_ext": {
+    "cnw_dorm2_wall_e2_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1791,9 +1791,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cnw_dorm_2"
+      "zone_name": "cnw_dorm2"
     },
-    "cnw_dorm_2_wall_n_ext": {
+    "cnw_dorm2_wall_n_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1824,9 +1824,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cnw_dorm_2"
+      "zone_name": "cnw_dorm2"
     },
-    "cnw_dorm_2_wall_s_int": {
+    "cnw_dorm2_wall_s_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1858,9 +1858,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cnw_dorm_2"
+      "zone_name": "cnw_dorm2"
     },
-    "cnw_dorm_2_wall_w1_int": {
+    "cnw_dorm2_wall_w1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1892,9 +1892,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cnw_dorm_2"
+      "zone_name": "cnw_dorm2"
     },
-    "cnw_dorm_2_wall_w2_int": {
+    "cnw_dorm2_wall_w2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -1926,7 +1926,7 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cnw_dorm_2"
+      "zone_name": "cnw_dorm2"
     },
     "cnw_liv_floor": {
       "idf_max_extensible_fields": 30,
@@ -2122,7 +2122,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cnw_dorm_2_wall_w2_int",
+      "outside_boundary_condition_object": "cnw_dorm2_wall_w2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -2189,7 +2189,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cnw_dorm_2_wall_s_int",
+      "outside_boundary_condition_object": "cnw_dorm2_wall_s_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -2257,7 +2257,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cnw_dorm_1_wall_s2_int",
+      "outside_boundary_condition_object": "cnw_dorm1_wall_s2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -2325,7 +2325,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cnw_dorm_2_wall_e1_int",
+      "outside_boundary_condition_object": "cnw_dorm2_wall_e1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -2359,7 +2359,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cnw_dorm_1_wall_e1_int",
+      "outside_boundary_condition_object": "cnw_dorm1_wall_e1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -2720,7 +2720,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mse_dorm_1_wall_w_int",
+      "outside_boundary_condition_object": "mse_dorm1_wall_w_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -2889,7 +2889,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mne_dorm_1_wall_w_int",
+      "outside_boundary_condition_object": "mne_dorm1_wall_w_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -3092,7 +3092,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mne_dorm_1_wall_s1_int",
+      "outside_boundary_condition_object": "mne_dorm1_wall_s1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -3159,7 +3159,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mnw_dorm_1_wall_s2_int",
+      "outside_boundary_condition_object": "mnw_dorm1_wall_s2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -3733,7 +3733,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "msw_dorm_1_wall_e_int",
+      "outside_boundary_condition_object": "msw_dorm1_wall_e_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -3835,7 +3835,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mnw_dorm_1_wall_e_int",
+      "outside_boundary_condition_object": "mnw_dorm1_wall_e_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -4030,7 +4030,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cse_dorm_1_wall_w2_int",
+      "outside_boundary_condition_object": "cse_dorm1_wall_w2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -4131,7 +4131,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cse_dorm_2_wall_e1_int",
+      "outside_boundary_condition_object": "cse_dorm2_wall_e1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -4159,7 +4159,7 @@
       "wind_exposure": "NoWind",
       "zone_name": "cse_bwc"
     },
-    "cse_dorm_1_floor": {
+    "cse_dorm1_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -4188,9 +4188,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cse_dorm_1"
+      "zone_name": "cse_dorm1"
     },
-    "cse_dorm_1_roof": {
+    "cse_dorm1_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -4217,9 +4217,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "cse_dorm_1"
+      "zone_name": "cse_dorm1"
     },
-    "cse_dorm_1_wall_e_ext": {
+    "cse_dorm1_wall_e_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4250,9 +4250,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cse_dorm_1"
+      "zone_name": "cse_dorm1"
     },
-    "cse_dorm_1_wall_n1_ext": {
+    "cse_dorm1_wall_n1_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4283,9 +4283,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cse_dorm_1"
+      "zone_name": "cse_dorm1"
     },
-    "cse_dorm_1_wall_n2_int": {
+    "cse_dorm1_wall_n2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4317,9 +4317,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cse_dorm_1"
+      "zone_name": "cse_dorm1"
     },
-    "cse_dorm_1_wall_s_ext": {
+    "cse_dorm1_wall_s_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4350,9 +4350,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cse_dorm_1"
+      "zone_name": "cse_dorm1"
     },
-    "cse_dorm_1_wall_w1_int": {
+    "cse_dorm1_wall_w1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4384,9 +4384,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cse_dorm_1"
+      "zone_name": "cse_dorm1"
     },
-    "cse_dorm_1_wall_w2_int": {
+    "cse_dorm1_wall_w2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4418,9 +4418,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cse_dorm_1"
+      "zone_name": "cse_dorm1"
     },
-    "cse_dorm_2_floor": {
+    "cse_dorm2_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -4449,9 +4449,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cse_dorm_2"
+      "zone_name": "cse_dorm2"
     },
-    "cse_dorm_2_roof": {
+    "cse_dorm2_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -4478,9 +4478,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "cse_dorm_2"
+      "zone_name": "cse_dorm2"
     },
-    "cse_dorm_2_wall_e1_int": {
+    "cse_dorm2_wall_e1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4512,9 +4512,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cse_dorm_2"
+      "zone_name": "cse_dorm2"
     },
-    "cse_dorm_2_wall_e2_int": {
+    "cse_dorm2_wall_e2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4546,9 +4546,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cse_dorm_2"
+      "zone_name": "cse_dorm2"
     },
-    "cse_dorm_2_wall_n_int": {
+    "cse_dorm2_wall_n_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4580,9 +4580,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cse_dorm_2"
+      "zone_name": "cse_dorm2"
     },
-    "cse_dorm_2_wall_s_ext": {
+    "cse_dorm2_wall_s_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4613,9 +4613,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cse_dorm_2"
+      "zone_name": "cse_dorm2"
     },
-    "cse_dorm_2_wall_w1_int": {
+    "cse_dorm2_wall_w1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4647,9 +4647,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "cse_dorm_2"
+      "zone_name": "cse_dorm2"
     },
-    "cse_dorm_2_wall_w2_ext": {
+    "cse_dorm2_wall_w2_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -4680,7 +4680,7 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "cse_dorm_2"
+      "zone_name": "cse_dorm2"
     },
     "cse_liv_floor": {
       "idf_max_extensible_fields": 30,
@@ -4808,7 +4808,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cse_dorm_2_wall_w1_int",
+      "outside_boundary_condition_object": "cse_dorm2_wall_w1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -4842,7 +4842,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cse_dorm_1_wall_w1_int",
+      "outside_boundary_condition_object": "cse_dorm1_wall_w1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -4976,7 +4976,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cse_dorm_2_wall_n_int",
+      "outside_boundary_condition_object": "cse_dorm2_wall_n_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -5044,7 +5044,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cse_dorm_1_wall_n2_int",
+      "outside_boundary_condition_object": "cse_dorm1_wall_n2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -5078,7 +5078,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "cse_dorm_2_wall_e2_int",
+      "outside_boundary_condition_object": "cse_dorm2_wall_e2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -5240,7 +5240,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "csw_dorm_2_wall_w2_int",
+      "outside_boundary_condition_object": "csw_dorm2_wall_w2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -5341,7 +5341,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "csw_dorm_1_wall_e1_int",
+      "outside_boundary_condition_object": "csw_dorm1_wall_e1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -5369,7 +5369,7 @@
       "wind_exposure": "NoWind",
       "zone_name": "csw_bwc"
     },
-    "csw_dorm_1_floor": {
+    "csw_dorm1_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -5398,9 +5398,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "csw_dorm_1"
+      "zone_name": "csw_dorm1"
     },
-    "csw_dorm_1_roof": {
+    "csw_dorm1_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -5427,9 +5427,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "csw_dorm_1"
+      "zone_name": "csw_dorm1"
     },
-    "csw_dorm_1_wall_e1_int": {
+    "csw_dorm1_wall_e1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5461,9 +5461,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "csw_dorm_1"
+      "zone_name": "csw_dorm1"
     },
-    "csw_dorm_1_wall_e2_int": {
+    "csw_dorm1_wall_e2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5495,9 +5495,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "csw_dorm_1"
+      "zone_name": "csw_dorm1"
     },
-    "csw_dorm_1_wall_n1_int": {
+    "csw_dorm1_wall_n1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5529,9 +5529,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "csw_dorm_1"
+      "zone_name": "csw_dorm1"
     },
-    "csw_dorm_1_wall_n2_ext": {
+    "csw_dorm1_wall_n2_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5562,9 +5562,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "csw_dorm_1"
+      "zone_name": "csw_dorm1"
     },
-    "csw_dorm_1_wall_s_ext": {
+    "csw_dorm1_wall_s_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5595,9 +5595,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "csw_dorm_1"
+      "zone_name": "csw_dorm1"
     },
-    "csw_dorm_1_wall_w_ext": {
+    "csw_dorm1_wall_w_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5628,9 +5628,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "csw_dorm_1"
+      "zone_name": "csw_dorm1"
     },
-    "csw_dorm_2_floor": {
+    "csw_dorm2_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -5659,9 +5659,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "csw_dorm_2"
+      "zone_name": "csw_dorm2"
     },
-    "csw_dorm_2_roof": {
+    "csw_dorm2_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -5688,9 +5688,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "csw_dorm_2"
+      "zone_name": "csw_dorm2"
     },
-    "csw_dorm_2_wall_e1_ext": {
+    "csw_dorm2_wall_e1_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5721,9 +5721,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "csw_dorm_2"
+      "zone_name": "csw_dorm2"
     },
-    "csw_dorm_2_wall_e2_int": {
+    "csw_dorm2_wall_e2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5755,9 +5755,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "csw_dorm_2"
+      "zone_name": "csw_dorm2"
     },
-    "csw_dorm_2_wall_n_int": {
+    "csw_dorm2_wall_n_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5789,9 +5789,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "csw_dorm_2"
+      "zone_name": "csw_dorm2"
     },
-    "csw_dorm_2_wall_s_ext": {
+    "csw_dorm2_wall_s_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5822,9 +5822,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "csw_dorm_2"
+      "zone_name": "csw_dorm2"
     },
-    "csw_dorm_2_wall_w1_int": {
+    "csw_dorm2_wall_w1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5856,9 +5856,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "csw_dorm_2"
+      "zone_name": "csw_dorm2"
     },
-    "csw_dorm_2_wall_w2_int": {
+    "csw_dorm2_wall_w2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -5890,7 +5890,7 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "csw_dorm_2"
+      "zone_name": "csw_dorm2"
     },
     "csw_liv_floor": {
       "idf_max_extensible_fields": 30,
@@ -6018,7 +6018,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "csw_dorm_2_wall_w1_int",
+      "outside_boundary_condition_object": "csw_dorm2_wall_w1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -6154,7 +6154,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "csw_dorm_1_wall_n1_int",
+      "outside_boundary_condition_object": "csw_dorm1_wall_n1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -6222,7 +6222,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "csw_dorm_2_wall_n_int",
+      "outside_boundary_condition_object": "csw_dorm2_wall_n_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -6289,7 +6289,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "csw_dorm_1_wall_e2_int",
+      "outside_boundary_condition_object": "csw_dorm1_wall_e2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -6323,7 +6323,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "csw_dorm_2_wall_e2_int",
+      "outside_boundary_condition_object": "csw_dorm2_wall_e2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -6579,7 +6579,7 @@
       "wind_exposure": "WindExposed",
       "zone_name": "mne_bwc"
     },
-    "mne_dorm_1_floor": {
+    "mne_dorm1_floor": {
       "idf_max_extensible_fields": 18,
       "idf_max_fields": 28,
       "number_of_vertices": 6,
@@ -6618,9 +6618,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mne_dorm_1"
+      "zone_name": "mne_dorm1"
     },
-    "mne_dorm_1_roof": {
+    "mne_dorm1_roof": {
       "idf_max_extensible_fields": 18,
       "idf_max_fields": 28,
       "number_of_vertices": 6,
@@ -6657,9 +6657,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "mne_dorm_1"
+      "zone_name": "mne_dorm1"
     },
-    "mne_dorm_1_wall_e1_int": {
+    "mne_dorm1_wall_e1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -6691,15 +6691,15 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mne_dorm_1"
+      "zone_name": "mne_dorm1"
     },
-    "mne_dorm_1_wall_e2_int": {
+    "mne_dorm1_wall_e2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mne_dorm_2_wall_w_int",
+      "outside_boundary_condition_object": "mne_dorm2_wall_w_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -6725,15 +6725,15 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mne_dorm_1"
+      "zone_name": "mne_dorm1"
     },
-    "mne_dorm_1_wall_n1_int": {
+    "mne_dorm1_wall_n1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mne_dorm_2_wall_s1_int",
+      "outside_boundary_condition_object": "mne_dorm2_wall_s1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -6759,9 +6759,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mne_dorm_1"
+      "zone_name": "mne_dorm1"
     },
-    "mne_dorm_1_wall_n2_ext": {
+    "mne_dorm1_wall_n2_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -6792,9 +6792,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "mne_dorm_1"
+      "zone_name": "mne_dorm1"
     },
-    "mne_dorm_1_wall_s1_int": {
+    "mne_dorm1_wall_s1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -6826,9 +6826,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mne_dorm_1"
+      "zone_name": "mne_dorm1"
     },
-    "mne_dorm_1_wall_s2_int": {
+    "mne_dorm1_wall_s2_int": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -6859,9 +6859,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "mne_dorm_1"
+      "zone_name": "mne_dorm1"
     },
-    "mne_dorm_1_wall_w_int": {
+    "mne_dorm1_wall_w_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -6893,9 +6893,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mne_dorm_1"
+      "zone_name": "mne_dorm1"
     },
-    "mne_dorm_2_floor": {
+    "mne_dorm2_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -6924,9 +6924,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mne_dorm_2"
+      "zone_name": "mne_dorm2"
     },
-    "mne_dorm_2_roof": {
+    "mne_dorm2_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -6953,9 +6953,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "mne_dorm_2"
+      "zone_name": "mne_dorm2"
     },
-    "mne_dorm_2_wall_e_int": {
+    "mne_dorm2_wall_e_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -6987,9 +6987,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mne_dorm_2"
+      "zone_name": "mne_dorm2"
     },
-    "mne_dorm_2_wall_n_ext": {
+    "mne_dorm2_wall_n_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -7020,15 +7020,15 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "mne_dorm_2"
+      "zone_name": "mne_dorm2"
     },
-    "mne_dorm_2_wall_s1_int": {
+    "mne_dorm2_wall_s1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mne_dorm_1_wall_n1_int",
+      "outside_boundary_condition_object": "mne_dorm1_wall_n1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -7054,9 +7054,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mne_dorm_2"
+      "zone_name": "mne_dorm2"
     },
-    "mne_dorm_2_wall_s2_int": {
+    "mne_dorm2_wall_s2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -7088,15 +7088,15 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mne_dorm_2"
+      "zone_name": "mne_dorm2"
     },
-    "mne_dorm_2_wall_w_int": {
+    "mne_dorm2_wall_w_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mne_dorm_1_wall_e2_int",
+      "outside_boundary_condition_object": "mne_dorm1_wall_e2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -7122,7 +7122,7 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mne_dorm_2"
+      "zone_name": "mne_dorm2"
     },
     "mne_liv_floor": {
       "idf_max_extensible_fields": 30,
@@ -7351,7 +7351,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mne_dorm_2_wall_s2_int",
+      "outside_boundary_condition_object": "mne_dorm2_wall_s2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -7487,7 +7487,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mne_dorm_2_wall_e_int",
+      "outside_boundary_condition_object": "mne_dorm2_wall_e_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -7521,7 +7521,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mne_dorm_1_wall_e1_int",
+      "outside_boundary_condition_object": "mne_dorm1_wall_e1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -7778,7 +7778,7 @@
       "wind_exposure": "NoWind",
       "zone_name": "mnw_bwc"
     },
-    "mnw_dorm_1_floor": {
+    "mnw_dorm1_floor": {
       "idf_max_extensible_fields": 18,
       "idf_max_fields": 28,
       "number_of_vertices": 6,
@@ -7817,9 +7817,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mnw_dorm_1"
+      "zone_name": "mnw_dorm1"
     },
-    "mnw_dorm_1_roof": {
+    "mnw_dorm1_roof": {
       "idf_max_extensible_fields": 18,
       "idf_max_fields": 28,
       "number_of_vertices": 6,
@@ -7856,9 +7856,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "mnw_dorm_1"
+      "zone_name": "mnw_dorm1"
     },
-    "mnw_dorm_1_wall_e_int": {
+    "mnw_dorm1_wall_e_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -7890,9 +7890,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mnw_dorm_1"
+      "zone_name": "mnw_dorm1"
     },
-    "mnw_dorm_1_wall_n1_ext": {
+    "mnw_dorm1_wall_n1_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -7923,15 +7923,15 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "mnw_dorm_1"
+      "zone_name": "mnw_dorm1"
     },
-    "mnw_dorm_1_wall_n2_int": {
+    "mnw_dorm1_wall_n2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mnw_dorm_2_wall_s2_int",
+      "outside_boundary_condition_object": "mnw_dorm2_wall_s2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -7957,9 +7957,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mnw_dorm_1"
+      "zone_name": "mnw_dorm1"
     },
-    "mnw_dorm_1_wall_s1_int": {
+    "mnw_dorm1_wall_s1_int": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -7990,9 +7990,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "mnw_dorm_1"
+      "zone_name": "mnw_dorm1"
     },
-    "mnw_dorm_1_wall_s2_int": {
+    "mnw_dorm1_wall_s2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -8024,15 +8024,15 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mnw_dorm_1"
+      "zone_name": "mnw_dorm1"
     },
-    "mnw_dorm_1_wall_w1_int": {
+    "mnw_dorm1_wall_w1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mnw_dorm_2_wall_e_int",
+      "outside_boundary_condition_object": "mnw_dorm2_wall_e_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -8058,9 +8058,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mnw_dorm_1"
+      "zone_name": "mnw_dorm1"
     },
-    "mnw_dorm_1_wall_w2_int": {
+    "mnw_dorm1_wall_w2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -8092,9 +8092,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mnw_dorm_1"
+      "zone_name": "mnw_dorm1"
     },
-    "mnw_dorm_2_floor": {
+    "mnw_dorm2_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -8123,9 +8123,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mnw_dorm_2"
+      "zone_name": "mnw_dorm2"
     },
-    "mnw_dorm_2_roof": {
+    "mnw_dorm2_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -8152,15 +8152,15 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "mnw_dorm_2"
+      "zone_name": "mnw_dorm2"
     },
-    "mnw_dorm_2_wall_e_int": {
+    "mnw_dorm2_wall_e_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mnw_dorm_1_wall_w1_int",
+      "outside_boundary_condition_object": "mnw_dorm1_wall_w1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -8186,9 +8186,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mnw_dorm_2"
+      "zone_name": "mnw_dorm2"
     },
-    "mnw_dorm_2_wall_n_ext": {
+    "mnw_dorm2_wall_n_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -8219,9 +8219,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "mnw_dorm_2"
+      "zone_name": "mnw_dorm2"
     },
-    "mnw_dorm_2_wall_s1_int": {
+    "mnw_dorm2_wall_s1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -8253,15 +8253,15 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mnw_dorm_2"
+      "zone_name": "mnw_dorm2"
     },
-    "mnw_dorm_2_wall_s2_int": {
+    "mnw_dorm2_wall_s2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mnw_dorm_1_wall_n2_int",
+      "outside_boundary_condition_object": "mnw_dorm1_wall_n2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -8287,9 +8287,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mnw_dorm_2"
+      "zone_name": "mnw_dorm2"
     },
-    "mnw_dorm_2_wall_w_int": {
+    "mnw_dorm2_wall_w_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -8321,7 +8321,7 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mnw_dorm_2"
+      "zone_name": "mnw_dorm2"
     },
     "mnw_liv_floor": {
       "idf_max_extensible_fields": 30,
@@ -8483,7 +8483,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mnw_dorm_1_wall_w2_int",
+      "outside_boundary_condition_object": "mnw_dorm1_wall_w2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -8517,7 +8517,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mnw_dorm_2_wall_w_int",
+      "outside_boundary_condition_object": "mnw_dorm2_wall_w_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -8551,7 +8551,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mnw_dorm_2_wall_s1_int",
+      "outside_boundary_condition_object": "mnw_dorm2_wall_s1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -8915,7 +8915,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mse_dorm_1_wall_n2_int",
+      "outside_boundary_condition_object": "mse_dorm1_wall_n2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -9172,7 +9172,7 @@
       "wind_exposure": "WindExposed",
       "zone_name": "mse_bwc_2"
     },
-    "mse_dorm_1_floor": {
+    "mse_dorm1_floor": {
       "idf_max_extensible_fields": 18,
       "idf_max_fields": 28,
       "number_of_vertices": 6,
@@ -9211,9 +9211,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mse_dorm_1"
+      "zone_name": "mse_dorm1"
     },
-    "mse_dorm_1_roof": {
+    "mse_dorm1_roof": {
       "idf_max_extensible_fields": 18,
       "idf_max_fields": 28,
       "number_of_vertices": 6,
@@ -9250,15 +9250,15 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "mse_dorm_1"
+      "zone_name": "mse_dorm1"
     },
-    "mse_dorm_1_wall_e1_int": {
+    "mse_dorm1_wall_e1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mse_dorm_2_wall_w_int",
+      "outside_boundary_condition_object": "mse_dorm2_wall_w_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -9284,9 +9284,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mse_dorm_1"
+      "zone_name": "mse_dorm1"
     },
-    "mse_dorm_1_wall_e2_int": {
+    "mse_dorm1_wall_e2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -9318,9 +9318,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mse_dorm_1"
+      "zone_name": "mse_dorm1"
     },
-    "mse_dorm_1_wall_n1_int": {
+    "mse_dorm1_wall_n1_int": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -9351,9 +9351,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "mse_dorm_1"
+      "zone_name": "mse_dorm1"
     },
-    "mse_dorm_1_wall_n2_int": {
+    "mse_dorm1_wall_n2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -9385,9 +9385,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mse_dorm_1"
+      "zone_name": "mse_dorm1"
     },
-    "mse_dorm_1_wall_s1_ext": {
+    "mse_dorm1_wall_s1_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -9418,15 +9418,15 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "mse_dorm_1"
+      "zone_name": "mse_dorm1"
     },
-    "mse_dorm_1_wall_s2_int": {
+    "mse_dorm1_wall_s2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mse_dorm_2_wall_n2_int",
+      "outside_boundary_condition_object": "mse_dorm2_wall_n2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -9452,9 +9452,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mse_dorm_1"
+      "zone_name": "mse_dorm1"
     },
-    "mse_dorm_1_wall_w_int": {
+    "mse_dorm1_wall_w_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -9486,9 +9486,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mse_dorm_1"
+      "zone_name": "mse_dorm1"
     },
-    "mse_dorm_2_floor": {
+    "mse_dorm2_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -9517,9 +9517,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mse_dorm_2"
+      "zone_name": "mse_dorm2"
     },
-    "mse_dorm_2_roof": {
+    "mse_dorm2_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -9546,9 +9546,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "mse_dorm_2"
+      "zone_name": "mse_dorm2"
     },
-    "mse_dorm_2_wall_e_int": {
+    "mse_dorm2_wall_e_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -9580,9 +9580,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mse_dorm_2"
+      "zone_name": "mse_dorm2"
     },
-    "mse_dorm_2_wall_n1_int": {
+    "mse_dorm2_wall_n1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -9614,15 +9614,15 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mse_dorm_2"
+      "zone_name": "mse_dorm2"
     },
-    "mse_dorm_2_wall_n2_int": {
+    "mse_dorm2_wall_n2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mse_dorm_1_wall_s2_int",
+      "outside_boundary_condition_object": "mse_dorm1_wall_s2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -9648,9 +9648,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mse_dorm_2"
+      "zone_name": "mse_dorm2"
     },
-    "mse_dorm_2_wall_s_ext": {
+    "mse_dorm2_wall_s_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -9681,15 +9681,15 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "mse_dorm_2"
+      "zone_name": "mse_dorm2"
     },
-    "mse_dorm_2_wall_w_int": {
+    "mse_dorm2_wall_w_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mse_dorm_1_wall_e1_int",
+      "outside_boundary_condition_object": "mse_dorm1_wall_e1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -9715,7 +9715,7 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "mse_dorm_2"
+      "zone_name": "mse_dorm2"
     },
     "mse_liv_floor": {
       "idf_max_extensible_fields": 30,
@@ -10013,7 +10013,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mse_dorm_2_wall_n1_int",
+      "outside_boundary_condition_object": "mse_dorm2_wall_n1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -10114,7 +10114,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mse_dorm_1_wall_e2_int",
+      "outside_boundary_condition_object": "mse_dorm1_wall_e2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -10148,7 +10148,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "mse_dorm_2_wall_e_int",
+      "outside_boundary_condition_object": "mse_dorm2_wall_e_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -10310,7 +10310,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "msw_dorm_1_wall_n1_int",
+      "outside_boundary_condition_object": "msw_dorm1_wall_n1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -10566,7 +10566,7 @@
       "wind_exposure": "NoWind",
       "zone_name": "msw_bwc_2"
     },
-    "msw_dorm_1_floor": {
+    "msw_dorm1_floor": {
       "idf_max_extensible_fields": 18,
       "idf_max_fields": 28,
       "number_of_vertices": 6,
@@ -10605,9 +10605,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "msw_dorm_1"
+      "zone_name": "msw_dorm1"
     },
-    "msw_dorm_1_roof": {
+    "msw_dorm1_roof": {
       "idf_max_extensible_fields": 18,
       "idf_max_fields": 28,
       "number_of_vertices": 6,
@@ -10644,9 +10644,9 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "msw_dorm_1"
+      "zone_name": "msw_dorm1"
     },
-    "msw_dorm_1_wall_e_int": {
+    "msw_dorm1_wall_e_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -10678,9 +10678,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "msw_dorm_1"
+      "zone_name": "msw_dorm1"
     },
-    "msw_dorm_1_wall_n1_int": {
+    "msw_dorm1_wall_n1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -10712,9 +10712,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "msw_dorm_1"
+      "zone_name": "msw_dorm1"
     },
-    "msw_dorm_1_wall_n2_int": {
+    "msw_dorm1_wall_n2_int": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -10745,15 +10745,15 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "msw_dorm_1"
+      "zone_name": "msw_dorm1"
     },
-    "msw_dorm_1_wall_s1_int": {
+    "msw_dorm1_wall_s1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "msw_dorm_2_wall_n1_int",
+      "outside_boundary_condition_object": "msw_dorm2_wall_n1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -10779,9 +10779,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "msw_dorm_1"
+      "zone_name": "msw_dorm1"
     },
-    "msw_dorm_1_wall_s2_ext": {
+    "msw_dorm1_wall_s2_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -10812,9 +10812,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "msw_dorm_1"
+      "zone_name": "msw_dorm1"
     },
-    "msw_dorm_1_wall_w1_int": {
+    "msw_dorm1_wall_w1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -10846,15 +10846,15 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "msw_dorm_1"
+      "zone_name": "msw_dorm1"
     },
-    "msw_dorm_1_wall_w2_int": {
+    "msw_dorm1_wall_w2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "msw_dorm_2_wall_e_int",
+      "outside_boundary_condition_object": "msw_dorm2_wall_e_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -10880,9 +10880,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "msw_dorm_1"
+      "zone_name": "msw_dorm1"
     },
-    "msw_dorm_2_floor": {
+    "msw_dorm2_floor": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -10911,9 +10911,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "msw_dorm_2"
+      "zone_name": "msw_dorm2"
     },
-    "msw_dorm_2_roof": {
+    "msw_dorm2_roof": {
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
@@ -10940,15 +10940,15 @@
           "vertex_z_coordinate": 2.6
         }
       ],
-      "zone_name": "msw_dorm_2"
+      "zone_name": "msw_dorm2"
     },
-    "msw_dorm_2_wall_e_int": {
+    "msw_dorm2_wall_e_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "msw_dorm_1_wall_w2_int",
+      "outside_boundary_condition_object": "msw_dorm1_wall_w2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -10974,15 +10974,15 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "msw_dorm_2"
+      "zone_name": "msw_dorm2"
     },
-    "msw_dorm_2_wall_n1_int": {
+    "msw_dorm2_wall_n1_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "msw_dorm_1_wall_s1_int",
+      "outside_boundary_condition_object": "msw_dorm1_wall_s1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -11008,9 +11008,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "msw_dorm_2"
+      "zone_name": "msw_dorm2"
     },
-    "msw_dorm_2_wall_n2_int": {
+    "msw_dorm2_wall_n2_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -11042,9 +11042,9 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "msw_dorm_2"
+      "zone_name": "msw_dorm2"
     },
-    "msw_dorm_2_wall_s_ext": {
+    "msw_dorm2_wall_s_ext": {
       "construction_name": "ext_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -11075,9 +11075,9 @@
         }
       ],
       "wind_exposure": "WindExposed",
-      "zone_name": "msw_dorm_2"
+      "zone_name": "msw_dorm2"
     },
-    "msw_dorm_2_wall_w_int": {
+    "msw_dorm2_wall_w_int": {
       "construction_name": "int_wall",
       "idf_max_extensible_fields": 12,
       "idf_max_fields": 22,
@@ -11109,7 +11109,7 @@
         }
       ],
       "wind_exposure": "NoWind",
-      "zone_name": "msw_dorm_2"
+      "zone_name": "msw_dorm2"
     },
     "msw_liv_floor": {
       "idf_max_extensible_fields": 30,
@@ -11237,7 +11237,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "msw_dorm_2_wall_w_int",
+      "outside_boundary_condition_object": "msw_dorm2_wall_w_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -11271,7 +11271,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "msw_dorm_1_wall_w1_int",
+      "outside_boundary_condition_object": "msw_dorm1_wall_w1_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -11474,7 +11474,7 @@
       "idf_max_fields": 22,
       "number_of_vertices": 4,
       "outside_boundary_condition": "Surface",
-      "outside_boundary_condition_object": "msw_dorm_2_wall_n2_int",
+      "outside_boundary_condition_object": "msw_dorm2_wall_n2_int",
       "sun_exposure": "NoSun",
       "surface_type": "Wall",
       "vertices": [
@@ -11613,8 +11613,8 @@
       "vertex_4_y_coordinate": 2.03,
       "vertex_4_z_coordinate": 2.1
     },
-    "cne_dorm_1_door_w": {
-      "building_surface_name": "cne_dorm_1_wall_w2_int",
+    "cne_dorm1_door_w": {
+      "building_surface_name": "cne_dorm1_wall_w2_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -11634,8 +11634,8 @@
       "vertex_4_y_coordinate": 0.135,
       "vertex_4_z_coordinate": 2.1
     },
-    "cne_dorm_1_window_n": {
-      "building_surface_name": "cne_dorm_1_wall_n_ext",
+    "cne_dorm1_window_n": {
+      "building_surface_name": "cne_dorm1_wall_n_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -11654,8 +11654,8 @@
       "vertex_4_y_coordinate": 3.1,
       "vertex_4_z_coordinate": 2.3
     },
-    "cne_dorm_2_door_e": {
-      "building_surface_name": "cne_dorm_2_wall_e1_int",
+    "cne_dorm2_door_e": {
+      "building_surface_name": "cne_dorm2_wall_e1_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -11675,8 +11675,8 @@
       "vertex_4_y_coordinate": 0.935,
       "vertex_4_z_coordinate": 2.1
     },
-    "cne_dorm_2_window_n": {
-      "building_surface_name": "cne_dorm_2_wall_n_ext",
+    "cne_dorm2_window_n": {
+      "building_surface_name": "cne_dorm2_wall_n_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -11701,7 +11701,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "cne_dorm_1_door_w",
+      "outside_boundary_condition_object": "cne_dorm1_door_w",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 5.24,
       "vertex_1_y_coordinate": 2.635,
@@ -11743,7 +11743,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "cne_dorm_2_door_e",
+      "outside_boundary_condition_object": "cne_dorm2_door_e",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 4.04,
       "vertex_1_y_coordinate": 3.435,
@@ -11860,8 +11860,8 @@
       "vertex_4_y_coordinate": 2.03,
       "vertex_4_z_coordinate": 2.1
     },
-    "cnw_dorm_1_door_e": {
-      "building_surface_name": "cnw_dorm_1_wall_e1_int",
+    "cnw_dorm1_door_e": {
+      "building_surface_name": "cnw_dorm1_wall_e1_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -11881,8 +11881,8 @@
       "vertex_4_y_coordinate": 0.935,
       "vertex_4_z_coordinate": 2.1
     },
-    "cnw_dorm_1_window_n": {
-      "building_surface_name": "cnw_dorm_1_wall_n_ext",
+    "cnw_dorm1_window_n": {
+      "building_surface_name": "cnw_dorm1_wall_n_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -11901,8 +11901,8 @@
       "vertex_4_y_coordinate": 3.1,
       "vertex_4_z_coordinate": 2.3
     },
-    "cnw_dorm_2_door_w": {
-      "building_surface_name": "cnw_dorm_2_wall_w2_int",
+    "cnw_dorm2_door_w": {
+      "building_surface_name": "cnw_dorm2_wall_w2_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -11922,8 +11922,8 @@
       "vertex_4_y_coordinate": 0.135,
       "vertex_4_z_coordinate": 2.1
     },
-    "cnw_dorm_2_window_n": {
-      "building_surface_name": "cnw_dorm_2_wall_n_ext",
+    "cnw_dorm2_window_n": {
+      "building_surface_name": "cnw_dorm2_wall_n_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -11969,7 +11969,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "cnw_dorm_2_door_w",
+      "outside_boundary_condition_object": "cnw_dorm2_door_w",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 2.03,
       "vertex_1_y_coordinate": 2.635,
@@ -12011,7 +12011,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "cnw_dorm_1_door_e",
+      "outside_boundary_condition_object": "cnw_dorm1_door_e",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 0.83,
       "vertex_1_y_coordinate": 3.435,
@@ -12315,8 +12315,8 @@
       "vertex_4_y_coordinate": 0,
       "vertex_4_z_coordinate": 2.1
     },
-    "cse_dorm_1_door_w": {
-      "building_surface_name": "cse_dorm_1_wall_w1_int",
+    "cse_dorm1_door_w": {
+      "building_surface_name": "cse_dorm1_wall_w1_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12336,8 +12336,8 @@
       "vertex_4_y_coordinate": 2.165,
       "vertex_4_z_coordinate": 2.1
     },
-    "cse_dorm_1_window_s": {
-      "building_surface_name": "cse_dorm_1_wall_s_ext",
+    "cse_dorm1_window_s": {
+      "building_surface_name": "cse_dorm1_wall_s_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12356,8 +12356,8 @@
       "vertex_4_y_coordinate": 0,
       "vertex_4_z_coordinate": 2.3
     },
-    "cse_dorm_2_door_e": {
-      "building_surface_name": "cse_dorm_2_wall_e2_int",
+    "cse_dorm2_door_e": {
+      "building_surface_name": "cse_dorm2_wall_e2_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12377,8 +12377,8 @@
       "vertex_4_y_coordinate": 2.965,
       "vertex_4_z_coordinate": 2.1
     },
-    "cse_dorm_2_window_s": {
-      "building_surface_name": "cse_dorm_2_wall_s_ext",
+    "cse_dorm2_window_s": {
+      "building_surface_name": "cse_dorm2_wall_s_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12403,7 +12403,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "cse_dorm_1_door_w",
+      "outside_boundary_condition_object": "cse_dorm1_door_w",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 5.24,
       "vertex_1_y_coordinate": 1.595,
@@ -12445,7 +12445,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "cse_dorm_2_door_e",
+      "outside_boundary_condition_object": "cse_dorm2_door_e",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 4.04,
       "vertex_1_y_coordinate": 2.395,
@@ -12562,8 +12562,8 @@
       "vertex_4_y_coordinate": 0,
       "vertex_4_z_coordinate": 2.1
     },
-    "csw_dorm_1_door_e": {
-      "building_surface_name": "csw_dorm_1_wall_e2_int",
+    "csw_dorm1_door_e": {
+      "building_surface_name": "csw_dorm1_wall_e2_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12583,8 +12583,8 @@
       "vertex_4_y_coordinate": 2.965,
       "vertex_4_z_coordinate": 2.1
     },
-    "csw_dorm_1_window_s": {
-      "building_surface_name": "csw_dorm_1_wall_s_ext",
+    "csw_dorm1_window_s": {
+      "building_surface_name": "csw_dorm1_wall_s_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12603,8 +12603,8 @@
       "vertex_4_y_coordinate": 0,
       "vertex_4_z_coordinate": 2.3
     },
-    "csw_dorm_2_door_w": {
-      "building_surface_name": "csw_dorm_2_wall_w1_int",
+    "csw_dorm2_door_w": {
+      "building_surface_name": "csw_dorm2_wall_w1_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12624,8 +12624,8 @@
       "vertex_4_y_coordinate": 2.165,
       "vertex_4_z_coordinate": 2.1
     },
-    "csw_dorm_2_window_s": {
-      "building_surface_name": "csw_dorm_2_wall_s_ext",
+    "csw_dorm2_window_s": {
+      "building_surface_name": "csw_dorm2_wall_s_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12650,7 +12650,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "csw_dorm_2_door_w",
+      "outside_boundary_condition_object": "csw_dorm2_door_w",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 2.03,
       "vertex_1_y_coordinate": -0.935,
@@ -12713,7 +12713,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "csw_dorm_1_door_e",
+      "outside_boundary_condition_object": "csw_dorm1_door_e",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 0.83,
       "vertex_1_y_coordinate": -0.135,
@@ -12809,8 +12809,8 @@
       "vertex_4_y_coordinate": 0.3,
       "vertex_4_z_coordinate": 2.1
     },
-    "mne_dorm_1_door_e": {
-      "building_surface_name": "mne_dorm_1_wall_e1_int",
+    "mne_dorm1_door_e": {
+      "building_surface_name": "mne_dorm1_wall_e1_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12830,8 +12830,8 @@
       "vertex_4_y_coordinate": 0.815,
       "vertex_4_z_coordinate": 2.1
     },
-    "mne_dorm_1_window_n": {
-      "building_surface_name": "mne_dorm_1_wall_n2_ext",
+    "mne_dorm1_window_n": {
+      "building_surface_name": "mne_dorm1_wall_n2_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12850,8 +12850,8 @@
       "vertex_4_y_coordinate": 3.065,
       "vertex_4_z_coordinate": 2.3
     },
-    "mne_dorm_2_door_s": {
-      "building_surface_name": "mne_dorm_2_wall_s2_int",
+    "mne_dorm2_door_s": {
+      "building_surface_name": "mne_dorm2_wall_s2_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12871,8 +12871,8 @@
       "vertex_4_y_coordinate": 0,
       "vertex_4_z_coordinate": 2.1
     },
-    "mne_dorm_2_window_n": {
-      "building_surface_name": "mne_dorm_2_wall_n_ext",
+    "mne_dorm2_window_n": {
+      "building_surface_name": "mne_dorm2_wall_n_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -12897,7 +12897,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "mne_dorm_2_door_s",
+      "outside_boundary_condition_object": "mne_dorm2_door_s",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 2.15,
       "vertex_1_y_coordinate": 0.83,
@@ -12960,7 +12960,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "mne_dorm_1_door_e",
+      "outside_boundary_condition_object": "mne_dorm1_door_e",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 0,
       "vertex_1_y_coordinate": 0.815,
@@ -13056,8 +13056,8 @@
       "vertex_4_y_coordinate": 0.9,
       "vertex_4_z_coordinate": 2.1
     },
-    "mnw_dorm_1_door_w": {
-      "building_surface_name": "mnw_dorm_1_wall_w2_int",
+    "mnw_dorm1_door_w": {
+      "building_surface_name": "mnw_dorm1_wall_w2_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13077,8 +13077,8 @@
       "vertex_4_y_coordinate": 0.015,
       "vertex_4_z_coordinate": 2.1
     },
-    "mnw_dorm_1_window_n": {
-      "building_surface_name": "mnw_dorm_1_wall_n1_ext",
+    "mnw_dorm1_window_n": {
+      "building_surface_name": "mnw_dorm1_wall_n1_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13097,8 +13097,8 @@
       "vertex_4_y_coordinate": 3.065,
       "vertex_4_z_coordinate": 2.3
     },
-    "mnw_dorm_2_door_s": {
-      "building_surface_name": "mnw_dorm_2_wall_s1_int",
+    "mnw_dorm2_door_s": {
+      "building_surface_name": "mnw_dorm2_wall_s1_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13118,8 +13118,8 @@
       "vertex_4_y_coordinate": 0,
       "vertex_4_z_coordinate": 2.1
     },
-    "mnw_dorm_2_window_n": {
-      "building_surface_name": "mnw_dorm_2_wall_n_ext",
+    "mnw_dorm2_window_n": {
+      "building_surface_name": "mnw_dorm2_wall_n_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13144,7 +13144,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "mnw_dorm_1_door_w",
+      "outside_boundary_condition_object": "mnw_dorm1_door_w",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 6.3,
       "vertex_1_y_coordinate": 0.85,
@@ -13165,7 +13165,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "mnw_dorm_2_door_s",
+      "outside_boundary_condition_object": "mnw_dorm2_door_s",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 4.95,
       "vertex_1_y_coordinate": 1.665,
@@ -13268,7 +13268,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "mse_dorm_1_door_n",
+      "outside_boundary_condition_object": "mse_dorm1_door_n",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 1.26,
       "vertex_1_y_coordinate": 0,
@@ -13344,8 +13344,8 @@
       "vertex_4_y_coordinate": 0.3,
       "vertex_4_z_coordinate": 2.1
     },
-    "mse_dorm_1_door_e": {
-      "building_surface_name": "mse_dorm_1_wall_e2_int",
+    "mse_dorm1_door_e": {
+      "building_surface_name": "mse_dorm1_wall_e2_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13365,8 +13365,8 @@
       "vertex_4_y_coordinate": 3.05,
       "vertex_4_z_coordinate": 2.1
     },
-    "mse_dorm_1_door_n": {
-      "building_surface_name": "mse_dorm_1_wall_n2_int",
+    "mse_dorm1_door_n": {
+      "building_surface_name": "mse_dorm1_wall_n2_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13386,8 +13386,8 @@
       "vertex_4_y_coordinate": 3.065,
       "vertex_4_z_coordinate": 2.1
     },
-    "mse_dorm_1_window_s": {
-      "building_surface_name": "mse_dorm_1_wall_s1_ext",
+    "mse_dorm1_window_s": {
+      "building_surface_name": "mse_dorm1_wall_s1_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13406,8 +13406,8 @@
       "vertex_4_y_coordinate": 0,
       "vertex_4_z_coordinate": 2.3
     },
-    "mse_dorm_2_door_n": {
-      "building_surface_name": "mse_dorm_2_wall_n1_int",
+    "mse_dorm2_door_n": {
+      "building_surface_name": "mse_dorm2_wall_n1_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13427,8 +13427,8 @@
       "vertex_4_y_coordinate": 2.235,
       "vertex_4_z_coordinate": 2.1
     },
-    "mse_dorm_2_window_s": {
-      "building_surface_name": "mse_dorm_2_wall_s_ext",
+    "mse_dorm2_window_s": {
+      "building_surface_name": "mse_dorm2_wall_s_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13495,7 +13495,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "mse_dorm_2_door_n",
+      "outside_boundary_condition_object": "mse_dorm2_door_n",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 1.35,
       "vertex_1_y_coordinate": 0,
@@ -13516,7 +13516,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "mse_dorm_1_door_e",
+      "outside_boundary_condition_object": "mse_dorm1_door_e",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 0,
       "vertex_1_y_coordinate": 0.815,
@@ -13577,7 +13577,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "msw_dorm_1_door_n",
+      "outside_boundary_condition_object": "msw_dorm1_door_n",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 0.1,
       "vertex_1_y_coordinate": 0,
@@ -13653,8 +13653,8 @@
       "vertex_4_y_coordinate": 0.9,
       "vertex_4_z_coordinate": 2.1
     },
-    "msw_dorm_1_door_n": {
-      "building_surface_name": "msw_dorm_1_wall_n1_int",
+    "msw_dorm1_door_n": {
+      "building_surface_name": "msw_dorm1_wall_n1_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13674,8 +13674,8 @@
       "vertex_4_y_coordinate": 0.83,
       "vertex_4_z_coordinate": 2.1
     },
-    "msw_dorm_1_door_w": {
-      "building_surface_name": "msw_dorm_1_wall_w1_int",
+    "msw_dorm1_door_w": {
+      "building_surface_name": "msw_dorm1_wall_w1_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13695,8 +13695,8 @@
       "vertex_4_y_coordinate": 0.015,
       "vertex_4_z_coordinate": 2.1
     },
-    "msw_dorm_1_window_s": {
-      "building_surface_name": "msw_dorm_1_wall_s2_ext",
+    "msw_dorm1_window_s": {
+      "building_surface_name": "msw_dorm1_wall_s2_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13715,8 +13715,8 @@
       "vertex_4_y_coordinate": -2.235,
       "vertex_4_z_coordinate": 2.3
     },
-    "msw_dorm_2_door_n": {
-      "building_surface_name": "msw_dorm_2_wall_n2_int",
+    "msw_dorm2_door_n": {
+      "building_surface_name": "msw_dorm2_wall_n2_int",
       "construction_name": "door_3cm",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13736,8 +13736,8 @@
       "vertex_4_y_coordinate": 2.235,
       "vertex_4_z_coordinate": 2.1
     },
-    "msw_dorm_2_window_s": {
-      "building_surface_name": "msw_dorm_2_wall_s_ext",
+    "msw_dorm2_window_s": {
+      "building_surface_name": "msw_dorm2_wall_s_ext",
       "construction_name": "simple_window",
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
@@ -13762,7 +13762,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "msw_dorm_1_door_w",
+      "outside_boundary_condition_object": "msw_dorm1_door_w",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 6.3,
       "vertex_1_y_coordinate": 2.25,
@@ -13825,7 +13825,7 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 21,
       "number_of_vertices": 4,
-      "outside_boundary_condition_object": "msw_dorm_2_door_n",
+      "outside_boundary_condition_object": "msw_dorm2_door_n",
       "surface_type": "Door",
       "vertex_1_x_coordinate": 4.15,
       "vertex_1_y_coordinate": 2.235,
@@ -13890,7 +13890,7 @@
       "x_origin": 34.92,
       "y_origin": 9.17
     },
-    "cne_dorm_1": {
+    "cne_dorm1": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -13898,7 +13898,7 @@
       "x_origin": 36.12,
       "y_origin": 8.1
     },
-    "cne_dorm_2": {
+    "cne_dorm2": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -13922,7 +13922,7 @@
       "x_origin": 2.56,
       "y_origin": 9.17
     },
-    "cnw_dorm_1": {
+    "cnw_dorm1": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -13930,7 +13930,7 @@
       "x_origin": 0,
       "y_origin": 8.1
     },
-    "cnw_dorm_2": {
+    "cnw_dorm2": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -13962,7 +13962,7 @@
       "x_origin": 34.92,
       "y_origin": 0
     },
-    "cse_dorm_1": {
+    "cse_dorm1": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -13970,7 +13970,7 @@
       "x_origin": 36.12,
       "y_origin": 0
     },
-    "cse_dorm_2": {
+    "cse_dorm2": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -13994,7 +13994,7 @@
       "x_origin": 2.56,
       "y_origin": 0
     },
-    "csw_dorm_1": {
+    "csw_dorm1": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -14002,7 +14002,7 @@
       "x_origin": 0,
       "y_origin": 0
     },
-    "csw_dorm_2": {
+    "csw_dorm2": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -14026,7 +14026,7 @@
       "x_origin": 24.58,
       "y_origin": 6.365
     },
-    "mne_dorm_1": {
+    "mne_dorm1": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -14034,7 +14034,7 @@
       "x_origin": 20.54,
       "y_origin": 7.565
     },
-    "mne_dorm_2": {
+    "mne_dorm2": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -14058,7 +14058,7 @@
       "x_origin": 11.85,
       "y_origin": 6.365
     },
-    "mnw_dorm_1": {
+    "mnw_dorm1": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -14066,7 +14066,7 @@
       "x_origin": 14.1,
       "y_origin": 7.565
     },
-    "mnw_dorm_2": {
+    "mnw_dorm2": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -14098,7 +14098,7 @@
       "x_origin": 24.58,
       "y_origin": 3.635
     },
-    "mse_dorm_1": {
+    "mse_dorm1": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -14106,7 +14106,7 @@
       "x_origin": 20.54,
       "y_origin": 0.57
     },
-    "mse_dorm_2": {
+    "mse_dorm2": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -14138,7 +14138,7 @@
       "x_origin": 11.85,
       "y_origin": 3.635
     },
-    "msw_dorm_1": {
+    "msw_dorm1": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
@@ -14146,7 +14146,7 @@
       "x_origin": 14.1,
       "y_origin": 2.805
     },
-    "msw_dorm_2": {
+    "msw_dorm2": {
       "direction_of_relative_north": 0,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 7,
