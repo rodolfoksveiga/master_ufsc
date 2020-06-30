@@ -3,21 +3,12 @@ pkgs = c('data.table', 'dplyr', 'ggplot2', 'ggrepel', 'scales', 'stringr')
 lapply(pkgs, library, character.only = TRUE)
 
 # base function ####
-BindHabOutputs = function(grid, df) {
-  hab = df %>% filter(sim == grid['sim'], typo == grid['typo'], shell == grid['shell'],
-                       level == grid['level'], position == grid['position'],
-                       orient == grid['orient'], weather == grid['weather'])
-  hab = data.frame('phft' = mean(hab$phft), 'ph_sup' = mean(hab$ph_sup),
-                    'ph_inf' = mean(hab$ph_inf), 'top_max' = max(hab$top_max),
-                    'top_min' = min(hab$top_min))
-  return(hab)
-}
 # calculate difference between full building and simplified models
 CalcDiff = function(df1, df0, rel, hab) {
   # df1: data frame with full simulation results
   # df0: data frame with single zone results
   # rel: 
-  label = sapply(df0, function(x) is.character(x) | is.logical(x))
+  label = sapply(df0, IsLabel)
   df = df1[, !label] - df0[, !label]
   if (rel) {
     df = df/abs(df0[, !label])*100
@@ -31,14 +22,20 @@ CalcDiff = function(df1, df0, rel, hab) {
 # classificate habitations -> VERY INEFFICIENT FUNCTION!
 CalcHab = function(df) {
   # df: 
-  cols = colnames(df)[sapply(df, is.character)]
-  cols = cols[!cols %in% c('room', 'storey')]
-  grid = df[, cols] %>% sapply(unique) %>% expand.grid() %>% as.data.frame()
-  df = grid %>% apply(1, BindHabOutputs, df) %>%
-    bind_rows() %>% cbind(grid)
-  df[, 6:12] = apply(df[, 6:12], 2, as.character)
+  Test = function(index, df) {
+    df = df[index:(index + 2), -grep('room', colnames(df))]
+    label = sapply(df, IsLabel)
+    df = data.frame('top_max' = max(df$top_max), 'top_min' = min(df$top_min),
+                    'ph_sup' = mean(df$ph_sup), 'ph_inf' = mean(df$ph_inf),
+                    'phft' = mean(df$phft), df[1, label])
+    label = sapply(df, IsLabel)
+    df[!label] = round(df[!label], 1)
+    return(df)
+  }
+  df = seq(1, nrow(df), 3) %>% lapply(Test, df) %>% bind_rows()
   return(df)
 }
+
 #classificate habitation
 ClassHab = function(df) {
   # df: 
@@ -68,6 +65,8 @@ IdentMin = function(df1, df0) {
     !(df1$weather == 'Curitiba' & df1$top_min < df0$top_min - 1)
   return(df1)
 }
+# is label?
+IsLabel = function(col) is.character(col) | is.logical(col)
 # differentiate
 ProcessDiff = function(rel, df, hab = FALSE) {
   # rel: 
@@ -122,7 +121,7 @@ BarPlotClass = function(df, output_dir) {
           axis.text.x = element_text(size = 14),
           axis.text.y = element_text(size = 14),
           strip.text.y = element_text(size = 16))
-  plot_name = 'class_barp'
+  plot_name = 'class_barplot'
   WritePlot(plot, plot_name, output_dir)
 }
 # bar plot thermal balance
@@ -147,7 +146,7 @@ BarPlotDiffClass = function(df, output_dir) {
           axis.text.x = element_text(size = 14),
           axis.text.y = element_text(size = 14),
           strip.text.y = element_text(size = 16))
-  plot_name = 'class_diff_barp'
+  plot_name = 'class_diff_barplot'
   WritePlot(plot, plot_name, output_dir)
 }
 # box plot the differences between full building and simplified models
@@ -169,7 +168,7 @@ BoxPlotDiffPHFT = function(df, rel, output_dir) {
             axis.text.y = element_text(size = 14),
             strip.text.x = element_text(size = 17),
             strip.text.y = element_text(size = 17))
-  plot_name = ifelse(rel == FALSE, 'phft_diff_abs_boxp', 'phft_diff_rel_boxp')
+  plot_name = ifelse(rel == FALSE, 'phft_diff_abs_boxplot', 'phft_diff_rel_boxplot')
   WritePlot(plot, plot_name, output_dir)
 }
 # box plot phft for all simulations
@@ -190,52 +189,7 @@ BoxPlotPHFT = function(df, output_dir) {
             axis.text.y = element_text(size = 14),
             strip.text.x = element_text(size = 17),
             strip.text.y = element_text(size = 17))
-  WritePlot(plot, 'phft_simp_boxp', output_dir)
-}
-# scatter plot
-ScatterPlotPHFT = function(df, output_dir, col) {
-  # df: 
-  # output_dir: 
-  # col: 
-  
-  if (col == 'wrap') {
-    cols = c('purple', 'yellow')
-    leg = c('Envoltória:')
-  } else {
-    cols = c('red', 'blue', 'green')
-    leg = ifelse(col == 'storey', 'Pavimento:', 'Clima:')
-  }
-  df = data$combo$afn$red
-  df_simp = filter(df, simp != 0)[, c('simp', 'comf', 'room', 'wrap', 'storey', 'weather')]
-  colnames(df_simp)[2] = 'comf_simp'
-  df_base = filter(df, simp == 0)[, c('simp', 'comf')]
-  df = cbind('comf_base' = df_base[, 2], df_simp)
-  df$simp = paste('Simp.', as.character(df$simp))
-  df$room = ifelse(grepl('Dorm', df$room), 'Dorm.', 'Sala')
-  df$wrap = ifelse(df$wrap == 'C10', 'Concreto (10 cm)',
-                   ifelse(df$wrap == 'TV', 'Tijolo Vazado', 'Steel Frame'))
-  
-  plot = ggplot(data = df, aes(x = comf_base, y = comf_simp)) +
-      facet_wrap(~ simp) +
-      geom_point(aes(colour = df[, col], shape = room)) +
-      geom_abline(intercept = 0, slope = 1, colour = 'black', linetype = 'dashed') +
-      labs(x = 'Redução do PHFT da simulação (%)',
-           y = 'Redução do PHFT das simplificações (%)',
-           colour = leg,
-           shape = 'Ambiente:') +
-      scale_shape_manual(values = c(4, 19)) +
-      scale_colour_manual(values = cols) +
-      theme(legend.text = element_text(size = 11),
-            legend.title = element_text(size = 12),
-            legend.position = 'bottom',
-            axis.title.x = element_text(size = 15),
-            axis.title.y = element_text(size = 15),
-            axis.text.x = element_text(size = 14),
-            axis.text.y = element_text(size = 14),
-            strip.text.x = element_text(size = 17),
-            strip.text.y = element_text(size = 17))
-  # write plot
-  plot_name = paste0('red_phft_simp_scat_', col)
+  WritePlot(plot, 'phft_simp_boxplot', output_dir)
 }
 # summarize results
 SummResults = function(df, output_dir) {
@@ -267,27 +221,31 @@ WritePlot = function(plot, plot_name, output_dir) {
   plot(plot)
   dev.off()
 }
+
 # main function ####
 DisplayResult = function(input_dir, output_dir) {
   # input_dir: 
   # output_dir: 
+  
+  input_dir = '~/git/master_ufsc/result/'
+  output_dir = '~/git/master_ufsc/plot_table/'
+  
   # load data
   inputs_paths = dir(input_dir, '\\.csv', full.names = TRUE)
   # process data
-  df_raw = inputs_paths %>%
+  df = inputs_paths %>%
     lapply(function(x) as.data.frame(fread(x))) %>%
-    bind_rows()
-  df_raw = RnmCols(df_raw)
+    bind_rows() %>%
+    RnmCols()
+  df = df %>% CalcHab() %>% ClassHab()
   rels = c(FALSE, TRUE)
-  dfs_diff_list = lapply(rels, ProcessDiff, df_raw)
-  df_hab = df_raw %>% CalcHab() %>% ClassHab()
-  df_hab_diff = ProcessDiff(FALSE, df_hab, TRUE)
+  diff_dfs_list = lapply(rels, ProcessDiff, df, TRUE)
   # plot
-  BoxPlotPHFT(df_raw, output_dir)
-  mapply(BoxPlotDiffPHFT, dfs_diff_list, rels, output_dir)
-  SummResults(dfs_diff_list[[1]], output_dir)
-  BarPlotClass(df_hab, output_dir)
-  BarPlotDiffClass(df_hab_diff, output_dir)
+  BoxPlotPHFT(df, output_dir)
+  mapply(BoxPlotDiffPHFT, diff_dfs_list, rels, output_dir)
+  SummResults(diff_dfs_list[[1]], output_dir)
+  BarPlotClass(df, output_dir)
+  BarPlotDiffClass(diff_dfs_list[[1]], output_dir)
 }
 
 # application ####

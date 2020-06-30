@@ -129,6 +129,6 @@ ProcessOutput = function(input_dir, sim, typo, shell, level, output_dir) {
 }
 
 # application ####
-grid = expand.grid(sim = 0:3, shell = c('tv', 'sf'), level = 1:5)
-mapply(SummOutput, '~/in_progress/master/', grid$sim, 'linear',
+grid = expand.grid(sim = 4, shell = c('tv', 'sf'), level = 1:5)
+mapply(ProcessOutput, '~/in_progress/master/', grid$sim, 'linear',
        grid$shell, grid$level, '~/git/master_ufsc/result/')
