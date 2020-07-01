@@ -3,7 +3,7 @@
 pkgs = c('jsonlite', 'purrr', 'parallel', 'stringr')
 lapply(pkgs, library, character.only = TRUE)
 # load complementary data
-load('~/git/master_ufsc/seed/snippets.rdata')
+load('~/git/master/seed/snippets.rdata')
 
 # base functions ####
 # create a string with storeys' label according to the number of floors
@@ -252,9 +252,11 @@ TagBoundSurf = function(tag) {
 }
 
 # main function ####
-BuildModel = function(geom_path, shell, boundary, n_strs, output_dir) {
-  # load seed with phisical objects
-  seed = read_json(geom_path)
+BuildModel = function(lsm, seed_path, shell, boundary, n_strs, output_dir) {
+  # load model
+  if (!lsm) { # load seed with phisical objects
+    seed = read_json(seed_path)
+  }
   # zones
   # determine storey height
   index = grep('roof', names(seed$'BuildingSurface:Detailed'))[1]
@@ -280,12 +282,15 @@ BuildModel = function(geom_path, shell, boundary, n_strs, output_dir) {
   types = c('equip', 'light', 'people')
   model[groups] = mapply(ApplyIntLoads, types, fill[groups],
                         MoreArgs = list(names(model$'ZoneList')))
-  # write json file 
-  geometry = str_remove(basename(geom_path), '.json')
-  index = ifelse(boundary == 'surface', '00', '01')
-  output_path = paste0(output_dir, index, '_', geometry, '_', shell, '.epJSON')
-  write_json(model, output_path, pretty = T, auto_unbox = T)
-  print(output_path)
+  if (lsm) { # write json file
+    geometry = str_remove(basename(geom_path), '.json')
+    index = ifelse(boundary == 'surface', '00', '01')
+    output_path = paste0(output_dir, index, '_', geometry, '_', shell, '.epJSON')
+    write_json(model, output_path, pretty = T, auto_unbox = T)
+    print(output_path)
+  } else { # return as a variable
+    return(model)
+  }
 }
 
 # application ####
@@ -295,5 +300,5 @@ BuildModel = function(geom_path, shell, boundary, n_strs, output_dir) {
 # geom_path = '/home/rodox/git/master_ufsc/seed/linear.json'
 # n_strs = 5
 # output_dir = '/home/rodox/git/master_ufsc/model/'
-# mcmapply(BuildModel, geom_path, grid$shell, grid$boundary,
-#          5, output_dir, mc.cores = detectCores())
+# mcmapply(BuildModel, TRUE, geom_path, grid$shell,
+#          grid$boundary, 5, output_dir, mc.cores = detectCores())

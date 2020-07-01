@@ -2,8 +2,8 @@
 # load libraries
 pkgs = c('jsonlite', 'purrr', 'parallel', 'stringr')
 lapply(pkgs, library, character.only = TRUE)
-source('~/git/master_ufsc/code/build_model.r')
-load('~/git/master_ufsc/seed/geometry.rds')
+load('~/git/master/seed/geometry.rds')
+load('~/git/master/seed/build_model.rdata')
 
 # base functions ####
 # scale one vertex of a surface
@@ -60,10 +60,10 @@ ScaleObject = function(object, type, ratio) {
 ScaleGroup = function(group, type, ratio) lapply(group, ScaleObject, type, ratio)
 
 # main function ####
-EditSeed = function(geom_path, area, ratio, azi, shell, wwr_liv, wwr_dorm,
+EditSeed = function(seed_path, area, ratio, azi, shell, wwr_liv, wwr_dorm,
                     u_window, open_fac, abs_wall, abs_roof) {
   seed_path = '~/git/master_ufsc/seed/seed1.epJSON'
-  model = read_json(geom_path)
+  seed = read_json(seed_path)
   
   index = seed_path %>% str_extract('[0-9](?=\\.epJSON)') %>% as.numeric()
   adjust = 1/geometry[[index]]$ratio
@@ -71,10 +71,15 @@ EditSeed = function(geom_path, area, ratio, azi, shell, wwr_liv, wwr_dorm,
   mult = sqrt(area/(area_seed*adjust))
   ratio = c('x' = mult, 'y' = ratio*mult)
   
+  seed = mapply(ScaleGroup, seed, c('surf', 'fen', 'zone'),
+                SIMPLIFY = FALSE, MoreArgs = list(ratio))
+  
+  
+  
 }
 
-seed_path = '~/git/master_ufsc/seed/seed1.epJSON'
-model = read_json(seed_path)
+seed_path = '~/git/master/seed/seed1.epJSON'
+seed = read_json(seed_path)
 area = 45.49629*2
 ratio = 1
 
@@ -84,8 +89,6 @@ area_seed = geometry[[index]]$area %>% flatten_dbl() %>% sum()
 mult = sqrt(area/(area_seed*adjust))
 ratio = c('x' = mult, 'y' = ratio*mult)
 
-
-
-model = mapply(ScaleGroup, model, c('surf', 'fen', 'zone'),
-               SIMPLIFY = FALSE, MoreArgs = list(ratio))
+seed = mapply(ScaleGroup, seed, c('surf', 'fen', 'zone'),
+              SIMPLIFY = FALSE, MoreArgs = list(ratio))
 

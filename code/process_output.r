@@ -3,8 +3,8 @@
 pkgs = c('data.table', 'dplyr', 'stringr')
 lapply(pkgs, library, character.only = TRUE)
 # load support files
-load('~/git/master_ufsc/seed/outputs_info.rdata')
-load('~/git/master_ufsc/seed/df_areas.rds')
+load('~/git/master/seed/outputs_info.rdata')
+load('~/git/master/seed/df_areas.rds')
 
 # base functions ####
 # calculate percentage of hours feeling uncomfortable (ph)
