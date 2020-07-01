@@ -41,18 +41,18 @@ AddAFNSurf = function(object, tag, storey, index, fill) {
     values = append(values, 'window_opening')
     if (grepl('bwc', tag)) { # if it's a bwc window
       # vetilation_control_mode = Constant
-      values = append(values, list(5, 'Constant'))
+      values = append(values, list(7, 'Constant'))
     } else { # if it's a living room or dormitory
       fields = append(fields, c('venting_availability_schedule_name',
                                 'ventilation_control_zone_temperature_setpoint_schedule_name'))
       sch = ifelse(grepl('liv', tag), 'sch_afn_liv', 'sch_afn_dorm')
       # venting_availability_schedule_name = Temperature
       # ventilation_control_zone_temperature_setpoint_schedule_name = sch_window_behav
-      values = append(values, list(7, 'Temperature', 'sch_window_behav', sch))
+      values = append(values, list(9, 'Temperature', 'sch_window_behav', sch))
     }
   } else if (object$surface_type == 'Door') { # if fenestration is a door
     # leakage_component_name = door_opening
-    values = append(values, list('door_opening', 5))
+    values = append(values, list('door_opening', 7))
     if (grepl('bwc|core', tag)) { # if it's a bwc door
       # vetilation_control_mode = NoVent
       values = append(values, 'NoVent')
@@ -289,11 +289,11 @@ BuildModel = function(geom_path, shell, boundary, n_strs, output_dir) {
 }
 
 # application ####
-grid = expand.grid('shell' = c('ref17', 'ref8', 'tm', 'tv', 'sf'),
-                   'boundary' = c('surface', 'adiabatic'),
-                   stringsAsFactors = FALSE)
-geom_path = '/home/rodox/git/master_ufsc/seed/linear.json'
-n_strs = 5
-output_dir = '/home/rodox/git/master_ufsc/model/'
-mcmapply(BuildModel, geom_path, grid$shell, grid$boundary,
-         5, output_dir, mc.cores = detectCores())
+# grid = expand.grid('shell' = c('ref17', 'ref8', 'tm', 'tv', 'sf'),
+#                    'boundary' = c('surface', 'adiabatic'),
+#                    stringsAsFactors = FALSE)
+# geom_path = '/home/rodox/git/master_ufsc/seed/linear.json'
+# n_strs = 5
+# output_dir = '/home/rodox/git/master_ufsc/model/'
+# mcmapply(BuildModel, geom_path, grid$shell, grid$boundary,
+#          5, output_dir, mc.cores = detectCores())

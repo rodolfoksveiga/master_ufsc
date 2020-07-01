@@ -1,11 +1,9 @@
 {
     "BuildingSurface:Detailed": {
         "bwc_floor": {
-            "construction_name": "floor",
             "idf_max_extensible_fields": 12,
             "idf_max_fields": 22,
             "number_of_vertices": 4,
-            "outside_boundary_condition": "Ground",
             "sun_exposure": "NoSun",
             "surface_type": "Floor",
             "vertices": [
@@ -34,12 +32,9 @@
             "zone_name": "bwc"
         },
         "bwc_roof": {
-            "construction_name": "roof",
             "idf_max_extensible_fields": 12,
             "idf_max_fields": 22,
             "number_of_vertices": 4,
-            "outside_boundary_condition": "Outdoors",
-            "sun_exposure": "SunExposed",
             "surface_type": "Roof",
             "vertices": [
                 {
@@ -63,7 +58,6 @@
                     "vertex_z_coordinate": 2.6
                 }
             ],
-            "wind_exposure": "WindExposed",
             "zone_name": "bwc"
         },
         "bwc_wall1_int": {
@@ -202,11 +196,9 @@
             "zone_name": "bwc"
         },
         "dorm1_floor": {
-            "construction_name": "floor",
             "idf_max_extensible_fields": 12,
             "idf_max_fields": 22,
             "number_of_vertices": 4,
-            "outside_boundary_condition": "Ground",
             "sun_exposure": "NoSun",
             "surface_type": "Floor",
             "vertices": [
@@ -235,12 +227,9 @@
             "zone_name": "dorm1"
         },
         "dorm1_roof": {
-            "construction_name": "roof",
             "idf_max_extensible_fields": 12,
             "idf_max_fields": 22,
             "number_of_vertices": 4,
-            "outside_boundary_condition": "Outdoors",
-            "sun_exposure": "SunExposed",
             "surface_type": "Roof",
             "vertices": [
                 {
@@ -264,7 +253,6 @@
                     "vertex_z_coordinate": 2.6
                 }
             ],
-            "wind_exposure": "WindExposed",
             "zone_name": "dorm1"
         },
         "dorm1_wall1_ext": {
@@ -436,11 +424,9 @@
             "zone_name": "dorm1"
         },
         "dorm2_floor": {
-            "construction_name": "floor",
             "idf_max_extensible_fields": 12,
             "idf_max_fields": 22,
             "number_of_vertices": 4,
-            "outside_boundary_condition": "Ground",
             "sun_exposure": "NoSun",
             "surface_type": "Floor",
             "vertices": [
@@ -469,12 +455,9 @@
             "zone_name": "dorm2"
         },
         "dorm2_roof": {
-            "construction_name": "roof",
             "idf_max_extensible_fields": 12,
             "idf_max_fields": 22,
             "number_of_vertices": 4,
-            "outside_boundary_condition": "Outdoors",
-            "sun_exposure": "SunExposed",
             "surface_type": "Roof",
             "vertices": [
                 {
@@ -498,7 +481,6 @@
                     "vertex_z_coordinate": 2.6
                 }
             ],
-            "wind_exposure": "WindExposed",
             "zone_name": "dorm2"
         },
         "dorm2_wall1_ext": {
@@ -636,11 +618,9 @@
             "zone_name": "dorm2"
         },
         "liv_floor": {
-            "construction_name": "floor",
-            "idf_max_extensible_fields": 18,
-            "idf_max_fields": 28,
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
             "number_of_vertices": 6,
-            "outside_boundary_condition": "Ground",
             "sun_exposure": "NoSun",
             "surface_type": "Floor",
             "vertices": [
@@ -679,12 +659,9 @@
             "zone_name": "liv"
         },
         "liv_roof": {
-            "construction_name": "roof",
-            "idf_max_extensible_fields": 18,
-            "idf_max_fields": 28,
+            "idf_max_extensible_fields": 12,
+            "idf_max_fields": 22,
             "number_of_vertices": 6,
-            "outside_boundary_condition": "Outdoors",
-            "sun_exposure": "SunExposed",
             "surface_type": "Roof",
             "vertices": [
                 {
@@ -718,7 +695,6 @@
                     "vertex_z_coordinate": 2.6
                 }
             ],
-            "wind_exposure": "WindExposed",
             "zone_name": "liv"
         },
         "liv_wall2_int": {
@@ -1225,8 +1201,7 @@
             "idf_max_fields": 7,
             "multiplier": 1,
             "x_origin": 0.0,
-            "y_origin": 3.05,
-            "z_origin": 0.0
+            "y_origin": 3.05
         },
         "dorm1": {
             "direction_of_relative_north": 0.0,
@@ -1234,8 +1209,7 @@
             "idf_max_fields": 7,
             "multiplier": 1,
             "x_origin": 0.0,
-            "y_origin": 0.0,
-            "z_origin": 0.0
+            "y_origin": 0.0
         },
         "dorm2": {
             "direction_of_relative_north": 0.0,
@@ -1243,8 +1217,7 @@
             "idf_max_fields": 7,
             "multiplier": 1,
             "x_origin": 2.95,
-            "y_origin": 0.0,
-            "z_origin": 0.0
+            "y_origin": 0.0
         },
         "liv": {
             "direction_of_relative_north": 0.0,
@@ -1252,8 +1225,7 @@
             "idf_max_fields": 7,
             "multiplier": 1,
             "x_origin": 1.95,
-            "y_origin": 3.05,
-            "z_origin": 0.0
+            "y_origin": 3.05
         }
     }
 }
