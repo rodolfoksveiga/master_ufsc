@@ -136,7 +136,7 @@
       "thickness": 0.025,
       "visible_absorptance": 0.5
     },
-    "barreira_radiante_aluminio": {
+    "manta_baixa_emissividade_aluminio": {
       "conductivity": 230,
       "density": 2700,
       "idf_max_extensible_fields": 0,
@@ -185,6 +185,18 @@
       "visible_absorptance": 0.7
     },
     "telha_fibrocimento": {
+      "conductivity": 0.65,
+      "density": 1700,
+      "idf_max_extensible_fields": 0,
+      "idf_max_fields": 9,
+      "roughness": "MediumRough",
+      "solar_absorptance": 0.5,
+      "specific_heat": 840,
+      "thermal_absorptance": 0.9,
+      "thickness": 0.008,
+      "visible_absorptance": 0.5
+    },
+    "telha_fibrocimento_0.6": {
       "conductivity": 0.65,
       "density": 1700,
       "idf_max_extensible_fields": 0,
@@ -286,11 +298,6 @@
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 2,
       "thermal_resistance": 0.21
-    },
-    "camara_cobertura_low_e": {
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 2,
-      "thermal_resistance": 0.61
     },
     "camara_parede": {
       "idf_max_extensible_fields": 0,

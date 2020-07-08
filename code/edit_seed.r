@@ -8,8 +8,6 @@ load('~/git/master/seed/geometry.rds')
 # base functions ####
 # move fenestration
 MoveFenestration = function(vertices, ratio, axis, is_bwc = FALSE) {
-  # vertices = window
-  
   v1 = vertices[[1]]
   v3 = vertices[[3]]
   l = (v3 - v1)/2
@@ -36,10 +34,6 @@ ScaleSurf = function(vertex, ratio, axis) {
 }
 # scale door
 ScaleDoor = function (axis, ratio, door) {
-  # axis = 'z'
-  # ratio = ratio[['z']]
-  # door = object
-  
   coords = paste0('vertex_', 1:4, '_', axis, '_coordinate')
   if (ratio > 1) {
     vertices = MoveFenestration(door[coords], ratio, axis)
@@ -54,7 +48,6 @@ ResizeWindow = function(vertices, ratio, wwr, axis) {
   v3 = vertices[[3]]
   l = (v3 - v1)/2
   center = (v1 + l)*ratio
-  # ratio = ifelse(diff != 0, ratio*wwr, ratio)
   l = l*ratio*wwr
   c = ifelse(v3 > v1, 1, -1)
   if (axis != 'z') {
@@ -67,11 +60,6 @@ ResizeWindow = function(vertices, ratio, wwr, axis) {
 }
 # scale window
 ScaleWindow = function(axis, ratio, is_bwc, wwr, window) {
-  # window = object
-  # axis = 'z'
-  # ratio = ratio[['z']]
-  # is_bwc = grepl('bwc', object$building_surface_name)
-  
   coords = paste0('vertex_', 1:4, '_', axis, '_coordinate')
   window = keep(window, names(window) %in% coords)
   if (is_bwc) {
@@ -83,11 +71,6 @@ ScaleWindow = function(axis, ratio, is_bwc, wwr, window) {
 }
 # scale an object
 ScaleObject = function(object, type, ratio, wwr) {
-  # object_old = seed$`Zone`[[5]]
-  # object = seed$`Zone`[[5]]
-  # type = 'zone'
-  # wwr = sqrt(c('liv' = wwr_liv, 'dorm' = wwr_dorm)/0.17)
-
   axis = c('x', 'y', 'z')
   if (type == 'zone') {
     coords = paste0(axis[1:2], '_origin')
@@ -128,23 +111,6 @@ EditSeed = function(seed_path, area, ratio, azimuth, shell, abs_wall, abs_roof,
   # shgc: solar heat gain coefficient of the windows (mean) [0.22 ~ 0.87]
   # open_factor: open factor (weighted average) [0.4 ~ 1]
   # construction, fill, setup and geometry: auxiliar files
-  
-  # test
-  seed_path = '/home/rodox/git/master/seed/seed3.json'
-  seed = read_json(seed_path)
-  area = 70
-  ratio = 0.6
-  height = 2.8
-  shell = 'tm'
-  abs_wall = 0.5
-  abs_roof = 0.7
-  wwr_liv = 0.4
-  wwr_dorm = 0.2
-  azimuth = 180
-  u_window = 5.7
-  shgc = 0.87
-  open_factor = 0.6
-  
   index = seed_path %>% str_extract('[0-9](?=\\.json)') %>% as.numeric()
   adjust = 1/geometry[[index]]$ratio
   ratio = ratio*adjust
@@ -163,6 +129,6 @@ EditSeed = function(seed_path, area, ratio, azimuth, shell, abs_wall, abs_roof,
   outside_layer_wall = model$'Construction'$'ext_wall'$'outside_layer'
   model$'Material'[[outside_layer_wall]]$'solar_absorptance' = abs_wall
   outside_layer_roof = model$'Construction'$'roof'$'outside_layer'
-  model$'Material'[[outside_layer_roof]]$'thermal_absorptance' = abs_roof
+  model$'Material'[[outside_layer_roof]]$'solar_absorptance' = abs_roof
   write_json(model, path = '~/Documents/test/test.epJSON', pretty = TRUE, auto_unbox = TRUE)
 }

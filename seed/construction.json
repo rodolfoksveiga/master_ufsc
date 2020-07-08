@@ -13,7 +13,7 @@
         "roof": {
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 4,
-            "outside_layer": "telha_fibrocimento",
+            "outside_layer": "telha_fibrocimento_0.6",
             "layer_2": "camara_cobertura",
             "layer_3": "concreto_10cm_0.5"
         }
@@ -32,7 +32,7 @@
         "roof": {
             "idf_max_extensible_fields": 0,
             "idf_max_fields": 5,
-            "outside_layer": "telha_fibrocimento",
+            "outside_layer": "telha_fibrocimento_0.6",
             "layer_2": "camara_cobertura",
             "layer_3": "isolamento_cobertura_zb8",
             "layer_4": "concreto_10cm_0.5"
@@ -78,10 +78,11 @@
         },
         "roof": {
             "idf_max_extensible_fields": 0,
-            "idf_max_fields": 4,
+            "idf_max_fields": 5,
             "outside_layer": "telha_fibrocimento",
             "layer_2": "camara_cobertura",
-            "layer_3": "concreto_10cm_0.5"
+            "layer_3": "la_vidro_5cm",
+            "layer_4": "concreto_10cm_0.5"
         }
 	},
 	"sf": {
@@ -101,12 +102,11 @@
         },
         "roof": {
             "idf_max_extensible_fields": 0,
-            "idf_max_fields": 6,
+            "idf_max_fields": 5,
             "outside_layer": "telha_fibrocimento",
-            "layer_2": "barreira_radiante_aluminio",
-            "layer_3": "camara_cobertura_low_e",
-            "layer_4": "la_vidro_5cm",
-            "layer_5": "concreto_10cm_0.5"
+            "layer_2": "camara_cobertura",
+            "layer_3": "la_vidro_5cm",
+            "layer_4": "gesso_0.5"
         }
 	}
 }
