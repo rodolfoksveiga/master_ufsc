@@ -64,7 +64,7 @@
       "maximum_number_of_warmup_days": 25,
       "minimum_number_of_warmup_days": 6,
       "north_axis": 0,
-      "solar_distribution": "FullInteriorAndExteriorWithReflections",
+      "solar_distribution": "FullExteriorWithReflections",
       "temperature_convergence_tolerance_value": 0.4,
       "terrain": "City"
     }
@@ -97,7 +97,7 @@
     "simple_window": {
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 2,
-      "outside_layer": "vid_0.87"
+      "outside_layer": "vidro"
     }
   },
   "GlobalGeometryRules": {
@@ -768,7 +768,7 @@
     }
   },
   "WindowMaterial:SimpleGlazingSystem": {
-    "vid_0.87": {
+    "vidro": {
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 3,
       "solar_heat_gain_coefficient": 0.87,

@@ -2,7 +2,6 @@
     "AirflowNetwork:MultiZone:Surface": {
 	    "item": {
 		    "idf_max_extensible_fields": 0,
-		    "idf_max_fields": 12,
             "window_door_opening_factor_or_crack_factor": 1
 	    }
     },

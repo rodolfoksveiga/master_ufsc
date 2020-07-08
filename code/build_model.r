@@ -1,8 +1,4 @@
-# load libraries and global environment ####
-# load libraries
-pkgs = c('jsonlite', 'purrr', 'parallel', 'stringr')
-lapply(pkgs, library, character.only = TRUE)
-# load complementary data
+# load global environment ####
 load('~/git/master/seed/snippets.rdata')
 
 # base functions ####
@@ -27,7 +23,7 @@ RnmStorey = function(tags, storey, index) {
   return(tags)
 }
 
-# model edition functions ####
+# model editing functions ####
 # airflow network zones
 AddAFNZone = function(tag, fill) AddFields(fill$item, 'zone_name', tag)
 # airflow network surfaces
@@ -221,21 +217,17 @@ GenStoreys = function(type, group, n, height, boundary) {
   storeys = LabelStoreys(n)
   if (type == 'zone') {
     heights = 0:(n -1)*height
-    group = mapply(CpZones, storeys, indexes, heights,
-                   SIMPLIFY = FALSE, USE.NAMES = FALSE,
-                   MoreArgs = list(group, names(group)))
+    group = mapply(CpZones, storeys, indexes, heights, SIMPLIFY = FALSE,
+                   USE.NAMES = FALSE, MoreArgs = list(group, names(group)))
   } else if (type == 'surf') {
-    group = mapply(ApplyBounds, storeys, indexes,
-                   SIMPLIFY = FALSE, USE.NAMES = FALSE,
+    group = mapply(ApplyBounds, storeys, indexes, SIMPLIFY = FALSE, USE.NAMES = FALSE,
                    MoreArgs = list(group, names(group), boundary))
   } else if (type == 'afn') {
-    group = mapply(ApplyAFNSurfs, storeys, indexes,
-                   SIMPLIFY = FALSE, USE.NAMES = FALSE,
-                   MoreArgs = list(group, names(group)))
+    group = mapply(ApplyAFNSurfs, storeys, indexes, SIMPLIFY = FALSE,
+                   USE.NAMES = FALSE, MoreArgs = list(group, names(group)))
   } else if (type == 'fen') {
-    group = mapply(ApplyFens, storeys, indexes,
-                   SIMPLIFY = FALSE, USE.NAMES = FALSE,
-                   MoreArgs = list(group, names(group)))
+    group = mapply(ApplyFens, storeys, indexes, SIMPLIFY = FALSE,
+                   USE.NAMES = FALSE, MoreArgs = list(group, names(group)))
   } else {
     stop('Not recognized group of objects!')
   }
@@ -245,18 +237,19 @@ GenStoreys = function(type, group, n, height, boundary) {
 
 # tag boundary surface for floor and roof
 TagBoundSurf = function(tag) {
-  opp = ifelse(grepl('floor', tag),
-               str_replace(tag, 'floor', 'roof'),
+  opp = ifelse(grepl('floor', tag), str_replace(tag, 'floor', 'roof'),
                str_replace(tag, 'roof', 'floor'))
   return(opp)
 }
 
 # main function ####
-BuildModel = function(lsm, seed_path, shell, boundary, n_strs, output_dir) {
-  # load model
-  if (!lsm) { # load seed with phisical objects
+BuildModel = function(seed, shell, n_strs, boundary, construction,
+                      fill, setup, lsm, seed_path, output_dir ) {
+  # load model geometry (seed)
+  if (lsm) { # load seed with phisical objects
     seed = read_json(seed_path)
   }
+  model = setup
   # zones
   # determine storey height
   index = grep('roof', names(seed$'BuildingSurface:Detailed'))[1]
@@ -292,13 +285,3 @@ BuildModel = function(lsm, seed_path, shell, boundary, n_strs, output_dir) {
     return(model)
   }
 }
-
-# application ####
-# grid = expand.grid('shell' = c('ref17', 'ref8', 'tm', 'tv', 'sf'),
-#                    'boundary' = c('surface', 'adiabatic'),
-#                    stringsAsFactors = FALSE)
-# geom_path = '/home/rodox/git/master_ufsc/seed/linear.json'
-# n_strs = 5
-# output_dir = '/home/rodox/git/master_ufsc/model/'
-# mcmapply(BuildModel, TRUE, geom_path, grid$shell,
-#          grid$boundary, 5, output_dir, mc.cores = detectCores())
