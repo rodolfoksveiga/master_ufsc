@@ -243,7 +243,7 @@ TagBoundSurf = function(tag) {
 }
 
 # main function ####
-BuildModel = function(seed, shell, n_strs, boundary, construction,
+BuildModel = function(seed, shell_wall, shell_roof, n_strs, boundary, construction,
                       fill, setup, lsm, seed_path, output_dir ) {
   # load model geometry (seed)
   if (lsm) { # load seed with phisical objects
@@ -265,7 +265,8 @@ BuildModel = function(seed, shell, n_strs, boundary, construction,
                                                 fill$'AirflowNetwork:MultiZone:Zone')
   names(model$'AirflowNetwork:MultiZone:Zone') = paste0('afn_', names(model$'Zone'))
   # define construction shell
-  model$'Construction' = append(model$'Construction', construction[[shell]])
+  constructions = append(construction$wall[[shell_wall]], construction$roof[[shell_roof]])
+  model$'Construction' = append(model$'Construction', constructions)
   # add zone lists for occupied rooms
   occup_rooms = c('liv', 'dorm')
   model$'ZoneList' = lapply(occup_rooms, AddZoneList, names(model$'Zone'), fill$'ZoneList')

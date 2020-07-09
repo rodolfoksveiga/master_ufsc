@@ -1,7 +1,4 @@
-# load libraries, functions and global environment ####
-# load libraries
-pkgs = c('jsonlite', 'purrr', 'parallel', 'stringr')
-lapply(pkgs, library, character.only = TRUE)
+# load global environment ####
 source('~/git/master/code/build_model.r')
 load('~/git/master/seed/geometry.rds')
 
@@ -95,14 +92,15 @@ ScaleObject = function(object, type, ratio, wwr) {
 ScaleGroup = function(group, type, ratio, wwr) lapply(group, ScaleObject, type, ratio, wwr)
 
 # main function ####
-EditSeed = function(seed_path, area, ratio, azimuth, shell, abs_wall, abs_roof,
-                    wwr_liv, wwr_dorm, u_window, shgc, open_fac, construction,
-                    fill, setup, geometry) {
+EditSeed = function(seed_path, area, ratio, height, azimuth, shell_wall, shell_roof,
+                    abs_wall, abs_roof, wwr_liv, wwr_dorm, u_window, shgc, open_factor,
+                    construction, fill, setup, geometry) {
   # seed_path: seed file path
-  # area: sum of the long occupancy rooms (living rooms and dormitories) [20 ~ 100]
+  # area: sum of the long occupancy rooms (living rooms and dormitories) [30 ~ 150]
   # ratio: ratio between the 'y' and the 'x' axis [0.25 ~ 4]
   # azimuth: azimuth angle related to south orientation [0 ~ 360]
-  # shell: shell composition [c10, tm10, tm20, sf]
+  # shell_wall: wall construction materials composition
+  # shell_roof: roof construction materials composition
   # abs_wall: solar absorptance of the walls [0.2 ~ 0.9]
   # abs_roof: solar absorptance of the roof [0.2 ~ 0.9]
   # wwr_liv: window to wall ratio in the living room (weighted average) [0.1 ~ 0.8]
@@ -111,6 +109,7 @@ EditSeed = function(seed_path, area, ratio, azimuth, shell, abs_wall, abs_roof,
   # shgc: solar heat gain coefficient of the windows (mean) [0.22 ~ 0.87]
   # open_factor: open factor (weighted average) [0.4 ~ 1]
   # construction, fill, setup and geometry: auxiliar files
+  seed = read_json(seed_path)
   index = seed_path %>% str_extract('[0-9](?=\\.json)') %>% as.numeric()
   adjust = 1/geometry[[index]]$ratio
   ratio = ratio*adjust
@@ -120,7 +119,7 @@ EditSeed = function(seed_path, area, ratio, azimuth, shell, abs_wall, abs_roof,
   wwr = sqrt(c('liv' = wwr_liv, 'dorm' = wwr_dorm)/0.17)
   seed = mapply(ScaleGroup, seed, c('zone', 'surf', 'fen'),
                 SIMPLIFY = FALSE, MoreArgs = list(ratio, wwr))
-  model = BuildModel(seed, shell, 1, 'surface', construction, fill, setup, FALSE)
+  model = BuildModel(seed, shell_wall, shell_roof, 1, 'surface', construction, fill, setup, FALSE)
   model$Building[[1]]$north_axis = azimuth
   model$'WindowMaterial:SimpleGlazingSystem'$vidro$u_factor = u_window
   model$'WindowMaterial:SimpleGlazingSystem'$vidro$solar_heat_gain_coefficient = shgc
