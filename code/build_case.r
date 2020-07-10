@@ -92,9 +92,9 @@ ScaleObject = function(object, type, ratio, wwr) {
 ScaleGroup = function(group, type, ratio, wwr) lapply(group, ScaleObject, type, ratio, wwr)
 
 # main function ####
-EditSeed = function(seed_path, area, ratio, height, azimuth, shell_wall, shell_roof,
-                    abs_wall, abs_roof, wwr_liv, wwr_dorm, u_window, shgc, open_factor,
-                    construction, fill, setup, geometry) {
+BuildCase = function(seed_path, area, ratio, height, azimuth, shell_wall, shell_roof,
+                     abs_wall, abs_roof, wwr_liv, wwr_dorm, u_window, shgc, open_factor,
+                     case, output_dir, construction, fill, setup, geometry) {
   # seed_path: seed file path
   # area: sum of the long occupancy rooms (living rooms and dormitories) [30 ~ 150]
   # ratio: ratio between the 'y' and the 'x' axis [0.25 ~ 4]
@@ -108,6 +108,8 @@ EditSeed = function(seed_path, area, ratio, height, azimuth, shell_wall, shell_r
   # u_window: solar transmitance of the windows (mean) [2.8 ~ 5.7]
   # shgc: solar heat gain coefficient of the windows (mean) [0.22 ~ 0.87]
   # open_factor: open factor (weighted average) [0.4 ~ 1]
+  # case: case index
+  # output_dir: output directory
   # construction, fill, setup and geometry: auxiliar files
   seed = read_json(seed_path)
   index = seed_path %>% str_extract('[0-9](?=\\.json)') %>% as.numeric()
@@ -129,5 +131,6 @@ EditSeed = function(seed_path, area, ratio, height, azimuth, shell_wall, shell_r
   model$'Material'[[outside_layer_wall]]$'solar_absorptance' = abs_wall
   outside_layer_roof = model$'Construction'$'roof'$'outside_layer'
   model$'Material'[[outside_layer_roof]]$'solar_absorptance' = abs_roof
-  write_json(model, path = '~/Documents/test/test.epJSON', pretty = TRUE, auto_unbox = TRUE)
+  model_path = paste0(output_dir, 'case', str_pad(case, 5, 'left', 0), '.epJSON')
+  write_json(model, model_path, pretty = TRUE, auto_unbox = TRUE)
 }
