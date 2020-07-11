@@ -1,6 +1,7 @@
 # load libraries and global environment ####
 invisible({
-  pkgs = c('data.table', 'jsonlite', 'parallel', 'purrr', 'reticulate', 'stringr', 'tibble')
+  pkgs = c('data.table', 'dplyr', 'jsonlite', 'parallel',
+           'purrr', 'reticulate', 'stringr', 'tibble')
   lapply(pkgs, library, character.only = TRUE)
   codes = c('build_case', 'calc_targ', 'tidy_sample', 'run_ep_sim')
   codes = paste0('./code/', codes, '.r')
