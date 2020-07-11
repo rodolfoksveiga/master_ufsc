@@ -109,7 +109,7 @@
                 "layer_3": "concreto_10cm_0.5"
             }
 	    },
-	    "fibrocimento_isolamentozb8_concreto": {
+	    "fibrocimento_isolamento_zb8_concreto": {
             "roof": {
                 "idf_max_extensible_fields": 0,
                 "idf_max_fields": 5,

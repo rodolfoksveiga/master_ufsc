@@ -1,0 +1,12 @@
+OUTPUTS
+    PHFT
+        Zone Operative Temperature
+    BALANÇO DE CALOR
+        Surface Inside Face Convection Heat Gain Energy
+        AFN Zone Infiltration Sensible Heat Gain Energy
+        AFN Zone Infiltration Sensible Heat Loss Energy
+        Zone Total Internal Convective Heating Energy
+        Surface Inside Face Temperature
+    INFORMAÇÕES ADICIONAIS
+        Zone Mean Air Temperature
+        AFN Zone Infiltration Air Change Rate

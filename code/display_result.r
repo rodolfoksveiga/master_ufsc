@@ -1,6 +1,8 @@
 # load libraries ####
+invisible({
 pkgs = c('data.table', 'dplyr', 'ggplot2', 'ggrepel', 'scales', 'stringr')
 lapply(pkgs, library, character.only = TRUE)
+})
 
 # base function ####
 # calculate difference between full building and simplified models
@@ -223,18 +225,13 @@ WritePlot = function(plot, plot_name, output_dir) {
 }
 
 # main function ####
-DisplayResult = function(input_dir, output_dir) {
-  # input_dir: 
+DisplayResult = function(input_path, output_dir) {
+  # input_path: 
   # output_dir: 
-  
-  input_dir = '~/git/master_ufsc/result/'
-  output_dir = '~/git/master_ufsc/plot_table/'
-  
-  # load data
-  inputs_paths = dir(input_dir, '\\.csv', full.names = TRUE)
-  # process data
-  df = inputs_paths %>%
-    lapply(function(x) as.data.frame(fread(x))) %>%
+  # load and process data
+  df = input_path %>%
+    fread() %>%
+    as.data.frame() %>%
     bind_rows() %>%
     RnmCols()
   df = df %>% CalcHab() %>% ClassHab()
@@ -249,4 +246,4 @@ DisplayResult = function(input_dir, output_dir) {
 }
 
 # application ####
-DisplayResult('~/git/master_ufsc/result/', '~/git/master_ufsc/plot_table/')
+DisplayResult('./result/simp_linear.csv', './plot_table/')

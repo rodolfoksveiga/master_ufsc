@@ -36,7 +36,7 @@ ExtrStrBetween = function(string, pattern, before = '_', after = '_') {
   return(string)
 }
 # label zone according to simlification, typology, shell, position, orientation, room,
-# room index and weather
+  # room index and weather
 LabelZone = function(tag) {
   # tag: 
   sim = ExtrStrBetween(tag, '[0-9]+')

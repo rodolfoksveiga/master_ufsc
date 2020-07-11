@@ -354,61 +354,12 @@
     }
   },
   "Output:Variable": {
-    "output_zones_mean_temp": {
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 3,
-      "key_value": "*",
-      "reporting_frequency": "Timestep",
-      "variable_name": "Zone Mean Air Temperature"
-    },
     "output_zones_op_temp": {
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 3,
       "key_value": "*",
       "reporting_frequency": "Timestep",
       "variable_name": "Zone Operative Temperature"
-    },
-    "output_zones_afn_air_change": {
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 3,
-      "key_value": "*",
-      "reporting_frequency": "Timestep",
-      "variable_name": "AFN Zone Infiltration Air Change Rate"
-    },
-    "output_surf_conv_hge": {
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 3,
-      "key_value": "*",
-      "reporting_frequency": "Timestep",
-      "variable_name": "Surface Inside Face Convection Heat Gain Energy"
-    },
-    "output_zones_afn_inf_sens_hge": {
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 3,
-      "key_value": "*",
-      "reporting_frequency": "Timestep",
-      "variable_name": "AFN Zone Infiltration Sensible Heat Gain Energy"
-    },
-    "output_zones_afn_inf_sens_hle": {
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 3,
-      "key_value": "*",
-      "reporting_frequency": "Timestep",
-      "variable_name": "AFN Zone Infiltration Sensible Heat Loss Energy"
-    },
-    "output_zones_int_conv_he": {
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 3,
-      "key_value": "*",
-      "reporting_frequency": "Timestep",
-      "variable_name": "Zone Total Internal Convective Heating Energy"
-    },
-    "output_surf_temp": {
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 3,
-      "key_value": "*",
-      "reporting_frequency": "Timestep",
-      "variable_name": "Surface Inside Face Temperature"
     }
   },
   "Output:VariableDictionary": {
