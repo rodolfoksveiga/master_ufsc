@@ -15,7 +15,7 @@ models_dir = '~/rolante/master/model/'
 inmet_path = './source/inmet_list.csv'
 epws_dir = '~/rolante/weather/'
 output_dir = '~/rolante/master/output/'
-sample_path = './code/result/sample.csv'
+sample_path = './result/sample.csv'
 cores_left = 0
 
 # main code ####

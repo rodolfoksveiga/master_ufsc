@@ -1,5 +1,5 @@
 # global environment ####
-load('~/git/master/seed/occup_temp.rdata')
+load('~/git/master/seed/occup.rds')
 
 # base functions ####
 # calculate percentage of hours feeling uncomfortable (ph)

@@ -136,18 +136,6 @@
       "thickness": 0.025,
       "visible_absorptance": 0.5
     },
-    "manta_baixa_emissividade_aluminio": {
-      "conductivity": 230,
-      "density": 2700,
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 9,
-      "roughness": "MediumSmooth",
-      "solar_absorptance": 0.4,
-      "specific_heat": 880,
-      "thermal_absorptance": 0.2,
-      "thickness": 6e-06,
-      "visible_absorptance": 0.4
-    },
     "concreto_10cm": {
       "conductivity": 1.75,
       "density": 2200,
@@ -208,18 +196,6 @@
       "thickness": 0.008,
       "visible_absorptance": 0.5
     },
-    "telha_fibrocimento_0.6": {
-      "conductivity": 0.65,
-      "density": 1700,
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 9,
-      "roughness": "MediumRough",
-      "solar_absorptance": 0.6,
-      "specific_heat": 840,
-      "thermal_absorptance": 0.9,
-      "thickness": 0.008,
-      "visible_absorptance": 0.5
-    },
     "piso_ceramico_0.7": {
       "conductivity": 1.05,
       "density": 2000,
@@ -255,6 +231,18 @@
       "thermal_absorptance": 0.9,
       "thickness": 0.013,
       "visible_absorptance": 0.7
+    },
+    "tijolo_macico_10cm": {
+      "conductivity": 1.05,
+      "density": 1800,
+      "idf_max_extensible_fields": 0,
+      "idf_max_fields": 9,
+      "roughness": "Rough",
+      "solar_absorptance": 0.7,
+      "specific_heat": 920,
+      "thermal_absorptance": 0.9,
+      "thickness": 0.1,
+      "visible_absorptance": 0.5
     },
     "tijolo_macico_10cm_0.5": {
       "conductivity": 1.05,
