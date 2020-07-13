@@ -80,28 +80,29 @@ ProcessDiff = function(rel, df, hab = FALSE) {
   return(df)
 }
 # pre process data to plot
-RnmCols = function(df) {
+RnmValues = function(df) {
   # df: 
   df$sim = str_pad(df$sim, 2, side = 'left', pad = 0)
   df$typo = str_to_title(df$typo)
-  df$shell = ifelse(df$shell == 'ref', 'Referência',
+  df$shell = ifelse(df$shell == 'ref', 'Referencia',
                     ifelse(df$shell == 'tm', 'Tijolo\nMaciço',
                            ifelse(df$shell == 'tv', 'Tijolo\nVazado', 'Steel\nFrame')))
   df$position = ifelse(df$position == 'corner', 'Canto', 'Meio')
   df$orient = str_to_upper(df$orient)
-  df$room = ifelse(df$room == 'liv', 'Sala', 'Dormitório')
+  df$index = ifelse(grepl('dorm', df$room), str_extract(df$room, '(?<=dorm)[12]'), NA)
+  df$room = ifelse(df$room == 'liv', 'Sala', 'Dormitorio')
   df$weather = df$weather %>%
     str_replace_all('_', ' ') %>%
     str_to_title() %>%
     str_replace('(?<= )D(?=e )', 'd')
-  df$storey = ifelse(df$level == 1, 'Térreo',
-                     ifelse(df$level < max(df$level), 'Intermediário', 'Cobertura'))
+  df$storey = ifelse(df$level == 1, 'Terreo',
+                     ifelse(df$level < max(df$level), 'Intermediario', 'Cobertura'))
   df$level = as.character(df$level)
   return(df)
 }
 
 # plot and table functions ####
-# bar plot thermal balance
+# bar plot classifications count
 BarPlotClass = function(df, output_dir) {
   # df: 
   # output_dir: 
@@ -126,7 +127,7 @@ BarPlotClass = function(df, output_dir) {
   plot_name = 'class_barplot'
   WritePlot(plot, plot_name, output_dir)
 }
-# bar plot thermal balance
+# bar plot classification differences count
 BarPlotDiffClass = function(df, output_dir) {
   # df: 
   # output_dir: 
@@ -151,7 +152,46 @@ BarPlotDiffClass = function(df, output_dir) {
   plot_name = 'class_diff_barplot'
   WritePlot(plot, plot_name, output_dir)
 }
-# box plot the differences between full building and simplified models
+# bar plot thermal balance
+BarPlotTB = function(df, si, tp, sh, st, po, or, ro, id, we, output_dir) {
+  output_dir = '~/rolante/nbr/plot_table/'
+  df = filter(df, (sim == '00' | sim == si) & typo == tp & shell == sh & storey == st &
+                position == po & orient == or & room == ro & (index == id | is.na(id)) &
+                weather == we)
+  df$sim = paste0(ifelse(df$sim == '00', 'Modelo Base', paste0('Simplificação n° ', df$sim)))
+  plot_name = tolower(paste0('tb_', si, '_', tp, '_', sh, '_', str_sub(str_to_lower(st), 1, 3), '_',
+                             str_sub(str_to_lower(po), 1, 1), str_to_lower(or), '_',
+                             str_sub(str_to_lower(ro), 1, 4), '_', gsub(' ', '_', we), '.png'))
+  plot_title = paste(tp, '-', sh, '-', po, or, '-', st, '-', we)
+  variables = c('il_hg', 'floor_hg', 'roof_hg', 'walls_int_hg',
+                'walls_ext_hg', 'windows_hg', 'doors_hg', 'afn_hg')
+  df = reshape2::melt(df, id.vars = 'sim', measure.vars = variables)
+  variables = c('Cargas Internas', 'Piso', 'Cobertura', 'Parede Internas',
+                'Parede Externas', 'Janelas', 'Portas', 'Ventilação Natural')
+  png(filename = paste0(output_dir, plot_name), width = 33.8, height = 19, units = 'cm', res = 500)
+  plot(
+    ggplot(data = df, aes(x = variable, y = value, fill = variable)) +
+      facet_grid(. ~ sim) +
+      geom_bar(stat = 'identity', position = 'dodge') +
+      labs(title = plot_title,
+           subtitle = paste(ro, ifelse(is.na(id), '', id)),
+           x = NULL,
+           y = 'Carga Térmica (kWh/m²)') +
+      scale_fill_discrete(name = 'Troca de calor:',
+                          labels = variables) +
+      theme(plot.title = element_text(size = 19, face = 'bold', hjust = 0.5),
+            plot.subtitle = element_text(size = 18, face = 'italic', hjust = 0.5),
+            legend.text = element_text(size = 14),
+            legend.title = element_text(size = 15),
+            legend.position = 'bottom',
+            axis.title.y = element_text(size=15),
+            axis.text.x = element_blank(),
+            axis.text.y = element_text(size=14),
+            strip.text.x = element_text(size = 17),
+            strip.text.y = element_text(size = 17)))
+  dev.off()
+}
+# box plot phft differences
 BoxPlotDiffPHFT = function(df, rel, output_dir) {
   # df: data frame with compiled results
   # output_dir: output directory
@@ -173,7 +213,7 @@ BoxPlotDiffPHFT = function(df, rel, output_dir) {
   plot_name = ifelse(rel == FALSE, 'phft_diff_abs_boxplot', 'phft_diff_rel_boxplot')
   WritePlot(plot, plot_name, output_dir)
 }
-# box plot phft for all simulations
+# box plot phft
 BoxPlotPHFT = function(df, output_dir) {
   # df: data frame with compiled results
   # output_dir: output directory
@@ -233,7 +273,7 @@ DisplayResult = function(input_path, output_dir) {
     fread() %>%
     as.data.frame() %>%
     bind_rows() %>%
-    RnmCols()
+    RnmValues()
   df = df %>% CalcHab() %>% ClassHab()
   rels = c(FALSE, TRUE)
   diff_dfs_list = lapply(rels, ProcessDiff, df, TRUE)
@@ -244,6 +284,3 @@ DisplayResult = function(input_path, output_dir) {
   BarPlotClass(df, output_dir)
   BarPlotDiffClass(diff_dfs_list[[1]], output_dir)
 }
-
-# application ####
-DisplayResult('./result/simp_linear.csv', './plot_table/')

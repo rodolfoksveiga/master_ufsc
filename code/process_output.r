@@ -1,10 +1,6 @@
-# load libraries and global environment ####
-# load libraries
-pkgs = c('data.table', 'dplyr', 'stringr')
-lapply(pkgs, library, character.only = TRUE)
-# load support files
-load('~/git/master/seed/outputs_info.rdata')
-load('~/git/master/seed/df_areas.rds')
+# load global environment ####
+load('~/git/master/seed/occup_temp.rdata')
+load('~/git/master/seed/areas.rds')
 
 # base functions ####
 # calculate percentage of hours feeling uncomfortable (ph)
@@ -65,8 +61,7 @@ LoadFiles = function(pattern, input_dir) {
 RnmCols = function(df, tag) {
   cols = df %>% colnames() %>% tolower()
   len = length(cols)
-  cols[c(1, (len - 4):len)] = c('il_hg', 'zone_temp', 'zone_top',
-                                'afn_hg', 'afn_hl', 'air_change')
+  cols[c(1, (len - 3):len)] = c('il_hg', 'zone_top', 'afn_hg', 'afn_hl', 'air_change')
   room = tag %>% str_extract('(?<=f[0-9]_).*')
   cond = ifelse(grepl('temperature', cols), 'temp', 'hg')
   colnames(df) = cols %>% str_remove(paste0(room, '_')) %>%
@@ -115,6 +110,12 @@ ProcessOutput = function(input_dir, sim, typo, shell, level, output_dir) {
   sim = str_pad(sim, 2, side = 'left', pad = 0)
   pattern = paste0(sim, '_', typo, '_', shell, '_f', level)
   dfs_list = LoadFiles(pattern, input_dir)
+  RmConduction = function(df) {
+    index = df %>% colnames() %>% str_detect('Conduction')
+    df = df[!index]
+    return(df)
+  }
+  dfs_list = lapply(dfs_list, RmConduction)
   # rename columns
   dfs_list = mapply(RnmCols, dfs_list, names(dfs_list), SIMPLIFY = FALSE)
   # generates a data frame report
@@ -127,8 +128,3 @@ ProcessOutput = function(input_dir, sim, typo, shell, level, output_dir) {
   rm(dfs_list, df)
   gc()
 }
-
-# application ####
-grid = expand.grid(sim = 4, shell = c('tv', 'sf'), level = 1:5)
-mapply(ProcessOutput, '~/in_progress/master/', grid$sim, 'linear',
-       grid$shell, grid$level, '~/git/master_ufsc/result/')

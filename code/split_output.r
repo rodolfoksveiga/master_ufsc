@@ -1,7 +1,3 @@
-# load libraries ####
-pkgs = c('data.table', 'dplyr', 'parallel', 'stringr')
-lapply(pkgs, library, character.only = T)
-
 # base functions ####
 # define a vector with zones
 DefZones = function(input_path, habs, n_strs) {
@@ -60,7 +56,3 @@ SplitOutput = function(input_path, zones, output_dir, cores_left) {
   rm(df)
   gc()
 }
-
-# application ####
-ApplySplOut('~/in_progress/master/04/', '~/in_progress/master/split/', 5,
-            c('csw', 'msw', 'mse', 'cse', 'cne', 'mne', 'mnw', 'cnw'), 0)

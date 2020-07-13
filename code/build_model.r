@@ -277,11 +277,12 @@ BuildModel = function(seed, shell_wall, shell_roof, n_strs, boundary, constructi
   model[groups] = mapply(ApplyIntLoads, types, fill[groups],
                         MoreArgs = list(names(model$'ZoneList')))
   if (lsm) { # write json file
-    geometry = str_remove(basename(geom_path), '.json')
+    geometry = str_remove(basename(seed_path), '.json')
     index = ifelse(boundary == 'surface', '00', '01')
+    shell = c('11' = 'ref17', '12' = 'ref8', '41' = 'tm', '53' = 'tv', '64' = 'sf')
+    shell = shell[paste0(shell_wall, shell_roof)]
     output_path = paste0(output_dir, index, '_', geometry, '_', shell, '.epJSON')
     write_json(model, output_path, pretty = T, auto_unbox = T)
-    print(output_path)
   } else { # return as a variable
     return(model)
   }
