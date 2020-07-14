@@ -1,9 +1,3 @@
-# load libraries ####
-invisible({
-pkgs = c('data.table', 'dplyr', 'ggplot2', 'ggrepel', 'scales', 'stringr')
-lapply(pkgs, library, character.only = TRUE)
-})
-
 # base function ####
 # calculate difference between full building and simplified models
 CalcDiff = function(df1, df0, rel, hab) {
