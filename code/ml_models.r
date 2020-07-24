@@ -28,11 +28,11 @@ PPData = function(data, pp_model) {
   return(data)
 }
 # fit
-FitModel = function(train_tech, samp_tech, num_samp, repeats, train_data,
+FitModel = function(train_tech, samp_tech, nfolds, nreps, train_data,
                     cores_left, eval = 'RMSE', seed = 200) {
   # reproduce results
   set.seed(seed)
-  fit_ctrl = trainControl(samp_tech, num_samp, repeats, savePredictions = 'final',
+  fit_ctrl = trainControl(samp_tech, nfolds, nreps, savePredictions = 'final',
                           returnResamp = 'final', verboseIter = TRUE)
   cl = makePSOCKcluster(detectCores() - cores_left)
   registerDoParallel(cl)
@@ -142,19 +142,8 @@ SummAccuracy = function(model, train_tech, pred, targ) {
   return(table)
 }
 
-# ProcessModel = function(data_path, weather_var, nfolds, nreps, save_models,
-#                         save_results, models_dir, plots_dir, cores_left, inmet) {
-  
-  data_path = './result/sample.csv'
-  weather_var = 'tbsm'
-  nfolds = 10
-  nreps = NA
-  save_models = TRUE
-  save_results = TRUE
-  models_dir = './result/'
-  plots_dir = './plot_table/'
-  cores_left = 1
-  
+ProcessModel = function(data_path, weather_var, nfolds, nreps, save_models,
+                        save_results, models_dir, plots_dir, cores_left, inmet) {
   # load data
   raw_data = read.csv(data_path)
   str(raw_data)
@@ -175,9 +164,8 @@ SummAccuracy = function(model, train_tech, pred, targ) {
   # train
   models_list = list(lm = 'lm', gbrt = 'blackboost', qrf = 'qrf',
                      svm = 'svmRadial', brnn = 'brnn')
-  # models = lapply(models_list, FitModel, 'cv', nfolds, nreps, dummy_data$train)
+  models = lapply(models_list, FitModel, 'cv', nfolds, nreps, dummy_data$train, cores_left)
   # test
-  load('./result/models_tbsm.rds')
   predictions = models %>%
     lapply(predict, newdata = dummy_data$test) %>%
     as.data.frame()
@@ -201,8 +189,12 @@ SummAccuracy = function(model, train_tech, pred, targ) {
     GenAccuracyTable(models, predictions, dummy_data$test$phft, suffix, plots_dir)
   }
   if (save_models) {
-    save(models, file = paste0(models_dir, 'models_', weather_var, '.rds'))
+    save(models, file = paste0(models_dir, 'models_', suffix, '.rds'))
   } else {
     return(models)
   }
 }
+
+# application ####
+ProcessModel('./result/sample.csv', 'tbsm', 10, NA, TRUE, TRUE,
+             './result/', './plot_table/', 1, inmet)
