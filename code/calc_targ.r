@@ -35,7 +35,7 @@ CalcTarg = function(df_path, weather, inmet) {
   zones = df %>% colnames() %>% str_extract('(?<=_)(liv|dorm)')
   target = mapply(CalcPHFT, df, occup[zones], MoreArgs = list(inmet[index, 'tbsm']))
   target = sapply(1:3, function(x, y) mean(y[grepl(paste0('^f', x), names(target))]), target)
-  target = data.frame('storey' = c('floor', 'inter', 'roof'), 'phft' = target)
+  target = data.frame('storey' = 1:3, 'phft' = target)
   rm(df)
   gc()
   return(target)

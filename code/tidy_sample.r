@@ -1,12 +1,5 @@
 # main functions ####
 TidySample = function(sample_paths, seeds_dir, models_dir, epws_dir, inmet) {
-  
-  # sample_paths = paste0('./model/sample_', c('train', 'test'), '.csv')
-  # seeds_dir = './seed/'
-  # models_dir = '~/rolante/master/model/'
-  # inmet = read.csv('./source/epw/inmet_list.csv', stringsAsFactors = FALSE)
-  # epws_dir = '~/rolante/weather/'
-  
   sample = sample_paths %>%
     lapply(read.csv, stringsAsFactors = FALSE)
   sample = mapply(function(x, y) add_column(x, 'set' = y),

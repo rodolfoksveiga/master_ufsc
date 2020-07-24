@@ -1,5 +1,5 @@
 # load global environment ####
-load('~/git/handy/inmet.rds')
+load('~/git/handy/inmet_list.rds')
 
 # base functions ####
 # compile errors into one file

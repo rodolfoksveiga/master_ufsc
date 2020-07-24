@@ -24,7 +24,6 @@ py_run_file('./code/saltelli_sample.py')
 # read and edit sample
 inmet = read.csv(inmet_path, stringsAsFactors = FALSE)
 sample = TidySample(sobol_paths, seeds_dir, models_dir, epws_dir, inmet)
-invisible(file.remove(sobol_paths))
 # build cases
 complements = list(construction, fill, setup, geometry)
 invisible(
