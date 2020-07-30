@@ -28,17 +28,14 @@ PPData = function(data, pp_model) {
   return(data)
 }
 # fit
-FitModel = function(train_tech, samp_tech, nfolds, nreps, train_data,
-                    cores_left, eval = 'RMSE', seed = 200) {
+FitModel = function(train_tech, samp_tech, nfolds, nreps,
+                    train_data, eval = 'RMSE', seed = 200) {
   # reproduce results
   set.seed(seed)
   fit_ctrl = trainControl(samp_tech, nfolds, nreps, savePredictions = 'final',
                           returnResamp = 'final', verboseIter = TRUE)
-  cl = makePSOCKcluster(detectCores() - cores_left)
-  registerDoParallel(cl)
   fit = train(phft ~ ., train_data, trControl = fit_ctrl,
               tuneLength = 20, method = train_tech, metric = eval)
-  stopCluster(cl)
   return(fit)
 }
 # test
@@ -96,8 +93,7 @@ PlotPerf = function(train_tech, pred, targ, suffix, output_dir) {
 # plot variable importances
 PlotVarImp = function(model, train_tech, suffix, output_dir) {
   df = varImp(model)[[1]]
-  df = add_rownames(df)
-  colnames(df) = c('var', 'imp')
+  df = data.frame(var = rownames(df), imp = df$Overall)
   plot = ggplot(df, aes(x = reorder(var, imp), y = imp)) +
     coord_flip() +
     geom_bar(stat = 'identity') +
@@ -164,7 +160,8 @@ ProcessModel = function(data_path, weather_var, nfolds, nreps, save_models,
   # train
   models_list = list(lm = 'lm', gbrt = 'blackboost', qrf = 'qrf',
                      svm = 'svmRadial', brnn = 'brnn')
-  models = lapply(models_list, FitModel, 'cv', nfolds, nreps, dummy_data$train, cores_left)
+  models = mclapply(models_list, FitModel, 'cv', nfolds, nreps, dummy_data$train,
+                    mc.cores = detectCores() - cores_left)
   # test
   predictions = models %>%
     lapply(predict, newdata = dummy_data$test) %>%
@@ -196,5 +193,5 @@ ProcessModel = function(data_path, weather_var, nfolds, nreps, save_models,
 }
 
 # application ####
-ProcessModel('./result/sample.csv', 'tbsm', 10, NA, TRUE, TRUE,
-             './result/', './plot_table/', 1, inmet)
+ProcessModel('./result/sample.csv', 'tbsm', 20, NA, TRUE, TRUE,
+             './result/', './plot_table/', 0, inmet)
