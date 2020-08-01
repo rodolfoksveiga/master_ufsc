@@ -1,11 +1,11 @@
 # base functions ####
 # define a vector with zones
-DefZones = function(input_path, habs, n_strs) {
+DefZones = function(input_path, habs, nstrs) {
   case =  str_extract(input_path, '(?<=(ref(17|8)|tm|tv|sf)).*')
   count = str_count(case, '_')
   rooms = c('liv', 'dorm1', 'dorm2')
   if (count == 0) {
-    zones = paste0('f', 1:n_strs) %>%
+    zones = paste0('f', 1:nstrs) %>%
       expand.grid(habs, rooms) %>%
       apply(1, str_flatten, collapse = '_')
   } else {
@@ -34,9 +34,12 @@ WriteFile = function(zone, df, prefix, output_dir) {
 
 # main functions ####
 # apply the SplitOutput()
-ApplySplOut = function(input_dir, output_dir, n_strs, habs, cores_left = 1) {
+ApplySplOut = function(input_dir, typo, nstrs, output_dir, cores_left) {
+  if (typo == 'linear') {
+    habs = c('csw', 'msw', 'mse', 'cse', 'cne', 'mne', 'mnw', 'cnw')
+  }
   input_paths = dir(input_dir, '\\.csv$', full.names = T)
-  zones = lapply(input_paths, DefZones, habs, n_strs)
+  zones = lapply(input_paths, DefZones, habs, nstrs)
   mapply(SplitOutput, input_paths, zones, output_dir, cores_left)
 }
 # split outputs for each zone and write files

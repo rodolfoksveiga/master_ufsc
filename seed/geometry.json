@@ -1,0 +1,71 @@
+{
+  "simps": {
+    "linear": {
+      "corner": {
+        "liv": 20.63,
+        "dorm1": 7.94,
+        "dorm2": 7.41
+      },
+      "middle": {
+        "liv": 18.54,
+        "dorm1": 9.86,
+        "dorm2": 7.55
+      }
+    },
+    "h": {
+      "corner": {
+        "liv": 23.26,
+        "dorm1": 9,
+        "dorm2": 8.57
+      }
+    }
+  },
+  "seeds": [
+    {
+      "ratio": 0.5252,
+      "area": {
+        "liv": 21.95,
+        "dorm1": 8.99,
+        "dorm2": 8
+      }
+    },
+    {
+      "ratio": 0.8649,
+      "area": {
+        "liv": 22.16,
+        "dorm1": 9,
+        "dorm2": 8.1
+      }
+    },
+    {
+      "ratio": 0.5917,
+      "area": {
+        "liv": 22.09,
+        "dorm1": 8.91,
+        "dorm2": 8.25
+      }
+    },
+    {
+      "ratio": 0.5952,
+      "area": {
+        "liv": 22,
+        "dorm1": 9,
+        "dorm2": 8
+      }
+    },
+    {
+      "ratio": 0.625,
+      "area": {
+        "liv": 16.9,
+        "dorm": 9
+      }
+    },
+    {
+      "ratio": 0.6977,
+      "area": {
+        "liv": 17.02,
+        "dorm": 9
+      }
+    }
+  ]
+}

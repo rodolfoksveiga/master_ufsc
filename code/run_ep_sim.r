@@ -1,6 +1,3 @@
-# load global environment ####
-load('~/git/handy/inmet_list.rds')
-
 # base functions ####
 # compile errors into one file
 CompErrs = function(dir, ind,
@@ -104,7 +101,7 @@ RunEPSim = function(model_path, epw_path, prefix, output_dir) {
 }
 
 # main function ####
-ProcessEPSims = function(sample, load_files, models_dir, epws_dir, weathers,
+ProcessEPSims = function(sample, models_dir, epws_dir, weathers,
                          output_dir, cores_left, inmet, form = '\\.epJSON') {
   # load_files: 'TRUE' (generate grid according to files inside models_dir and epws_dir) or
     # 'FALSE' (load the sample grid)
@@ -116,7 +113,7 @@ ProcessEPSims = function(sample, load_files, models_dir, epws_dir, weathers,
   # output_dir: output directory
   # form: simulation file format (.epJSON or .idf)
   # list models and weather files path in a grid
-  if (load_files) {
+  if (is.null(sample)) {
     sims_grid = DefSimGrid(models_dir, epws_dir, weathers, inmet, form)
   } else {
     sims_grid = select(sample, model_path, epw_path, prefix)
