@@ -21,7 +21,9 @@ invisible({
   epws_dir = '~/rolante/weather/'
   weathers = c('curitiba', 'rio_de_janeiro', 'sao_paulo', 'sorriso', 'teresina')
   output_dir = '~/rolante/master/simp/output/'
+  split_dir = '~/rolante/master/simp/output/split/'
   sample_path = './result/sample1.csv'
+  result_dir = '~/rolante/master/simp/result/'
   cores_left = 0
   
   # main code ####
@@ -48,8 +50,7 @@ invisible({
   # run simulations
   ProcessEPSims(NULL, models_dir, epws_dir, weathers, output_dir, cores_left, inmet)
   # split outputs
-  ApplySplOut('/home/rodox/rolante/master/simp/output/', 'linear', 5,
-              '/home/rodox/rolante/master/simp/output/split/', 0)
+  ApplySplOut(output_dir, 'linear', 5, split_dir, 0)
   # process outputs
-  ApplySplOut('~/rolante/master/simp/output/split/', 'linear', 5, '~/rolante/master/simp/result/')
+  ApplySplOut(split_dir, 'linear', 5, result_dir)
 })
