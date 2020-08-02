@@ -46,11 +46,11 @@ invisible({
            MoreArgs = list(construction, fill, setup, geometry),
            mc.cores = detectCores() - cores_left)
   # shrink building
-  invisible(ApplyShkBuild(models_dir, 'linear', 5, models_dir, 0))
+  ApplyShkBuild(models_dir, 'linear', 5, models_dir, cores_left)
   # run simulations
   ProcessEPSims(NULL, models_dir, epws_dir, weathers, output_dir, cores_left, inmet)
   # split outputs
-  ApplySplOut(output_dir, 'linear', 5, split_dir, 0)
+  ApplySplOut(output_dir, 'linear', 5, split_dir, cores_left)
   # process outputs
   ApplySplOut(split_dir, 'linear', 5, result_dir)
 })
