@@ -121,6 +121,7 @@ ProcessEPSims = function(sample, models_dir, epws_dir, weathers,
   # run simulations in parallel
   errs_ind = mcmapply(RunEPSim, sims_grid$model_path, sims_grid$epw_path,
                       sims_grid$prefix, output_dir, mc.cores = detectCores() - cores_left)
+  save(errs_ind, file = '~/rolante/errs_ind.rds')
   # remove all files but .csv and .err
   RmUnsFiles(output_dir)
   # list and rename the outputs left

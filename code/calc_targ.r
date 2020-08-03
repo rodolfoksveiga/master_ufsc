@@ -1,6 +1,3 @@
-# global environment ####
-load('~/git/master/seed/occup.rds')
-
 # base functions ####
 # calculate percentage of hours feeling uncomfortable (ph)
 CalcPH = function (lim, op_temp, occup, mean_temp) {
@@ -47,7 +44,7 @@ AddTargToSample = function(sample, output_dir, inmet) {
   target = mapply(CalcTarg, output_paths, weathers, MoreArgs = list(inmet), SIMPLIFY = FALSE)
   target = bind_rows(target)
   sample = sample %>% slice(rep(1:n(), each = 3)) %>% cbind(target) %>%
-    select(set, seed, area, ratio, height, storey, azimuth, shell_wall, shell_roof,
-           abs_wall, abs_roof, wwr_liv, wwr_dorm, u_window, shgc, open_factor, epw, phft)
+    select(seed, area, ratio, height, storey, azimuth, shell_wall, abs_wall, shell_roof, abs_roof,
+           wwr_liv, wwr_dorm, u_window, shgc, open_factor, blind, balcony, facade, epw, phft)
   return(sample)
 }

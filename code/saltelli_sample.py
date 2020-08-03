@@ -10,20 +10,19 @@ def DefRange(bound, gap):
 
 # generate sample
 def GenSample(names, bounds, gap, quals, size):
-    cats = ['train', 'test']
     consts = np.repeat(gap, len(names))
     consts[quals] = 0
-    bounds = [DefRange(bound, gap) for bound, const in zip(bounds, consts)]
+    bounds = [DefRange(bound, const) for bound, const in zip(bounds, consts)]
     problem = {'num_vars': len(names), 'names': names, 'bounds': bounds}
     param_values = saltelli.sample(problem, size)
     df = pd.DataFrame(param_values, columns = problem['names'])
     df.to_csv('~/git/master/result/sobol_sample2.csv', index = False)
 
 # main code
-names = ['seed', 'area', 'ratio', 'height', 'azimuth', 'shell_wall',
-         'shell_roof', 'abs_wall', 'abs_roof', 'wwr_liv', 'wwr_dorm',
-         'u_window', 'shgc', 'open_factor', 'epw']
-bounds = [[1, 4], [30, 150], [0.5, 2], [2.5, 3.5], [0, 360], [1, 8],
-          [1, 5], [0.2, 0.8], [0.2, 0.8], [0.15, 0.85], [0.15, 0.85],
-          [2.8, 5.7], [0.22, 0.87], [0.4, 0.9], [1, 412]]
-GenSample(names, bounds, 0.02, [0, 5, 6, 14], 200)
+names = ['seed', 'area', 'ratio', 'height', 'azimuth', 'shell_wall', 'abs_wall',
+         'shell_roof', 'abs_roof', 'wwr_liv', 'wwr_dorm', 'u_window', 'shgc',
+         'open_factor', 'blind', 'balcony', 'facade', 'epw']
+bounds = [[1, 5], [30, 150], [0.5, 2], [2.5, 3.5], [0, 360], [1, 8], [0.2, 0.8],
+          [1, 5], [0.2, 0.8], [0.15, 0.85], [0.15, 0.85], [2.8, 5.7], [0.22, 0.87],
+          [0.4, 0.9], [0, 2], [-2, 2], [0, 2], [1, 412]]
+GenSample(names, bounds, 0.02, [0, 5, 7, 14, 16, 17], 500)
