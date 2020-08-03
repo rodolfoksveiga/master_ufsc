@@ -101,8 +101,8 @@ RunEPSim = function(model_path, epw_path, prefix, output_dir) {
 }
 
 # main function ####
-ProcessEPSims = function(sample, models_dir, epws_dir, weathers,
-                         output_dir, cores_left, inmet, form = '\\.epJSON') {
+ProcessEPSims = function(sample, models_dir, epws_dir, weathers, output_dir,
+                         cores_left, inmet, sort = FALSE, form = '\\.epJSON') {
   # load_files: 'TRUE' (generate grid according to files inside models_dir and epws_dir) or
     # 'FALSE' (load the sample grid)
   # models_dir: energyplus simulation files directory
@@ -115,6 +115,9 @@ ProcessEPSims = function(sample, models_dir, epws_dir, weathers,
   # list models and weather files path in a grid
   if (is.null(sample)) {
     sims_grid = DefSimGrid(models_dir, epws_dir, weathers, inmet, form)
+    if (sort) {
+      sims_grid = arrange(sims_grid, model_path)
+    }
   } else {
     sims_grid = select(sample, model_path, epw_path, prefix)
   }
