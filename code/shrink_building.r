@@ -163,7 +163,6 @@ ShrinkBuilding = function(seed_path, pattern, output_dir) {
   # seed_path = grid$seed_path[1]
   # pattern = grid$pattern[1]
   # output_dir = '~/rolante/master/simp/model/split/'
-  
   # load seed model
   model = read_json(seed_path)
   # find zones associated to the habitation
@@ -206,8 +205,7 @@ ShrinkBuilding = function(seed_path, pattern, output_dir) {
   output_name = seed_path %>% basename() %>%
     str_remove('.epJSON') %>% str_replace('^0', sim)
   output_path = paste0(output_dir, output_name, '_', pattern, '.epJSON')
-  write_json(model, output_path, pretty = T, auto_unbox = T)
-  print(output_path)
+  write_json(model, output_path, pretty = TRUE, auto_unbox = TRUE)
 }
 # apply ShrinkBuilding()
 ApplyShkBuild = function(seed_dir, typo, nstrs, output_dir, cores_left,
