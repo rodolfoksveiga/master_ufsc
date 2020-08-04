@@ -16,10 +16,10 @@ invisible({
   # variables ####
   sobol_path = './result/sobol_sample2.csv'
   seeds_dir = './seed/'
-  models_dir = '~/rolante/master/data/model/'
+  models_dir = '~/rolante/master/model/'
   epws_dir = '~/rolante/weather/'
-  output_dir = '~/rolante/master/data/output/'
-  result_output = '~/rolante/master/data/result/'
+  output_dir = '~/rolante/master/output/'
+  result_output = '~/rolante/master/result/'
   sample_path = './result/sample2.csv'
   cores_left = 0
   

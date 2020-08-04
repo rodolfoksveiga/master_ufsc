@@ -208,7 +208,7 @@ ShrinkBuilding = function(seed_path, pattern, output_dir) {
   write_json(model, output_path, pretty = TRUE, auto_unbox = TRUE)
 }
 # apply ShrinkBuilding()
-ApplyShkBuild = function(seed_dir, typo, nstrs, output_dir, cores_left,
+ApplyShrinkBuild = function(seed_dir, typo, nstrs, output_dir, cores_left,
                          shells = c('ref17', 'ref8', 'tm', 'tv', 'sf')) {
   if (typo == 'linear') {
     habs = c('csw', 'msw', 'mse', 'cse', 'cne', 'mne', 'mnw', 'cnw')

@@ -103,13 +103,12 @@ SumCol = function(val, var) {
 
 # main functions ####
 # apply ProcessOutput()
-ApplyProcOut = function(input_dir, typos, nstrs, output_dir,
-                        shells = c('ref', 'tm', 'tv', 'sf')) {
+ApplyProcessOut = function(input_dir, typos, nstrs, output_dir,
+                           shells = c('ref', 'tm', 'tv', 'sf')) {
   grid = expand.grid(sim = 0, typo = typos, shell = shells,
                      level = 1:nstrs, stringsAsFactors = FALSE)
   mapply(ProcessOutput, input_dir, grid$sim, grid$typo,
-         grid$shell, grid$level, output_dir, SIMPLIFY = FALSE) %>%
-    bind_rows() %>% write.csv(paste0(output_dir, 'simp.csv'))
+         grid$shell, grid$level, output_dir, SIMPLIFY = FALSE)
 }
 # process output and generate a summarized table
 ProcessOutput = function(input_dir, sim, typo, shell, level, output_dir) {
@@ -122,5 +121,10 @@ ProcessOutput = function(input_dir, sim, typo, shell, level, output_dir) {
   complement = list(geometry, occup, out_temp)
   df = mapply(GenReport, dfs_list, names(dfs_list), MoreArgs = complement) %>%
     as.data.frame() %>% t() %>% as.data.frame(row.names = FALSE)
-  return(df)
+  # write report
+  output_path = paste0(output_dir, pattern, '.csv')
+  write.csv(df, file = output_path, row.names = FALSE)
+  # clean cache
+  rm(dfs_list, df)
+  gc()
 }
