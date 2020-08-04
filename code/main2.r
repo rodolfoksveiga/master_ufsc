@@ -28,6 +28,7 @@ invisible({
   py_run_file('./code/saltelli_sample.py')
   # read and tidy up sample
   sample = TidySample(sobol_path, seeds_dir, models_dir, epws_dir, inmet)
+  sample = head(sample, 100)
   # build cases
   mcmapply(BuildModel,
            seed_path = sample$seed_path, area = sample$area, ratio = sample$seed,
