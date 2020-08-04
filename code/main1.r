@@ -28,7 +28,7 @@ invisible({
   
   # main code ####
   # generate sample
-  sample = expand.grid(simp = 1, typo = 'linear', stringsAsFactors = FALSE,
+  sample = expand.grid(simp = 0, typo = 'linear', stringsAsFactors = FALSE,
                        shell = c('ref17', 'ref8', 'tm', 'tv', 'sf'))
   write.csv(sample, sample_path, row.names = FALSE)
   # link sample to appropriate values
@@ -47,10 +47,10 @@ invisible({
            mc.cores = detectCores() - cores_left)
   # # shrink building
   # ApplyShrinkBuild(models_dir, 'linear', 5, models_dir, cores_left)
-  # run simulations
-  ProcessEPSims(NULL, models_dir, epws_dir, weathers, output_dir, cores_left, inmet)
-  # split outputs
-  ApplySplOut(output_dir, 'linear', 5, split_dir, cores_left)
-  # process outputs
-  ApplyProcessOut(split_dir, 'linear', 5, result_dir)
+  # # run simulations
+  # ProcessEPSims(NULL, models_dir, epws_dir, weathers, output_dir, cores_left, inmet)
+  # # split outputs
+  # ApplySplOut(output_dir, 'linear', 5, split_dir, cores_left)
+  # # process outputs
+  # ApplyProcessOut(split_dir, 'linear', 5, result_dir)
 })
