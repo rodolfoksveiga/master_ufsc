@@ -38,7 +38,7 @@ invisible({
            MoreArgs = list(construction, fill, setup, geometry),
            mc.cores = detectCores() - cores_left)
   # run simulations
-  ProcessEPSims(sample, NULL, NULL, output_dir, 0, NULL)
+  ProcessEPSims(sample, NULL, NULL, NULL, output_dir, 0)
   # calculate targets and add them to the sample
   sample = AddTargToSample(sample, output_dir, occup, inmet)
   # write sample file 
