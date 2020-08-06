@@ -24,7 +24,7 @@ CalcPHFT = function(op_temp, occup, mean_temp) {
 }
 
 # main function ####
-CalcTarg = function(df_path, weather, inmet) {
+CalcTarg = function(df_path, weather, occup, inmet) {
   df = df_path %>% fread() %>% as.data.frame()
   colnames(df) = df %>% colnames() %>% str_remove(':.*') %>% str_to_lower()
   df = df[str_detect(colnames(df), '(?<=_)(liv|dorm)')]
@@ -38,10 +38,11 @@ CalcTarg = function(df_path, weather, inmet) {
   return(target)
 }
 # add targets to sample data frame
-AddTargToSample = function(sample, output_dir, inmet) {
+AddTargToSample = function(sample, output_dir, occup, inmet) {
   output_paths = dir(output_dir, '\\.csv', full.names = TRUE)
   weathers = str_remove(basename(sample$epw_path), '\\.epw')
-  target = mapply(CalcTarg, output_paths, weathers, MoreArgs = list(inmet), SIMPLIFY = FALSE)
+  target = mapply(CalcTarg, output_paths, weathers,
+                  MoreArgs = list(occup, inmet), SIMPLIFY = FALSE)
   target = bind_rows(target)
   sample = sample %>% slice(rep(1:n(), each = 3)) %>% cbind(target) %>%
     select(seed, area, ratio, height, storey, azimuth, shell_wall, abs_wall, shell_roof, abs_roof,

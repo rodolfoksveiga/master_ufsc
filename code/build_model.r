@@ -200,10 +200,10 @@ DefFen = function(object, storey, index) {
   return(object)
 }
 # generate balcony
-GenBalcony = function(surf, tag, balcony, fill) {
+GenBalcony = function(surf, tag, depth, fill) {
   orient = tag %>% str_extract('(?<=wall)[1-4]') %>% as.numeric()
   faces = c(0, ifelse(orient == 1, 4, orient - 1), orient, ifelse(orient == 4, 1, orient + 1), 5)
-  balcony = lapply(faces, GenBalcSurf, orient, surf$vertices)
+  balcony = lapply(faces, GenBalcSurf, depth, orient, surf$vertices)
   add = rep(tag, 5)
   names(add) = paste0('shading_', tag, '_', c('floor', paste0('wall', faces[2:4]), 'roof'))
   balcony = mapply(function(x, y, z) c(z, list('vertices' = y, 'base_surface_name' = x)),
@@ -211,7 +211,7 @@ GenBalcony = function(surf, tag, balcony, fill) {
   return(balcony)
 }
 # generate balcony surface
-GenBalcSurf = function(face, orient, vertices) {
+GenBalcSurf = function(face, depth, orient, vertices) {
   if (orient %in% c(1, 3)) {
     c = ifelse(orient == 1, -1, 1)
     coord = 'y'
@@ -220,7 +220,7 @@ GenBalcSurf = function(face, orient, vertices) {
     coord = 'x'
   }
   vertex = paste0('vertex_', coord, '_coordinate')
-  depth = vertices[[1]][[vertex]] + c*balcony
+  depth = vertices[[1]][[vertex]] + c*depth
   if (face %in% c(0, 5)) {
     vertices[c(2, 3)] = lapply(vertices[c(2, 3)], ChangeCoordValue, coord, depth)
     if (face == 0) {

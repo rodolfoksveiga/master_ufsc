@@ -19,7 +19,6 @@ invisible({
   models_dir = '~/rolante/master/model/'
   epws_dir = '~/rolante/weather/'
   output_dir = '~/rolante/master/output/'
-  result_output = '~/rolante/master/result/'
   sample_path = './result/sample2.csv'
   cores_left = 0
   
@@ -28,10 +27,9 @@ invisible({
   py_run_file('./code/saltelli_sample.py')
   # read and tidy up sample
   sample = TidySample(sobol_path, seeds_dir, models_dir, epws_dir, inmet)
-  sample = head(sample, 100)
+  sample = head(sample, 200)
   # build cases
-  mcmapply(BuildModel,
-           seed_path = sample$seed_path, area = sample$area, ratio = sample$seed,
+  mcmapply(BuildModel, seed_path = sample$seed_path, area = sample$area, ratio = sample$ratio,
            height = sample$height, azimuth = sample$azimuth, shell_wall = sample$shell_wall,
            abs_wall = sample$abs_wall, shell_roof = sample$shell_roof, abs_roof = sample$abs_roof,
            wwr_liv = sample$wwr_liv, wwr_dorm = sample$wwr_dorm, u_window = sample$u_window,
@@ -40,9 +38,9 @@ invisible({
            MoreArgs = list(construction, fill, setup, geometry),
            mc.cores = detectCores() - cores_left)
   # run simulations
-  ProcessEPSims(sample, NULL, NULL, output_dir, 0, inmet)
+  ProcessEPSims(sample, NULL, NULL, output_dir, 0, NULL)
   # calculate targets and add them to the sample
-  sample = AddTargToSample(sample, output_dir, inmet)
+  sample = AddTargToSample(sample, output_dir, occup, inmet)
   # write sample file 
   write.csv(sample, sample_path, row.names = FALSE)
 })
