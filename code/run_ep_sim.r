@@ -77,6 +77,12 @@ RmUnsFiles = function(dir, rm_all_but = c('.csv', '.err'),
   files_path = files_path[index]
   file.remove(files_path)
 }
+# create simulation sequence folders
+SimFolders = function(nrows) {
+  dim = nrows %>% log10() %>% floor()
+  ns = 1:nrows %>% str_pad(dim + 1, 'left', 0) %>% paste0('/')
+  return(ns)
+}
 # sum the number of warnings and severe errors in all simulations
 SumErrs = function(start, end, comp_path) {
   # start: pattern before the number of simulation errors
@@ -91,36 +97,43 @@ SumErrs = function(start, end, comp_path) {
 
 # simulation function ####
 # run a single energyplus simulation
-RunEPSim = function(model_path, epw_path, prefix, output_dir) {
+RunEPSim = function(model_path, epw_path, prefix, output_dir, n) {
   # model_path: full model file path
   # epw_path: full weather file path
   # weather: correspondent weather file
   # output_dir: output directory
+  if (!is.null(n)) {
+    original_dir = output_dir
+    output_dir = paste0(output_dir, n)
+    dir.create(output_dir)
+  }
   args = c('-r', '-w', epw_path, '-d', output_dir, '-p', prefix, model_path)
   system2('energyplus', args, stdout = FALSE, stderr = FALSE)
+  if (!is.null(n)) {
+    files = dir(output_dir, full.names = TRUE)
+    file.rename(files, paste0(original_dir, basename(files)))
+    unlink(output_dir, recursive = TRUE)
+  }
 }
 
 # main function ####
-ProcessEPSims = function(sample, models_dir, epws_dir, weathers,
-                         output_dir, cores_left, inmet, form = '\\.epJSON') {
-  # load_files: 'TRUE' (generate grid according to files inside models_dir and epws_dir) or
-    # 'FALSE' (load the sample grid)
-  # models_dir: energyplus simulation files directory
-  # epws_dir: energyplus weather files directory
-  # weathers: vector of chosen weathers
-    # e.g.: c('rio_de_janeiro', 'sao_paulo')
-  # sample: sample grid with simulation informations
-  # output_dir: output directory
-  # form: simulation file format (.epJSON or .idf)
-  # list models and weather files path in a grid
+ProcessEPSims = function(sample, models_dir, epws_dir, weathers, output_dir,
+                         cores_left, inmet, large_files = FALSE, form = '\\.epJSON') {
+  # create simulation grid
   if (is.null(sample)) {
     sims_grid = DefSimGrid(models_dir, epws_dir, weathers, inmet, form)
   } else {
     sims_grid = select(sample, model_path, epw_path, prefix)
   }
+  # generate folders sequence for each large simulation file
+  if (large_files) {
+    ns = sims_grid %>% nrow() %>% SimFolders()
+  } else {
+    ns = NULL
+  }
   # run simulations in parallel
   errs_ind = mcmapply(RunEPSim, sims_grid$model_path, sims_grid$epw_path,
-                      sims_grid$prefix, output_dir, mc.cores = detectCores() - cores_left)
+                      sims_grid$prefix, output_dir, ns, mc.cores = detectCores() - cores_left)
   # remove all files but .csv and .err
   RmUnsFiles(output_dir)
   # list and rename the outputs left
