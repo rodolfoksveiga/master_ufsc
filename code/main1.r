@@ -49,8 +49,8 @@ invisible({
   ApplyShrinkBuild(models_dir, 'linear', 5, models_dir, cores_left)
   # run simulations
   ProcessEPSims(NULL, models_dir, epws_dir, weathers, output_dir, cores_left, inmet, TRUE)
-  # # split outputs
-  # ApplySplOut(output_dir, 'linear', 5, split_dir, cores_left)
-  # # process outputs
-  # ApplyProcessOut(split_dir, 'linear', 5, result_dir)
+  # split outputs
+  ApplySplOut(output_dir, 'linear', 5, split_dir, cores_left)
+  # process outputs
+  ApplyProcessOut(split_dir, 'linear', 5, result_dir)
 })

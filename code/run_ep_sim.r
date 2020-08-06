@@ -97,7 +97,7 @@ SumErrs = function(start, end, comp_path) {
 
 # simulation function ####
 # run a single energyplus simulation
-RunEPSim = function(model_path, epw_path, prefix, output_dir, n) {
+RunEPSim = function(model_path, epw_path, prefix, output_dir, n = NULL) {
   # model_path: full model file path
   # epw_path: full weather file path
   # weather: correspondent weather file
@@ -125,15 +125,15 @@ ProcessEPSims = function(sample, models_dir, epws_dir, weathers, output_dir,
   } else {
     sims_grid = select(sample, model_path, epw_path, prefix)
   }
-  # generate folders sequence for each large simulation file
+  # generate folders sequence for each large simulation file and run simulations
   if (large_files) {
     ns = sims_grid %>% nrow() %>% SimFolders()
+    errs_ind = mcmapply(RunEPSim, sims_grid$model_path, sims_grid$epw_path,
+                        sims_grid$prefix, output_dir, ns, mc.cores = detectCores() - cores_left)
   } else {
-    ns = NULL
+    errs_ind = mcmapply(RunEPSim, sims_grid$model_path, sims_grid$epw_path,
+                        sims_grid$prefix, output_dir, mc.cores = detectCores() - cores_left)
   }
-  # run simulations in parallel
-  errs_ind = mcmapply(RunEPSim, sims_grid$model_path, sims_grid$epw_path,
-                      sims_grid$prefix, output_dir, ns, mc.cores = detectCores() - cores_left)
   # remove all files but .csv and .err
   RmUnsFiles(output_dir)
   # list and rename the outputs left
