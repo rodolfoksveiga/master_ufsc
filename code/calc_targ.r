@@ -18,7 +18,7 @@ CalcPH = function (lim, op_temp, occup, mean_temp) {
 DefLimSup = function(x) ifelse(x < 25, 26, ifelse(x < 27, 28, 30))
 # calc phft
 CalcPHFT = function(op_temp, occup, mean_temp) {
-  phs = sapply(c('ph_sup' = 'sup', 'ph_inf' = 'inf'), CalcPH, op_temp, occup, mean_temp)
+  phs = sapply(c(ph_sup = 'sup', ph_inf = 'inf'), CalcPH, op_temp, occup, mean_temp)
   phft = 100 - sum(phs)
   return(phft)
 }
@@ -32,7 +32,7 @@ CalcTarg = function(df_path, weather, occup, inmet) {
   zones = df %>% colnames() %>% str_extract('(?<=_)(liv|dorm)')
   target = mapply(CalcPHFT, df, occup[zones], MoreArgs = list(inmet[index, 'tbsm']))
   target = sapply(1:3, function(x, y) mean(y[grepl(paste0('^f', x), names(target))]), target)
-  target = data.frame('storey' = 1:3, 'phft' = target)
+  target = data.frame(storey = 1:3, phft = target)
   rm(df)
   gc()
   return(target)

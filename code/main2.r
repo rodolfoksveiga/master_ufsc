@@ -24,22 +24,22 @@ invisible({
   cores_left = 0
   
   # main code ####
-  # # generate sample
-  # py_run_file('./code/saltelli_sample.py')
-  # # read and tidy up sample
-  # sample = TidySample(sobol_path, seeds_dir, models_dir, epws_dir, inmet)
-  # sample = head(sample, 200)
-  # # build cases
-  # mcmapply(BuildModel, seed_path = sample$seed_path, area = sample$area, ratio = sample$ratio,
-  #          height = sample$height, azimuth = sample$azimuth, shell_wall = sample$shell_wall,
-  #          abs_wall = sample$abs_wall, shell_roof = sample$shell_roof, abs_roof = sample$abs_roof,
-  #          wwr_liv = sample$wwr_liv, wwr_dorm = sample$wwr_dorm, u_window = sample$u_window,
-  #          shgc = sample$shgc, open_factor = sample$open_factor, blind = sample$blind,
-  #          balcony = sample$balcony, model_path = sample$model_path,
-  #          MoreArgs = list(construction, fill, setup, geometry),
-  #          mc.cores = detectCores() - cores_left)
-  # # run simulations
-  # ProcessEPSims(sample, NULL, NULL, NULL, output_dir, 0)
+  # generate sample
+  py_run_file('./code/saltelli_sample.py')
+  # read and tidy up sample
+  sample = TidySample(sobol_path, seeds_dir, models_dir, epws_dir, inmet)
+  sample = head(sample, 200)
+  # build cases
+  mcmapply(BuildModel, seed_path = sample$seed_path, area = sample$area, ratio = sample$ratio,
+           height = sample$height, azimuth = sample$azimuth, shell_wall = sample$shell_wall,
+           abs_wall = sample$abs_wall, shell_roof = sample$shell_roof, abs_roof = sample$abs_roof,
+           wwr_liv = sample$wwr_liv, wwr_dorm = sample$wwr_dorm, u_window = sample$u_window,
+           shgc = sample$shgc, open_factor = sample$open_factor, blind = sample$blind,
+           balcony = sample$balcony, model_path = sample$model_path,
+           MoreArgs = list(construction, fill, setup, geometry),
+           mc.cores = detectCores() - cores_left)
+  # run simulations
+  ProcessEPSims(sample, NULL, NULL, NULL, output_dir, 0)
   # calculate targets and add them to the sample
   sample = AddTargToSample(sample, output_dir, occup, inmet)
   # write sample file 
