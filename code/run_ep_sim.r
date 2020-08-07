@@ -78,7 +78,7 @@ RmUnsFiles = function(dir, rm_all_but = c('.csv', '.err'),
   file.remove(files_path)
 }
 # create simulation sequence folders
-SimFolders = function(nrows) {
+ListSimDirs = function(nrows) {
   dim = nrows %>% log10() %>% floor()
   ns = 1:nrows %>% str_pad(dim + 1, 'left', 0) %>% paste0('/')
   return(ns)
@@ -95,41 +95,48 @@ SumErrs = function(start, end, comp_path) {
   return(sum_err)
 }
 
-# simulation function ####
+# simulation functions ####
 # run a single energyplus simulation
-RunEPSim = function(model_path, epw_path, prefix, output_dir, n = NULL) {
+RunEPSim = function(model_path, epw_path, prefix, output_dir) {
   # model_path: full model file path
   # epw_path: full weather file path
   # weather: correspondent weather file
   # output_dir: output directory
-  if (!is.null(n)) {
-    original_dir = output_dir
-    output_dir = paste0(output_dir, n)
-    dir.create(output_dir)
-  }
+
   args = c('-r', '-w', epw_path, '-d', output_dir, '-p', prefix, model_path)
   system2('energyplus', args, stdout = FALSE, stderr = FALSE)
-  if (!is.null(n)) {
-    files = dir(output_dir, full.names = TRUE)
-    file.rename(files, paste0(original_dir, basename(files)))
-    unlink(output_dir, recursive = TRUE)
-  }
+
+}
+# run large energyplus simulations
+SimLargeEPModel = function(n, model_path, epw_path, prefix, output_dir) {
+  working_dir = getwd()
+  original_dir = output_dir
+  output_dir = paste0(output_dir, n)
+  dir.create(output_dir)
+  setwd(output_dir)
+  err = RunEPSim(model_path, epw_path, prefix, output_dir)
+  files = dir(output_dir, full.names = TRUE)
+  file.rename(files, paste0(original_dir, basename(files)))
+  setwd(working_dir)
+  unlink(output_dir, recursive = TRUE)
+  return(err)
 }
 
 # main function ####
 ProcessEPSims = function(sample, models_dir, epws_dir, weathers, output_dir,
-                         cores_left, inmet, large_files = FALSE, form = '\\.epJSON') {
+                         cores_left, inmet, large_models = FALSE, form = '\\.epJSON') {
   # create simulation grid
   if (is.null(sample)) {
     sims_grid = DefSimGrid(models_dir, epws_dir, weathers, inmet, form)
   } else {
     sims_grid = select(sample, model_path, epw_path, prefix)
   }
-  # generate folders sequence for each large simulation file and run simulations
-  if (large_files) {
-    ns = sims_grid %>% nrow() %>% SimFolders()
-    errs_ind = mcmapply(RunEPSim, sims_grid$model_path, sims_grid$epw_path,
-                        sims_grid$prefix, output_dir, ns, mc.cores = detectCores() - cores_left)
+  # run simulation in parallel
+  if (large_models) {
+    # each simulation runs in a separated directory
+    ns = sims_grid %>% nrow() %>% ListSimDirs()
+    errs_ind = mcmapply(SimLargeEPModel, ns, sims_grid$model_path, sims_grid$epw_path,
+                        sims_grid$prefix, output_dir, mc.cores = detectCores() - cores_left)
   } else {
     errs_ind = mcmapply(RunEPSim, sims_grid$model_path, sims_grid$epw_path,
                         sims_grid$prefix, output_dir, mc.cores = detectCores() - cores_left)

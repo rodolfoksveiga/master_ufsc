@@ -45,8 +45,8 @@ invisible({
            boundary = sample$boundary, scale = FALSE,
            MoreArgs = list(construction, fill, setup, geometry),
            mc.cores = detectCores() - cores_left)
-  # shrink building
-  ApplyShrinkBuild(models_dir, 'linear', 5, models_dir, cores_left)
+  # # shrink building
+  # ApplyShrinkBuild(models_dir, 'linear', 5, models_dir, cores_left)
   # run simulations
   ProcessEPSims(NULL, models_dir, epws_dir, weathers, output_dir, cores_left, inmet, TRUE)
   # split outputs

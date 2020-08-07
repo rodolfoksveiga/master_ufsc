@@ -28,7 +28,6 @@ invisible({
   py_run_file('./code/saltelli_sample.py')
   # read and tidy up sample
   sample = TidySample(sobol_path, seeds_dir, models_dir, epws_dir, inmet)
-  sample = head(sample, 200)
   # build cases
   mcmapply(BuildModel, seed_path = sample$seed_path, area = sample$area, ratio = sample$ratio,
            height = sample$height, azimuth = sample$azimuth, shell_wall = sample$shell_wall,
