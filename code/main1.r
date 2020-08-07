@@ -28,7 +28,7 @@ invisible({
   
   # main code ####
   # generate sample
-  sample = expand.grid(simp = 0, typo = 'linear', stringsAsFactors = FALSE,
+  sample = expand.grid(simp = 1, typo = 'linear', stringsAsFactors = FALSE,
                        shell = c('ref17', 'ref8', 'tm', 'tv', 'sf'))
   write.csv(sample, sample_path, row.names = FALSE)
   # link sample to appropriate values
