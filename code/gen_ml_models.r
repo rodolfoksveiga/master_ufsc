@@ -2,7 +2,7 @@
 invisible({
   pkgs = c('caret', 'doParallel', 'dplyr', 'hydroGOF', 'Metrics', 'parallel')
   lapply(pkgs, library, character.only = T)
-  inmet = read.csv('./source/inmet_list.csv', stringsAsFactors = FALSE)
+  inmet = read.csv('./seed/inmet_list.csv', stringsAsFactors = FALSE)
 })
 
 # base functions ####
@@ -17,10 +17,22 @@ DefFactors = function(df, vars) {
 # machine learning model functions ####
 # create dummy variables
 CreateDummies = function(data) {
-  dummy_model = dummyVars(phft ~ ., data = data)
+  dummy_model = dummyVars(targ ~ ., data = data)
   dummy_data = data.frame(predict(dummy_model, newdata = data))
-  dummy_data$phft = data$phft
+  dummy_data$targ = data$targ
   return(dummy_data)
+}
+# split data into train and test sets
+SplitData = function(train, dummy_data, train_prop, seed = 100) {
+  # reproduce
+  set.seed(seed)
+  train_part = createDataPartition(dummy_data$targ, p = train_prop, list = F)
+  if(train) {
+    data = dummy_data[train_part, ]
+  } else {
+    data = dummy_data[-train_part, ]
+  }
+  return(data)
 }
 # pre-process data
 PPData = function(data, pp_model) {
@@ -32,9 +44,8 @@ FitModel = function(train_tech, samp_tech, nfolds, nreps,
                     train_data, eval = 'RMSE', seed = 200) {
   # reproduce results
   set.seed(seed)
-  fit_ctrl = trainControl(samp_tech, nfolds, nreps, savePredictions = 'final',
-                          returnResamp = 'final', verboseIter = TRUE)
-  fit = train(phft ~ ., train_data, trControl = fit_ctrl,
+  fit_ctrl = trainControl(samp_tech, nfolds, nreps, returnData = FALSE, verboseIter = TRUE)
+  fit = train(targ ~ ., train_data, trControl = fit_ctrl,
               tuneLength = 20, method = train_tech, metric = eval)
   return(fit)
 }
@@ -138,22 +149,22 @@ SummAccuracy = function(model, train_tech, pred, targ) {
   return(table)
 }
 
-ProcessModel = function(data_path, weather_var, nfolds, nreps, save_models,
-                        save_results, models_dir, plots_dir, cores_left, inmet) {
+GenMLModels = function(data_path, weather_var, nfolds, nreps, save_models,
+                       save_results, models_dir, plots_dir, cores_left, inmet) {
   # load data
   raw_data = read.csv(data_path)
   str(raw_data)
   # define qualitative and quantitative variables
-  qual_vars = c('seed', 'storey', 'shell_wall', 'shell_roof')
+  qual_vars = c('seed', 'storey', 'shell_wall', 'shell_roof', 'blind', 'facade')
   quant_vars = colnames(raw_data[-c(1, length(raw_data))])
   quant_vars = quant_vars[!quant_vars %in% qual_vars]
   # edit sample
   raw_data$epw = inmet[raw_data$epw, weather_var]
-  sets = c(train = 'train', test = 'test')
-  raw_data = lapply(sets, function (x, y) filter(y, set == x)[-1], raw_data)
   # create dummy variables
-  raw_data = lapply(raw_data, DefFactors, qual_vars)
-  dummy_data = lapply(raw_data, CreateDummies)
+  raw_data = DefFactors(raw_data, qual_vars)
+  dummy_data = CreateDummies(raw_data)
+  # split data into train and test sets
+  dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
   # pre-process data
   pp_model = preProcess(dummy_data$train[, quant_vars], method = c('center', 'scale'))
   dummy_data = lapply(dummy_data, PPData, pp_model)
@@ -178,12 +189,12 @@ ProcessModel = function(data_path, weather_var, nfolds, nreps, save_models,
     # plot training process
     mapply(PlotFit, models[-1], names(models[-1]), suffix, MoreArgs = list(plots_dir))
     # plot model performance
-    mapply(PlotPerf, names(models), predictions, MoreArgs = list(dummy_data$test$phft,
+    mapply(PlotPerf, names(models), predictions, MoreArgs = list(dummy_data$test$targ,
                                                                  suffix, plots_dir))
     # plot variables importance
     mapply(PlotVarImp, models, names(models), MoreArgs = list(suffix, plots_dir))
     # generate accuracy table
-    GenAccuracyTable(models, predictions, dummy_data$test$phft, suffix, plots_dir)
+    GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, plots_dir)
   }
   if (save_models) {
     save(models, file = paste0(models_dir, 'models_', suffix, '.rds'))
@@ -193,5 +204,5 @@ ProcessModel = function(data_path, weather_var, nfolds, nreps, save_models,
 }
 
 # application ####
-ProcessModel('./result/sample.csv', 'tbsm', 20, NA, TRUE, TRUE,
-             './result/', './plot_table/', 0, inmet)
+GenMLModels('./result/sample2.csv', 'tbsm', 20, NA, TRUE, TRUE,
+            './result/', './plot_table/', 0, inmet)
