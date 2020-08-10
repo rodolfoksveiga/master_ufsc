@@ -102,10 +102,9 @@ RunEPSim = function(model_path, epw_path, prefix, output_dir) {
   # epw_path: full weather file path
   # weather: correspondent weather file
   # output_dir: output directory
-
   args = c('-r', '-w', epw_path, '-d', output_dir, '-p', prefix, model_path)
-  system2('energyplus', args, stdout = FALSE, stderr = FALSE)
-
+  err = system2('energyplus', args, stdout = FALSE, stderr = FALSE)
+  return(err)
 }
 # run large energyplus simulations
 SimLargeEPModel = function(n, model_path, epw_path, prefix, output_dir) {
