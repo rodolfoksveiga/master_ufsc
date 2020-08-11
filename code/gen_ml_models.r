@@ -205,4 +205,4 @@ GenMLModels = function(data_path, weather_var, nfolds, nreps, save_models,
 
 # application ####
 GenMLModels('./result/sample2.csv', 'tbsm', 15, NA, TRUE, TRUE,
-            './result/', './plot_table/', 0, inmet)
+            './result/', './plot_table/', 3, inmet)
