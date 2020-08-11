@@ -46,7 +46,7 @@ FitModel = function(train_tech, samp_tech, nfolds, nreps,
   set.seed(seed)
   fit_ctrl = trainControl(samp_tech, nfolds, nreps, returnData = FALSE, verboseIter = TRUE)
   fit = train(targ ~ ., train_data, trControl = fit_ctrl,
-              tuneLength = 20, method = train_tech, metric = eval)
+              tuneLength = 15, method = train_tech, metric = eval)
   return(fit)
 }
 # test
@@ -204,5 +204,5 @@ GenMLModels = function(data_path, weather_var, nfolds, nreps, save_models,
 }
 
 # application ####
-GenMLModels('./result/sample2.csv', 'tbsm', 20, NA, TRUE, TRUE,
+GenMLModels('./result/sample2.csv', 'tbsm', 15, NA, TRUE, TRUE,
             './result/', './plot_table/', 0, inmet)
