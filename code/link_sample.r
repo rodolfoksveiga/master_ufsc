@@ -1,6 +1,5 @@
 # main function ####
-LinkSample = function(sample_path, seeds_dir, models_dir) {
-  sample = read.csv(sample_path, stringsAsFactors = FALSE)
+LinkSample = function(sample, seeds_dir, models_dir) {
   seed_paths = paste0(seeds_dir, sample$typo, '.json')
   construction = list(ref17 = c(1, 1), ref8 = c(1, 2), tm20 = c(4, 1), tv = c(5, 3), sf = c(6, 4))
   index = sapply(sample$shell, grep, names(construction))

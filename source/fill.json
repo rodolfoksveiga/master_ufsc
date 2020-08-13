@@ -72,5 +72,13 @@
             "idf_max_fields": 16,
             "number_of_vertices": 4
         }
+    },
+    "Output:Variable": {
+        "item": {
+            "idf_max_extensible_fields": 0,
+            "idf_max_fields": 3,
+            "key_value": "*",
+            "reporting_frequency": "Timestep"
+        }
     }
 }

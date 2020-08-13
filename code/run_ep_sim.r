@@ -77,12 +77,6 @@ RmUnsFiles = function(dir, rm_all_but = c('.csv', '.err'),
   files_path = files_path[index]
   file.remove(files_path)
 }
-# create simulation sequence folders
-ListSimDirs = function(nrows) {
-  dim = nrows %>% log10() %>% floor()
-  ns = 1:nrows %>% str_pad(dim + 1, 'left', 0) %>% paste0('/')
-  return(ns)
-}
 # sum the number of warnings and severe errors in all simulations
 SumErrs = function(start, end, comp_path) {
   # start: pattern before the number of simulation errors
@@ -95,7 +89,7 @@ SumErrs = function(start, end, comp_path) {
   return(sum_err)
 }
 
-# simulation functions ####
+# simulation function ####
 # run a single energyplus simulation
 RunEPSim = function(model_path, epw_path, prefix, output_dir) {
   # model_path: full model file path
@@ -106,24 +100,10 @@ RunEPSim = function(model_path, epw_path, prefix, output_dir) {
   err = system2('energyplus', args, stdout = FALSE, stderr = FALSE)
   return(err)
 }
-# run large energyplus simulations
-SimLargeEPModel = function(n, model_path, epw_path, prefix, output_dir) {
-  working_dir = getwd()
-  original_dir = output_dir
-  output_dir = paste0(output_dir, n)
-  dir.create(output_dir)
-  setwd(output_dir)
-  err = RunEPSim(model_path, epw_path, prefix, output_dir)
-  files = dir(output_dir, full.names = TRUE)
-  file.rename(files, paste0(original_dir, basename(files)))
-  setwd(working_dir)
-  unlink(output_dir, recursive = TRUE)
-  return(err)
-}
 
 # main function ####
 ProcessEPSims = function(sample, models_dir, epws_dir, weathers, output_dir,
-                         cores_left, inmet, large_models = FALSE, form = '\\.epJSON') {
+                         cores_left, inmet, form = '\\.epJSON') {
   # create simulation grid
   if (is.null(sample)) {
     sims_grid = DefSimGrid(models_dir, epws_dir, weathers, inmet, form)
@@ -131,15 +111,8 @@ ProcessEPSims = function(sample, models_dir, epws_dir, weathers, output_dir,
     sims_grid = select(sample, model_path, epw_path, prefix)
   }
   # run simulation in parallel
-  if (large_models) {
-    # each simulation runs in a separated directory
-    ns = sims_grid %>% nrow() %>% ListSimDirs()
-    errs_ind = mcmapply(SimLargeEPModel, ns, sims_grid$model_path, sims_grid$epw_path,
-                        sims_grid$prefix, output_dir, mc.cores = detectCores() - cores_left)
-  } else {
-    errs_ind = mcmapply(RunEPSim, sims_grid$model_path, sims_grid$epw_path,
-                        sims_grid$prefix, output_dir, mc.cores = detectCores() - cores_left)
-  }
+  errs_ind = mcmapply(RunEPSim, sims_grid$model_path, sims_grid$epw_path,
+                      sims_grid$prefix, output_dir, mc.cores = detectCores() - cores_left)
   # remove all files but .csv and .err
   RmUnsFiles(output_dir)
   # list and rename the outputs left

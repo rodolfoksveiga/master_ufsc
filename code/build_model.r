@@ -82,6 +82,22 @@ AddIntLoad = function(tag, fill, type) {
   int_load = AddFields(fill$item, fields, values)
   return(int_load)
 }
+# add output variables
+AddOutputs = function(outputs, fill) {
+  field = 'variable_name'
+  options = list('mean_temp' = 'Zone Mean Air Temperature',
+                 'op_temp' = 'Zone Operative Temperature',
+                 'air_change' = 'AFN Zone Infiltration Air Change Rate',
+                 'therm_bal' = c('Surface Inside Face Convection Heat Gain Energy',
+                                 'AFN Zone Infiltration Sensible Heat Gain Energy',
+                                 'AFN Zone Infiltration Sensible Heat Loss Energy',
+                                 'Zone Total Internal Convective Heating Energy'),
+                 'surf_temp' = 'Surface Inside Face Temperature')
+  values = options[outputs] %>% flatten_chr()
+  outputs = mapply(AddFields, list(fill$item), field, values, SIMPLIFY = FALSE)
+  names(outputs) = paste0('output', 1:length(outputs))
+  return(outputs)
+}
 # create zone lists for living rooms and dormitories
 AddZoneList = function(room, tags, fill) {
   tags = tags[grep(room, tags)]
@@ -386,7 +402,7 @@ TagBoundSurf = function(tag) {
 # main function ####
 BuildModel = function(seed_path, area, ratio, height, azimuth, shell_wall, abs_wall, shell_roof,
                       abs_roof, wwr_liv, wwr_dorm, u_window, shgc, open_factor, blind, balcony,
-                      model_path, construction, fill, setup, geometry, nstrs = 3,
+                      model_path, outputs, construction, fill, setup, geometry, nstrs = 3,
                       boundary = 'surface', scale = TRUE) {
   # seed_path: seed file path
   # area: sum of the long occupancy rooms (living rooms and dormitories) [30 ~ 150]
@@ -477,5 +493,7 @@ BuildModel = function(seed_path, area, ratio, height, azimuth, shell_wall, abs_w
   model$'Material'[[outside_layer_wall]]$'solar_absorptance' = abs_wall
   outside_layer_roof = model$'Construction'$'roof'$'outside_layer'
   model$'Material'[[outside_layer_roof]]$'solar_absorptance' = abs_roof
+  # add output variables
+  model$'Output:Variable' = AddOutputs(outputs, fill$'Output:Variable')
   write_json(model, model_path, pretty = TRUE, auto_unbox = TRUE)
 }

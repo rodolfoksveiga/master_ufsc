@@ -1,8 +1,11 @@
 # load libraries and global environment ####
 invisible({
-  pkgs = c('caret', 'doParallel', 'dplyr', 'hydroGOF', 'Metrics', 'parallel')
-  lapply(pkgs, library, character.only = T)
-  inmet = read.csv('./seed/inmet_list.csv', stringsAsFactors = FALSE)
+  pkgs = c('caret', 'doParallel', 'data.table', 'dplyr',
+           'ggplot2', 'hydroGOF', 'Metrics', 'parallel')
+  # required packages to fit models
+  # pkgs = c(pkgs, 'quantregForest', 'party', 'mboost', 'plyr', 'kernlab', 'brnn')
+  lapply(pkgs, library, character.only = TRUE)
+  inmet = read.csv('./source/inmet_list.csv', stringsAsFactors = FALSE)
 })
 
 # base functions ####
@@ -40,13 +43,18 @@ PPData = function(data, pp_model) {
   return(data)
 }
 # fit
-FitModel = function(train_tech, samp_tech, nfolds, nreps,
-                    train_data, eval = 'RMSE', seed = 200) {
+FitModel = function(train_tech, samp_tech, nfolds, nreps, tune_length,
+                    train_data, cores_left, eval = 'RMSE', seed = 200) {
   # reproduce results
   set.seed(seed)
+  # run training in parallel
+  cores = detectCores() - cores_left
+  registerDoParallel(cores)
   fit_ctrl = trainControl(samp_tech, nfolds, nreps, returnData = FALSE, verboseIter = TRUE)
   fit = train(targ ~ ., train_data, trControl = fit_ctrl,
-              tuneLength = 15, method = train_tech, metric = eval)
+              tuneLength = tune_length, method = train_tech, metric = eval)
+  registerDoSEQ()
+  gc()
   return(fit)
 }
 # test
@@ -70,19 +78,17 @@ CompModels = function(models) {
 }
 # plot comparison between models
 PlotComp = function(models_comp, suffix, output_dir) {
-  plot = bwplot(models_comp, scales = list(x = list(relation = 'free'),
-                                           y = list(relation = 'free')))
+  plot = bwplot(models_comp, main = 'Models Training Accuracy',
+                scales = list(x = list(relation = 'free'), y = list(relation = 'free')))
   SavePlot(plot, paste0('models_comp_', suffix), output_dir)
 }
 # plot training process
 PlotFit = function(model, train_tech, suffix, output_dir) {
   k = ifelse(nrow(model$modelInfo$parameters) == 1, 1.5, 2)
   plot = plot(model, asp = 1/k,
-              main = paste0(model$modelInfo$label,
-                            '\nOtimização dos Hiperparâmetros'),
-              xlab = paste('Valor do Hiperparâmetro -',
-                           model$modelInfo$parameters$label[1]),
-              ylab = 'RMSE de validação (%)')
+              main = paste0(model$modelInfo$label, '\nHyperparameters Optimization'),
+              xlab = paste('Hyperparameter Value -', model$modelInfo$parameters$label[1]),
+              ylab = 'Validation RMSE (%)')
   SavePlot(plot, paste0('fit_', train_tech, '_', suffix), output_dir)
 }
 # plot predicted x real
@@ -91,8 +97,9 @@ PlotPerf = function(train_tech, pred, targ, suffix, output_dir) {
   plot = ggplot(df, aes(x = targ, y = pred)) +
     geom_point(size = 0.5) +
     geom_abline(slope = 1, colour = 'red', size = 1) +
-    labs(title = 'Performance do modelo', subtitle = toupper(train_tech),
-         x = 'PHFT Simulado (%)', y = 'PHFT Predito (%)') +
+    labs(title = 'Model Testing Accuracy', subtitle = toupper(train_tech),
+         x = 'Simulated Energy Consumption (kWh/m².year)',
+         y = 'Predicted Energy Consumption (kWh/m².year)') +
     theme(plot.title = element_text(size = 19, hjust = 0.5),
           plot.subtitle = element_text(size = 18, face = 'bold', hjust = 0.5),
           axis.title.x = element_text(size = 15),
@@ -102,15 +109,16 @@ PlotPerf = function(train_tech, pred, targ, suffix, output_dir) {
   SavePlot(plot, paste0('perf_', train_tech, '_', suffix), output_dir)
 }
 # plot variable importances
-PlotVarImp = function(model, train_tech, suffix, output_dir) {
-  df = varImp(model)[[1]]
-  df = data.frame(var = rownames(df), imp = df$Overall)
-  plot = ggplot(df, aes(x = reorder(var, imp), y = imp)) +
+PlotVarImp = function(train_tech, prediction, predictors, suffix, output_dir) {
+  df = predictors %>%
+    select(-targ) %>%
+    filterVarImp(prediction) %>%
+    setDT(keep.rownames = TRUE)
+  plot = ggplot(df, aes(x = reorder(rn, Overall), y = Overall)) +
     coord_flip() +
     geom_bar(stat = 'identity') +
-    labs(title = paste0('Análise simplificada da influência das variáveis (',
-                        toupper(train_tech), ')'),
-         x = 'Importância da variável', y = 'Variável') +
+    labs(title = paste0('Simplified analysis of the variables influences\n', toupper(train_tech)),
+         x = 'Variable', y = 'T-Value') +
     theme(plot.title = element_text(size = 19, hjust = 0.5),
           plot.subtitle = element_text(size = 18, face = 'bold', hjust = 0.5),
           axis.title.x = element_text(size = 15),
@@ -146,17 +154,19 @@ SummAccuracy = function(model, train_tech, pred, targ) {
                     'MAE' = mae(targ, pred))
   table = cbind(table, rbind(train, test, make.row.names = FALSE))
   colnames(table)[4] = 'R²'
+  table[1:2] = sapply(table[1:2], as.character)
   return(table)
 }
 
-GenMLModels = function(data_path, weather_var, nfolds, nreps, save_models,
+# main function ####
+GenMLModels = function(data_path, weather_var, nfolds, nreps, tune_length, save_models,
                        save_results, models_dir, plots_dir, cores_left, inmet) {
   # load data
   raw_data = read.csv(data_path)
   str(raw_data)
   # define qualitative and quantitative variables
-  qual_vars = c('seed', 'storey', 'shell_wall', 'shell_roof', 'blind', 'facade')
-  quant_vars = colnames(raw_data[-c(1, length(raw_data))])
+  qual_vars = c('seed', 'storey', 'shell_wall', 'shell_roof', 'blind', 'balcony', 'facade')
+  quant_vars = colnames(raw_data[-c(length(raw_data))])
   quant_vars = quant_vars[!quant_vars %in% qual_vars]
   # edit sample
   raw_data$epw = inmet[raw_data$epw, weather_var]
@@ -164,6 +174,7 @@ GenMLModels = function(data_path, weather_var, nfolds, nreps, save_models,
   raw_data = DefFactors(raw_data, qual_vars)
   dummy_data = CreateDummies(raw_data)
   # split data into train and test sets
+  raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
   dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
   # pre-process data
   pp_model = preProcess(dummy_data$train[, quant_vars], method = c('center', 'scale'))
@@ -171,16 +182,16 @@ GenMLModels = function(data_path, weather_var, nfolds, nreps, save_models,
   # train
   models_list = list(lm = 'lm', gbrt = 'blackboost', qrf = 'qrf',
                      svm = 'svmRadial', brnn = 'brnn')
-  models = mclapply(models_list, FitModel, 'cv', nfolds, nreps, dummy_data$train,
-                    mc.cores = detectCores() - cores_left)
+  models = lapply(models_list, FitModel, 'cv', nfolds, nreps,
+                  tune_length, dummy_data$train, cores_left)
   # test
   predictions = models %>%
     lapply(predict, newdata = dummy_data$test) %>%
     as.data.frame()
   # plots and results
   # stats comparison between models
-  suffix = paste0(weather_var, '_', nfolds, 'folds_',
-                  ifelse(is.na(nreps), 0, nreps), 'reps')
+  suffix = paste0(weather_var, '_f', nfolds, '_r',
+                  ifelse(is.na(nreps), 0, nreps), '_tl', tune_length)
   models_comp = CompModels(models)
   models_summ = summary(models_comp)
   if (save_results) {
@@ -189,10 +200,11 @@ GenMLModels = function(data_path, weather_var, nfolds, nreps, save_models,
     # plot training process
     mapply(PlotFit, models[-1], names(models[-1]), suffix, MoreArgs = list(plots_dir))
     # plot model performance
-    mapply(PlotPerf, names(models), predictions, MoreArgs = list(dummy_data$test$targ,
-                                                                 suffix, plots_dir))
+    mapply(PlotPerf, names(models), predictions,
+           MoreArgs = list(dummy_data$test$targ, suffix, plots_dir))
     # plot variables importance
-    mapply(PlotVarImp, models, names(models), MoreArgs = list(suffix, plots_dir))
+    mapply(PlotVarImp, names(models), predictions,
+           MoreArgs = list(raw_data$test, suffix, plots_dir))
     # generate accuracy table
     GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, plots_dir)
   }
@@ -204,5 +216,5 @@ GenMLModels = function(data_path, weather_var, nfolds, nreps, save_models,
 }
 
 # application ####
-GenMLModels('./result/sample2.csv', 'tbsm', 15, NA, TRUE, TRUE,
-            './result/', './plot_table/', 3, inmet)
+GenMLModels('./result/sample2.csv', 'tbsm', 20, NA, 20, TRUE, TRUE,
+            './result/', './plot_table/', 0, inmet)

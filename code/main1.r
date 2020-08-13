@@ -7,18 +7,18 @@ invisible({
             'run_ep_sim', 'shrink_building', 'split_output')
   codes = paste0('./code/', codes, '.r')
   lapply(codes, source)
-  inmet = read.csv('./seed/inmet_list.csv')
-  occup = read.csv('./seed/occup.csv')
-  geometry = read_json('./seed/geometry.json')[[1]]
-  out_temp = read.csv('./seed/out_temp.csv')
-  construction = read_json('./seed/construction.json')
-  fill = read_json('./seed/fill.json')
-  setup = read_json('./seed/setup1.json')
+  inmet = read.csv('./source/inmet_list.csv')
+  occup = read.csv('./source/occup.csv')
+  geometry = read_json('./source/geometry.json')[[1]]
+  out_temp = read.csv('./source/out_temp.csv')
+  construction = read_json('./source/construction.json')
+  fill = read_json('./source/fill.json')
+  setup = read_json('./source/setup.json')
   
   # variables ####
-  sample_path = './result/sample1.csv'
   seeds_dir = './seed/'
-  models_dir = '~/rolante/master/model/'
+  large_models_dir = '~/rolante/master/large_model/'
+  shrink_models_dir = '~/rolante/master/shrink_model/'
   epws_dir = '~/rolante/weather/'
   weathers = c('curitiba', 'rio_de_janeiro', 'sao_paulo', 'sorriso', 'teresina')
   output_dir = '~/rolante/master/output/'
@@ -26,14 +26,23 @@ invisible({
   result_dir = '~/rolante/master/result/'
   cores_left = 0
   
+  # functions ####
+  ManageFiles = function(temp_dir, pattern) {
+    file_names = dir(temp_dir, 'errors')
+    file.rename(paste0(temp_dir, file_names), paste0(temp_dir, pattern, '_', file_names))
+    file_names = dir(temp_dir, full.names = TRUE)
+    file.rename(file_names, str_replace(file_names, paste0(pattern, '/'), ''))
+    unlink(temp_dir, recursive = TRUE)
+  }
+  
   # main code ####
   # generate sample
-  sample = expand.grid(simp = 1, typo = 'linear', stringsAsFactors = FALSE,
+  sample = expand.grid(simp = 0:1, typo = 'linear', stringsAsFactors = FALSE,
                        shell = c('ref17', 'ref8', 'tm', 'tv', 'sf'))
-  write.csv(sample, sample_path, row.names = FALSE)
   # link sample to appropriate values
-  sample = LinkSample(sample_path, seeds_dir, models_dir)
+  sample = LinkSample(sample, seeds_dir, large_models_dir)
   # build cases
+  outputs = c('mean_temp', 'op_temp', 'air_change', 'therm_bal', 'surf_temp')
   mcmapply(BuildModel,
            seed_path = sample$seed_path,
            area = NA, ratio = NA, height = NA, azimuth = 0, nstrs = 5,
@@ -43,12 +52,20 @@ invisible({
            blind = FALSE, balcony = 0,
            model_path = sample$model_path,
            boundary = sample$boundary, scale = FALSE,
-           MoreArgs = list(construction, fill, setup, geometry),
+           MoreArgs = list(outputs, construction, fill, setup, geometry),
            mc.cores = detectCores() - cores_left)
-  # # shrink building
-  # ApplyShrinkBuild(models_dir, 'linear', 5, models_dir, cores_left)
+  # shrink building
+  ApplyShrinkBuild(large_models_dir, 'linear', 5, shrink_models_dir, cores_left)
   # run simulations
-  ProcessEPSims(NULL, models_dir, epws_dir, weathers, output_dir, cores_left, inmet, TRUE)
+  use_one_core = detectCores() - 1
+  temp_output_dir = paste0(output_dir, 'large/')
+  dir.create(temp_output_dir)
+  ProcessEPSims(NULL, large_models_dir, epws_dir, weathers, temp_output_dir, use_one_core, inmet)
+  ManageFiles(temp_output_dir, 'large')
+  temp_output_dir = paste0(output_dir, 'shrink/')
+  dir.create(temp_output_dir)
+  ProcessEPSims(NULL, shrink_models_dir, epws_dir, weathers, temp_output_dir, cores_left, inmet)
+  ManageFiles(temp_output_dir, 'shrink')
   # split outputs
   ApplySplOut(output_dir, 'linear', 5, split_dir, cores_left)
   # process outputs

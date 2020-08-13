@@ -7,20 +7,20 @@ invisible({
   codes = c('build_model', 'calc_target', 'tidy_sample', 'run_ep_sim')
   codes = paste0('./code/', codes, '.r')
   lapply(codes, source)
-  occup = read.csv('./seed/occup.csv')
-  inmet = read.csv('./seed/inmet_list.csv')
-  geometry = read_json('./seed/geometry.json')[[2]]
-  construction = read_json('./seed/construction.json')
-  fill = read_json('./seed/fill.json')
-  setup = read_json('./seed/setup2.json')
+  occup = read.csv('./source/occup.csv')
+  inmet = read.csv('./source/inmet_list.csv')
+  geometry = read_json('./source/geometry.json')[[2]]
+  construction = read_json('./source/construction.json')
+  fill = read_json('./source/fill.json')
+  setup = read_json('./source/setup.json')
   
   # variables ####
-  sobol_path = './result/sobol_sample2.csv'
+  sobol_path = './result/sobol_sample.csv'
   seeds_dir = './seed/'
   models_dir = '~/rolante/master/model/'
   epws_dir = '~/rolante/weather/'
   output_dir = '~/rolante/master/output/'
-  sample_path = './result/sample2.csv'
+  sample_path = './result/sample.csv'
   cores_left = 0
   
   # main code ####
@@ -36,7 +36,7 @@ invisible({
            wwr_liv = sample$wwr_liv, wwr_dorm = sample$wwr_dorm, u_window = sample$u_window,
            shgc = sample$shgc, open_factor = sample$open_factor, blind = sample$blind,
            balcony = sample$balcony, model_path = sample$model_path,
-           MoreArgs = list(construction, fill, setup, geometry),
+           MoreArgs = list(outputs = 'op_temp', construction, fill, setup, geometry),
            mc.cores = detectCores() - cores_left)
   # run simulations
   ProcessEPSims(sample, NULL, NULL, NULL, output_dir, 0)

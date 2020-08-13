@@ -379,15 +379,6 @@
       "report_type": "DXF"
     }
   },
-  "Output:Variable": {
-    "output_zones_op_temp": {
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 3,
-      "key_value": "*",
-      "reporting_frequency": "Timestep",
-      "variable_name": "Zone Operative Temperature"
-    }
-  },
   "Output:VariableDictionary": {
     "idf_dic": {
       "idf_max_extensible_fields": 0,

@@ -16,7 +16,7 @@ def GenSample(names, bounds, gap, quals, size):
     problem = {'num_vars': len(names), 'names': names, 'bounds': bounds}
     param_values = saltelli.sample(problem, size)
     df = pd.DataFrame(param_values, columns = problem['names'])
-    df.to_csv('~/git/master/result/sobol_sample2.csv', index = False)
+    df.to_csv('~/git/master/result/sobol_sample.csv', index = False)
 
 # main code
 names = ['seed', 'area', 'ratio', 'height', 'azimuth', 'shell_wall', 'abs_wall',
