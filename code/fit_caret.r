@@ -11,11 +11,6 @@ invisible({
 # base functions ####
 # rename analysis index r squared
 RenameRsq = function(x) sub('Rsquared', 'R²', x)
-# define qualitative variables as factors
-DefFactors = function(df, vars) {
-  df[, vars] = lapply(df[, vars], factor)
-  return(df)
-}
 
 # machine learning model functions ####
 # create dummy variables
@@ -43,26 +38,24 @@ PPData = function(data, pp_model) {
   return(data)
 }
 # fit
-FitModel = function(train_tech, samp_tech, nfolds, nreps, tune_length,
-                    train_data, cores_left, eval = 'RMSE', seed = 200) {
-  # reproduce results
-  set.seed(seed)
+FitModel = function(train_tech, tune_grid, samp_tech, nfolds, train_data,
+                    cores_left, tune_length, eval = 'RMSE', seed = 200) {
   # run training in parallel
   cores = detectCores() - cores_left
   registerDoParallel(cores)
-  fit_ctrl = trainControl(samp_tech, nfolds, nreps, returnData = FALSE, verboseIter = TRUE)
-  fit = train(targ ~ ., train_data, trControl = fit_ctrl,
-              tuneLength = tune_length, method = train_tech, metric = eval)
+  fit_ctrl = trainControl(samp_tech, nfolds, returnData = FALSE, verboseIter = TRUE)
+  # reproduce results
+  set.seed(seed)
+  if (!is.null(tune_grid)) {
+    fit = train(targ ~ ., train_data, trControl = fit_ctrl,
+                tuneGrid = tune_grid, method = train_tech, metric = eval)
+  } else {
+    fit = train(targ ~ ., train_data, trControl = fit_ctrl,
+                tuneLength = tune_length, method = train_tech, metric = eval)
+  }
   registerDoSEQ()
   gc()
   return(fit)
-}
-# test
-TestModel = function(sim, obs) {
-  test = data.frame('RMSE' = rmse(obs, sim),
-                    'Rsquared' = cor(obs, sim)^2,
-                    'MAE' = mae(obs, sim))
-  return(test)
 }
 
 # stats and plot functions ####
@@ -148,30 +141,42 @@ SummAccuracy = function(model, train_tech, pred, targ) {
                  names(best_tune), SIMPLIFY = FALSE, MoreArgs = list(model))
   index = Reduce(intersect, index)
   table = data.frame(Model = toupper(train_tech), Sample = c('Train', 'Test'))
-  train = model[[4]][index, c('RMSE', 'Rsquared', 'MAE')]
-  test = data.frame('RMSE' = rmse(targ, pred),
-                    'Rsquared' = cor(targ, pred)^2,
-                    'MAE' = mae(targ, pred))
+  train = model[[4]][index, c('MAE', 'RMSE', 'Rsquared')]
+  test = data.frame('MAE' = mae(targ, pred),
+                    'RMSE' = rmse(targ, pred),
+                    'Rsquared' = cor(targ, pred)^2)
   table = cbind(table, rbind(train, test, make.row.names = FALSE))
-  colnames(table)[4] = 'R²'
+  colnames(table)[5] = 'R²'
   table[1:2] = sapply(table[1:2], as.character)
   return(table)
 }
 
 # main function ####
-GenMLModels = function(data_path, weather_var, nfolds, nreps, tune_length, save_models,
-                       save_results, models_dir, plots_dir, cores_left, inmet) {
+GenMLModels = function(data_path, weather_var, nfolds, tune_length, save_results,
+                       save_models, models_dir, plots_dir, cores_left, inmet) {
+  
+  data_path = './result/sample.csv'
+  weather_var = 'cdh'
+  nfolds = 5
+  tune_length = NULL
+  save_results = TRUE
+  save_models = TRUE
+  models_dir = './result/'
+  plots_dir = './plot_table/'
+  cores_left = 0
+  inmet
+  
   # load data
   raw_data = read.csv(data_path)
   str(raw_data)
   # define qualitative and quantitative variables
-  qual_vars = c('seed', 'storey', 'shell_wall', 'shell_roof', 'blind', 'balcony', 'facade')
-  quant_vars = colnames(raw_data[-c(length(raw_data))])
+  qual_vars = c('seed', 'storey', 'shell_wall', 'shell_roof', 'blind', 'facade')
+  quant_vars = colnames(raw_data[-length(raw_data)])
   quant_vars = quant_vars[!quant_vars %in% qual_vars]
   # edit sample
   raw_data$epw = inmet[raw_data$epw, weather_var]
   # create dummy variables
-  raw_data = DefFactors(raw_data, qual_vars)
+  raw_data[, qual_vars] = lapply(raw_data[, qual_vars], factor)
   dummy_data = CreateDummies(raw_data)
   # split data into train and test sets
   raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
@@ -180,18 +185,17 @@ GenMLModels = function(data_path, weather_var, nfolds, nreps, tune_length, save_
   pp_model = preProcess(dummy_data$train[, quant_vars], method = c('center', 'scale'))
   dummy_data = lapply(dummy_data, PPData, pp_model)
   # train
-  models_list = list(lm = 'lm', gbrt = 'blackboost', qrf = 'qrf',
-                     svm = 'svmRadial', brnn = 'brnn')
-  models = lapply(models_list, FitModel, 'cv', nfolds, nreps,
-                  tune_length, dummy_data$train, cores_left)
+  models_list = list(lm = 'lm', brnn = 'brnn')
+  tune_grids = list(lm = NULL, brnn = expand.grid(.neurons = 20:50))
+  models = mapply(FitModel, models_list[c(1, 2)], tune_grids[c(1, 2)], SIMPLIFY = FALSE,
+                  MoreArgs = list('cv', nfolds, dummy_data$train, cores_left))
   # test
   predictions = models %>%
     lapply(predict, newdata = dummy_data$test) %>%
     as.data.frame()
   # plots and results
   # stats comparison between models
-  suffix = paste0(weather_var, '_f', nfolds, '_r',
-                  ifelse(is.na(nreps), 0, nreps), '_tl', tune_length)
+  suffix = paste0(weather_var, '_f', nfolds)
   models_comp = CompModels(models)
   models_summ = summary(models_comp)
   if (save_results) {
@@ -216,5 +220,5 @@ GenMLModels = function(data_path, weather_var, nfolds, nreps, tune_length, save_
 }
 
 # application ####
-GenMLModels('./result/sample2.csv', 'tbsm', 20, NA, 20, TRUE, TRUE,
+GenMLModels('./result/sample.csv', 'cdh', 10, NULL, TRUE, TRUE,
             './result/', './plot_table/', 0, inmet)
