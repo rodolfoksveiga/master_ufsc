@@ -21,20 +21,15 @@ CreateDummies = function(data) {
   return(dummy_data)
 }
 # split data into train and test sets
-SplitData = function(train, dummy_data, train_prop, seed = 100) {
+SplitData = function(train, data, train_prop, seed = 100) {
   # reproduce
   set.seed(seed)
-  train_part = createDataPartition(dummy_data$targ, p = train_prop, list = F)
+  train_part = createDataPartition(data$targ, p = train_prop, list = FALSE)
   if(train) {
-    data = dummy_data[train_part, ]
+    data = data[train_part, ]
   } else {
-    data = dummy_data[-train_part, ]
+    data = data[-train_part, ]
   }
-  return(data)
-}
-# pre-process data
-PPData = function(data, pp_model) {
-  data = predict(pp_model, data)
   return(data)
 }
 # fit
@@ -47,11 +42,11 @@ FitModel = function(train_tech, tune_grid, samp_tech, nfolds, train_data,
   # reproduce results
   set.seed(seed)
   if (!is.null(tune_grid)) {
-    fit = train(targ ~ ., train_data, trControl = fit_ctrl,
-                tuneGrid = tune_grid, method = train_tech, metric = eval)
+    fit = train(targ ~ ., train_data, trControl = fit_ctrl, tuneGrid = tune_grid,
+                method = train_tech, metric = eval, preProcess = 'BoxCox')
   } else {
-    fit = train(targ ~ ., train_data, trControl = fit_ctrl,
-                tuneLength = tune_length, method = train_tech, metric = eval)
+    fit = train(targ ~ ., train_data, trControl = fit_ctrl, tuneLength = tune_length,
+                method = train_tech, metric = eval, preProcess = 'BoxCox')
   }
   registerDoSEQ()
   gc()
@@ -154,18 +149,6 @@ SummAccuracy = function(model, train_tech, pred, targ) {
 # main function ####
 GenMLModels = function(data_path, weather_var, nfolds, tune_length, save_results,
                        save_models, models_dir, plots_dir, cores_left, inmet) {
-  
-  data_path = './result/sample.csv'
-  weather_var = 'cdh'
-  nfolds = 5
-  tune_length = NULL
-  save_results = TRUE
-  save_models = TRUE
-  models_dir = './result/'
-  plots_dir = './plot_table/'
-  cores_left = 0
-  inmet
-  
   # load data
   raw_data = read.csv(data_path)
   str(raw_data)
@@ -181,14 +164,14 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, save_results
   # split data into train and test sets
   raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
   dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
-  # pre-process data
-  pp_model = preProcess(dummy_data$train[, quant_vars], method = c('center', 'scale'))
-  dummy_data = lapply(dummy_data, PPData, pp_model)
   # train
-  models_list = list(lm = 'lm', brnn = 'brnn')
-  tune_grids = list(lm = NULL, brnn = expand.grid(.neurons = 20:50))
-  models = mapply(FitModel, models_list[c(1, 2)], tune_grids[c(1, 2)], SIMPLIFY = FALSE,
-                  MoreArgs = list('cv', nfolds, dummy_data$train, cores_left))
+  models_list = list(lm = 'lm', svmr = 'svmRadial', svmp = 'svmPoly', brnn = 'brnn')
+  tune_grids = list(lm = NULL,
+                    svmr = NULL,
+                    svmp = expand.grid(.degree = 5, .scale = 0.05, .C = 0.15),
+                    brnn = expand.grid(.neurons = c(35)))
+  models = mapply(FitModel, models_list[1:2], tune_grids, SIMPLIFY = FALSE,
+                  MoreArgs = list('cv', nfolds, dummy_data$train, cores_left, tune_length))
   # test
   predictions = models %>%
     lapply(predict, newdata = dummy_data$test) %>%
@@ -199,16 +182,16 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, save_results
   models_comp = CompModels(models)
   models_summ = summary(models_comp)
   if (save_results) {
-    # plot comparison between models
-    PlotComp(models_comp, suffix, plots_dir)
-    # plot training process
-    mapply(PlotFit, models[-1], names(models[-1]), suffix, MoreArgs = list(plots_dir))
-    # plot model performance
-    mapply(PlotPerf, names(models), predictions,
-           MoreArgs = list(dummy_data$test$targ, suffix, plots_dir))
-    # plot variables importance
-    mapply(PlotVarImp, names(models), predictions,
-           MoreArgs = list(raw_data$test, suffix, plots_dir))
+    # # plot comparison between models
+    # PlotComp(models_comp, suffix, plots_dir)
+    # # plot training process
+    # mapply(PlotFit, models[-1], names(models[-1]), suffix, MoreArgs = list(plots_dir))
+    # # plot model performance
+    # mapply(PlotPerf, names(models), predictions,
+    #        MoreArgs = list(dummy_data$test$targ, suffix, plots_dir))
+    # # plot variables importance
+    # mapply(PlotVarImp, names(models), predictions,
+    #        MoreArgs = list(raw_data$test, suffix, plots_dir))
     # generate accuracy table
     GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, plots_dir)
   }
@@ -220,5 +203,5 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, save_results
 }
 
 # application ####
-GenMLModels('./result/sample.csv', 'cdh', 10, NULL, TRUE, TRUE,
+GenMLModels('./result/sample.csv', 'tbsm', 5, NULL, TRUE, TRUE,
             './result/', './plot_table/', 0, inmet)
