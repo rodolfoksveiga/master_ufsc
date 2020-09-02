@@ -43,26 +43,22 @@ test_targets = as.matrix(select(test_data, targ))
 # add layers to the model
 set.seed(100)
 model = keras_model_sequential() %>%
-  layer_dense(units = 128, activation = 'relu', input_shape = ncol(train_labels)) %>%
-  layer_dense(units = 32, activation = 'relu') %>%
-  layer_dense(units = 16, activation = 'relu') %>%
+  layer_dense(units = 16, activation = 'relu', input_shape = ncol(train_labels)) %>%
+  layer_dense(units = 8, activation = 'relu') %>%
+  layer_dense(units = 8, activation = 'relu') %>%
+  layer_dense(units = 4, activation = 'relu') %>%
+  layer_dense(units = 4, activation = 'relu') %>%
   layer_dense(units = 1) %>%
   compile(loss = 'mse',
-          optimizer = optimizer_adam(lr = 0.001),
+          optimizer = optimizer_adam(lr = 0.002),
           metrics = list('mae'))
 # print model info
 summary(model)
 # fit model
 history = model %>%
-  fit(train_labels, train_targets, batch_size = 1024,
-      epochs = 200, validation_split = 0.2, verbose = 2,
+  fit(train_labels, train_targets, batch_size = 516,
+      epochs = 1000, validation_split = 0.2, verbose = 2,
       callbacks = callback_early_stopping(monitor = 'val_loss', patience = 20))
 # evaluate model
 test = model %>%
   evaluate(test_labels, test_targets)
-
-# for (i in 1:10258) {
-#   if (10258%%i == 0) {
-#     print(i)
-#   }
-# }

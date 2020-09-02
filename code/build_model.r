@@ -1,3 +1,8 @@
+# load libraries and global environment ####
+pkgs = c('data.table', 'dplyr', 'jsonlite', 'reticulate',
+         'parallel', 'purrr', 'stringr', 'tibble')
+lapply(pkgs, library, character.only = TRUE)
+
 # base functions ####
 # airflow network zones
 AddAFNZone = function(tag, fill) AddFields(fill$item, 'zone_name', tag)
@@ -410,7 +415,7 @@ BuildModel = function(seed_path, area, ratio, height, azimuth, shell_wall, abs_w
   # height: right foot [2.5 ~ 3.5]
   # azimuth: azimuth angle related to south orientation [0 ~ 360]
   # shell_wall: wall construction materials composition [1 ~ 7]
-  # shell_roof: roof construction materials composition [ 1 ~ 4]
+  # shell_roof: roof construction materials composition [1 ~ 4]
   # abs_wall: solar absorptance of the walls [0.2 ~ 0.9]
   # abs_roof: solar absorptance of the roof [0.2 ~ 0.9]
   # wwr_liv: window to wall ratio in the living room (weighted average) [0.1 ~ 0.8]

@@ -4,7 +4,7 @@ invisible({
   pkgs = c('data.table', 'dplyr', 'jsonlite', 'reticulate',
            'parallel', 'purrr', 'stringr', 'tibble')
   lapply(pkgs, library, character.only = TRUE)
-  codes = c('build_model', 'calc_target', 'tidy_sample', 'run_ep_sim')
+  codes = c('build_model', 'calc_target', 'join_samples', 'run_ep_sim', 'tidy_sample')
   codes = paste0('./code/', codes, '.r')
   lapply(codes, source)
   occup = read.csv('./source/occup.csv')
@@ -15,7 +15,7 @@ invisible({
   setup = read_json('./source/setup.json')
   
   # variables ####
-  sobol_path = './result/sobol_sample.csv'
+  sobol_path = './result/saltelli_sample.csv'
   seeds_dir = './seed/'
   models_dir = '~/rolante/master/model/'
   epws_dir = '~/rolante/weather/'
@@ -28,7 +28,6 @@ invisible({
   py_run_file('./code/saltelli_sample.py')
   # read and tidy up sample
   sample = TidySample(sobol_path, seeds_dir, models_dir, epws_dir, inmet)
-  sample = head(sample, 4)
   # build cases
   mcmapply(BuildModel, seed_path = sample$seed_path, area = sample$area, ratio = sample$ratio,
            height = sample$height, azimuth = sample$azimuth, shell_wall = sample$shell_wall,
