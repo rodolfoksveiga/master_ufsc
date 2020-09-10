@@ -108,24 +108,12 @@
     }
   },
   "Construction": {
-    "ceiling": {
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 4,
-      "outside_layer": "piso_ceramico_0.7",
-      "layer_2": "contrapiso",
-      "layer_3": "concreto_10cm_0.5"
-    },
-    "floor": {
-      "idf_max_extensible_fields": 0,
-      "idf_max_fields": 4,
-      "outside_layer": "concreto_10cm_0.5",
-      "layer_2": "contrapiso",
-      "layer_3": "piso_ceramico_0.7"
-    },
     "slab": {
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 2,
-      "outside_layer": "concreto_10cm_0.5"
+      "outside_layer": "concreto_10cm_0.5",
+      "layer_2": "contrapiso",
+      "layer_3": "piso_ceramico_0.7"
     },
     "door_3cm": {
       "idf_max_extensible_fields": 0,
@@ -344,6 +332,15 @@
     }
   },
   "Material:NoMass": {
+    "eps_4cm": {
+      "idf_max_extensible_fields": 0,
+      "idf_max_fields": 6,
+      "roughness": "MediumSmooth",
+      "thermal_resistance": 1,
+      "thermal_absorptance": 0.9,
+      "solar_absorptance": 0.7,
+      "visible_absorptance": 0.7
+    },
     "la_vidro_5cm": {
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 6,
@@ -353,7 +350,7 @@
       "solar_absorptance": 0.7,
       "visible_absorptance": 0.7
     },
-    "isolamento_cobertura_zb8": {
+    "la_vidro_2.5cm": {
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 6,
       "roughness": "MediumSmooth",
@@ -693,68 +690,6 @@
       "idf_max_extensible_fields": 10,
       "idf_max_fields": 12,
       "schedule_type_limits_name": "sch_lim_fracao"
-    },
-    "sch_blind_dorm": {
-      "data": [
-        {
-            "field": "Through: 12/31"
-        },
-        {
-            "field": "For: AllDays"
-        },
-        {
-            "field": "Until:  8:00"
-        },
-        {
-            "field": 1
-        },
-        {
-            "field": "Until: 22:00"
-        },
-        {
-            "field": 0
-        },
-        {
-            "field": "Until: 24:00"
-        },
-        {
-            "field": 1
-        }
-      ],
-      "idf_max_extensible_fields": 8,
-      "idf_max_fields": 10,
-      "schedule_type_limits_name": "sch_lim_on_off"
-    },
-    "sch_blind_liv": {
-      "data": [
-        {
-            "field": "Through: 12/31"
-        },
-        {
-            "field": "For: AllDays"
-        },
-        {
-            "field": "Until: 14:00"
-        },
-        {
-            "field": 0
-        },
-        {
-            "field": "Until: 22:00"
-        },
-        {
-            "field": 1
-        },
-        {
-            "field": "Until: 24:00"
-        },
-        {
-            "field": 0
-        }
-      ],
-      "idf_max_extensible_fields": 10,
-      "idf_max_fields": 12,
-      "schedule_type_limits_name": "sch_lim_on_off"
     }
   },
   "ScheduleTypeLimits": {
@@ -826,31 +761,31 @@
   },
   "WindowMaterial:Blind": {
     "veneziana_madeira": {
-      "back_side_slat_beam_solar_reflectance": 0.04,
-      "back_side_slat_beam_visible_reflectance": 0.04,
-      "back_side_slat_diffuse_solar_reflectance": 0.04,
-      "back_side_slat_diffuse_visible_reflectance": 0.04,
+      "back_side_slat_beam_solar_reflectance": 0.8,
+      "back_side_slat_beam_visible_reflectance": 0.8,
+      "back_side_slat_diffuse_solar_reflectance": 0.8,
+      "back_side_slat_diffuse_visible_reflectance": 0.8,
       "back_side_slat_infrared_hemispherical_emissivity": 0.9,
       "blind_bottom_opening_multiplier": 0,
       "blind_left_side_opening_multiplier": 0,
       "blind_right_side_opening_multiplier": 0,
       "blind_to_glass_distance": 0.05,
       "blind_top_opening_multiplier": 0,
-      "front_side_slat_beam_solar_reflectance": 0.04,
-      "front_side_slat_beam_visible_reflectance": 0.04,
-      "front_side_slat_diffuse_solar_reflectance": 0.04,
-      "front_side_slat_diffuse_visible_reflectance": 0.04,
+      "front_side_slat_beam_solar_reflectance": 0.8,
+      "front_side_slat_beam_visible_reflectance": 0.8,
+      "front_side_slat_diffuse_solar_reflectance": 0.8,
+      "front_side_slat_diffuse_visible_reflectance": 0.8,
       "front_side_slat_infrared_hemispherical_emissivity": 0.9,
       "idf_max_extensible_fields": 0,
       "idf_max_fields": 29,
       "maximum_slat_angle": 0,
       "minimum_slat_angle": 0,
       "slat_angle": 45,
-      "slat_beam_solar_transmittance": 0.14,
-      "slat_beam_visible_transmittance": 0.14,
+      "slat_beam_solar_transmittance": 0,
+      "slat_beam_visible_transmittance": 0,
       "slat_conductivity": 0.29,
-      "slat_diffuse_solar_transmittance": 0.14,
-      "slat_diffuse_visible_transmittance": 0.14,
+      "slat_diffuse_solar_transmittance": 0,
+      "slat_diffuse_visible_transmittance": 0,
       "slat_infrared_hemispherical_transmittance": 0,
       "slat_orientation": "Horizontal",
       "slat_separation": 0.03,

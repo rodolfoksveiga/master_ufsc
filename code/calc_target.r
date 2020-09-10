@@ -23,29 +23,43 @@ CalcPHFT = function(op_temp, occup, mean_temp) {
   return(phft)
 }
 
-# main function ####
-CalcTarget = function(input_path, weather, occup, inmet) {
-  df = input_path %>% fread() %>% as.data.frame()
-  colnames(df) = df %>% colnames() %>% str_remove(':.*') %>% str_to_lower()
-  df = df[str_detect(colnames(df), '(?<=_)(liv|dorm)')]
+# main functions ####
+CalcTarget = function(input_path, storey, weather, period, occup, inmet) {
+  df = read.csv(input_path, nrows = 1)
+  cols = df %>% colnames() %>% str_which(paste0('^F', storey, '_(LIV|DORM)'))
+  df = input_path %>%
+    fread(nrows = 52560, select = cols, colClasses = 'numeric') %>%
+    as.data.frame()
   index = match(weather, inmet$arquivo_climatico)
-  zones = df %>% colnames() %>% str_extract('(?<=_)(liv|dorm)')
-  target = mapply(CalcPHFT, df, occup[zones], MoreArgs = list(inmet[index, 'tbsm']))
-  target = sapply(1:3, function(x, y) mean(y[grepl(paste0('^f', x), names(target))]), target)
-  target = data.frame(storey = 1:3, targ = target)
+  zones = df %>% colnames() %>% str_extract('(?<=_)(LIV|DORM)') %>% str_to_lower()
+  if (period == 'month') {
+    dfs = split(df, as.factor(occup$month))
+    occups = split(occup[zones], as.factor(occup$month))
+    target = mapply(function(x, w, y, z) mapply(y, x, w, MoreArgs = z), dfs, occups,
+                    MoreArgs = list(CalcPHFT, list(inmet[index, 'tbsm'])), SIMPLIFY = FALSE) %>%
+      sapply(mean)
+  } else {
+    target = mapply(CalcPHFT, df, occup[zones], MoreArgs = list(inmet[index, 'tbsm'])) %>% mean()
+  }
   rm(df)
   gc()
   return(target)
 }
 # add targets to sample data frame
-ApplyCalcTarget = function(sample, input_dir, occup, inmet) {
+ApplyCalcTarget = function(period, sample, input_dir, occup, inmet) {
   input_paths = dir(input_dir, '\\.csv', full.names = TRUE)
-  weathers = str_remove(basename(sample$epw_path), '\\.epw')
-  targets = mapply(CalcTarget, input_paths, weathers,
-                   MoreArgs = list(occup, inmet), SIMPLIFY = FALSE)
-  targets = bind_rows(targets)
-  sample = sample %>% slice(rep(1:n(), each = 3)) %>% cbind(targets) %>%
-    select(seed, area, ratio, height, storey, azimuth, shell_wall, abs_wall, shell_roof, abs_roof,
-           wwr_liv, wwr_dorm, u_window, shgc, open_factor, blind, balcony, facade, epw, targ)
+  weathers = sample %>% pull(epw_path) %>% basename() %>% str_remove('\\.epw')
+  targets = mapply(CalcTarget, input_paths, sample$storey,
+                   weathers, MoreArgs = list(period, occup, inmet))
+  cols = c('seed_path', 'model_path', 'prefix', 'epw_path', 'nstrs')
+  sample = sample %>%
+    select(-all_of(cols))
+  if (period == 'month') {
+    sample = sample %>%
+      slice(rep(1:n(), each = 12)) %>%
+      mutate(targ = as.vector(targets), month = rep(1:12, length(input_paths)))
+  } else {
+    sample = mutate(sample, targ = targets)
+  }
   return(sample)
 }

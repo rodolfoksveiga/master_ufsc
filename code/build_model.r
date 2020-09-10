@@ -1,8 +1,3 @@
-# load libraries and global environment ####
-pkgs = c('data.table', 'dplyr', 'jsonlite', 'reticulate',
-         'parallel', 'purrr', 'stringr', 'tibble')
-lapply(pkgs, library, character.only = TRUE)
-
 # base functions ####
 # airflow network zones
 AddAFNZone = function(tag, fill) AddFields(fill$item, 'zone_name', tag)
@@ -52,11 +47,8 @@ AddAFNSurf = function(object, tag, storey, index, fill) {
 }
 # add blind control
 AddBlindControl = function(tag, fill) {
-  fields = c('zone_name', 'schedule_name')
   zone = str_remove(tag, '_window.*')
-  sch = paste0('sch_blind_', ifelse(grepl('liv', tag), 'liv', 'dorm'))
-  values = c(zone, sch)
-  blind = AddFields(fill$item, fields, values)
+  blind = AddFields(fill$item, 'zone_name', zone)
   blind$fenestration_surfaces = list(list('fenestration_surface_name' = tag))
   return(blind)
 }
@@ -344,9 +336,10 @@ RnmStorey = function(tags, storey, index) {
   return(tags)
 }
 # scale door
-ScaleDoor = function (axis, ratio, door) {
+ScaleDoor = function(axis, ratio, door) {
   coords = paste0('vertex_', 1:4, '_', axis, '_coordinate')
-  if (ratio > 1) {
+  if (abs(ratio) > 1) {
+    coords = SortCoords(ratio, coords)
     vertices = MoveFenestration(door[coords], ratio, axis)
   } else {
     vertices = sapply(door[coords], ScaleVertex, ratio)
@@ -358,7 +351,7 @@ ScaleGroup = function(group, type, ratio, wwr)
   mapply(ScaleObject, group, names(group), MoreArgs = list(type, ratio, wwr), SIMPLIFY = FALSE)
 # scale an object
 ScaleObject = function(object, tag, type, ratio, wwr) {
-  axis = c('x', 'y', 'z')
+  axis = names(ratio)
   if (type == 'zone') {
     coords = paste0(axis[1:2], '_origin')
     object[coords] = mapply(ScaleVertex, object[coords], ratio[1:2])
@@ -391,11 +384,19 @@ ScaleWindow = function(axis, ratio, is_bwc, wwr, window) {
   coords = paste0('vertex_', 1:4, '_', axis, '_coordinate')
   window = keep(window, names(window) %in% coords)
   if (is_bwc) {
+    coords = SortCoords(ratio, coords)
     vertices = MoveFenestration(window[coords], ratio, axis, is_bwc)
   } else {
     vertices = ResizeWindow(window[coords], ratio, wwr, axis)
   }
   return(vertices)
+}
+# sort coordinates
+SortCoords = function(ratio, coords) {
+  if (ratio < 0) {
+    coords = sort(coords, decreasing = TRUE)
+  }
+  return(coords)
 }
 # tag boundary surface for floor and roof
 TagBoundSurf = function(tag) {
@@ -405,10 +406,10 @@ TagBoundSurf = function(tag) {
 }
 
 # main function ####
-BuildModel = function(seed_path, area, ratio, height, azimuth, shell_wall, abs_wall, shell_roof,
-                      abs_roof, wwr_liv, wwr_dorm, u_window, shgc, open_factor, blind, balcony,
-                      model_path, outputs, construction, fill, setup, geometry, nstrs = 3,
-                      boundary = 'surface', scale = TRUE) {
+BuildModel = function(seed_path, nstrs, area, ratio, height, azimuth, shell_wall, abs_wall,
+                      shell_roof, abs_roof, wwr_liv, wwr_dorm, u_window, shgc, open_factor,
+                      blind, balcony, mirror, model_path, outputs, construction, fill, setup,
+                      geometry, boundary = 'surface', scale = TRUE) {
   # seed_path: seed file path
   # area: sum of the long occupancy rooms (living rooms and dormitories) [30 ~ 150]
   # ratio: ratio between the 'y' and the 'x' axis [0.25 ~ 4]
@@ -425,6 +426,7 @@ BuildModel = function(seed_path, area, ratio, height, azimuth, shell_wall, abs_w
   # open_factor: open factor (weighted average) [0.4 ~ 1]
   # blind: if there is a blind on windows [TRUE or FALSE]
   # balcony: balcony's depth [0 ~ 2]
+  # mirror: reflection around y-axis [TRUE or FALSE]
   # output_dir: output directory
   # construction, fill, setup and geometry: auxiliar files
   # read seed file
@@ -437,13 +439,19 @@ BuildModel = function(seed_path, area, ratio, height, azimuth, shell_wall, abs_w
     ratio = ratio*adjust
     area_seed = geometry[[index]]$area %>% flatten_dbl() %>% sum()
     multiplier = sqrt(area/(area_seed*ratio))
-    ratio = c('x' = multiplier, 'y' = ratio*multiplier, 'z' = height/2.6)
+    inv = ifelse(mirror, -1, 1)
+    ratio = c('x' = multiplier*inv, 'y' = ratio*multiplier, 'z' = height/2.6)
     wwr = sqrt(c('liv' = wwr_liv, 'dorm' = wwr_dorm)/0.2)
     seed = mapply(ScaleGroup, seed, c('zone', 'surf', 'fen'),
                   SIMPLIFY = FALSE, MoreArgs = list(ratio, wwr))
   }
   # define the model as the standard setup
   model = setup
+  # change rules when mirroring
+  if (mirror) {
+    model$'GlobalGeometryRules'$geom_rules$starting_vertex_position = 'UpperRightCorner'
+    model$'GlobalGeometryRules'$geom_rules$vertex_entry_direction = 'Clockwise'
+  }
   # zones
   # determine storey height
   index = grep('roof', names(seed$'BuildingSurface:Detailed'))[1]

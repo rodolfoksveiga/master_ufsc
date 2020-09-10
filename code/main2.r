@@ -1,10 +1,9 @@
-# avoid undesirable outputs on prompt
 invisible({
   # load libraries and global environment ####
   pkgs = c('data.table', 'dplyr', 'jsonlite', 'reticulate',
            'parallel', 'purrr', 'stringr', 'tibble')
   lapply(pkgs, library, character.only = TRUE)
-  codes = c('build_model', 'calc_target', 'join_samples', 'run_ep_sim', 'tidy_sample')
+  codes = c('build_model', 'calc_target', 'run_ep_sim', 'tidy_sample')
   codes = paste0('./code/', codes, '.r')
   lapply(codes, source)
   occup = read.csv('./source/occup.csv')
@@ -15,7 +14,7 @@ invisible({
   setup = read_json('./source/setup.json')
   
   # variables ####
-  sobol_path = './result/saltelli_sample.csv'
+  saltelli_path = './result/saltelli_sample.csv'
   seeds_dir = './seed/'
   models_dir = '~/rolante/master/model/'
   epws_dir = '~/rolante/weather/'
@@ -27,20 +26,23 @@ invisible({
   # generate sample
   py_run_file('./code/saltelli_sample.py')
   # read and tidy up sample
-  sample = TidySample(sobol_path, seeds_dir, models_dir, epws_dir, inmet)
+  sample = TidySample(saltelli_path, seeds_dir, models_dir, epws_dir, inmet)
+  sample = sample[1:(nrow(sample) %/% 3), ]
   # build cases
-  mcmapply(BuildModel, seed_path = sample$seed_path, area = sample$area, ratio = sample$ratio,
-           height = sample$height, azimuth = sample$azimuth, shell_wall = sample$shell_wall,
-           abs_wall = sample$abs_wall, shell_roof = sample$shell_roof, abs_roof = sample$abs_roof,
-           wwr_liv = sample$wwr_liv, wwr_dorm = sample$wwr_dorm, u_window = sample$u_window,
-           shgc = sample$shgc, open_factor = sample$open_factor, blind = sample$blind,
-           balcony = sample$balcony, model_path = sample$model_path,
-           MoreArgs = list(outputs = 'op_temp', construction, fill, setup, geometry),
-           mc.cores = detectCores() - cores_left)
+  with(sample, mcmapply(BuildModel, seed_path, nstrs, area, ratio, height, azimuth,
+                        shell_wall, abs_wall, shell_roof, abs_roof, wwr_liv, wwr_dorm,
+                        u_window, shgc, open_factor, blind, balcony, mirror, model_path,
+                        MoreArgs = list('op_temp', construction, fill, setup, geometry),
+                        mc.cores = detectCores() - cores_left))
   # run simulations
   ProcessEPSims(sample, NULL, NULL, NULL, output_dir, 0)
   # calculate targets and add them to the sample
-  sample = ApplyCalcTarget(sample, output_dir, occup, inmet)
-  # write sample file 
-  write.csv(sample, sample_path, row.names = FALSE)
+  periods = c('year', 'month')
+  samples = lapply(periods, ApplyCalcTarget, sample, output_dir, occup, inmet)
+  # write sample file
+  periods = paste0('_', periods, '.csv')
+  sample_paths = sapply(periods, str_replace, string = sample_path, pattern = '\\.csv')
+  mapply(write.csv, samples, sample_paths, MoreArgs = list(row.names = FALSE))
+  # # join samples
+  # JoinSamples(saltelli_path, sample_paths[1])
 })

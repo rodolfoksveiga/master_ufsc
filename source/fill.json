@@ -58,7 +58,7 @@
             "idf_max_fields": 17,
             "multiple_surface_control_type": "Sequential",
             "setpoint": 26,
-            "shading_control_is_scheduled": "Yes",
+            "shading_control_is_scheduled": "No",
             "shading_control_sequence_number": 1,
             "shading_control_type": "OnIfHighOutdoorAirTemperature",
             "shading_device_material_name": "veneziana_madeira",

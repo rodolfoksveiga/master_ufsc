@@ -45,10 +45,10 @@ invisible({
   outputs = c('mean_temp', 'op_temp', 'air_change', 'therm_bal', 'surf_temp')
   mcmapply(BuildModel,
            seed_path = sample$seed_path,
-           area = NA, ratio = NA, height = NA, azimuth = 0, nstrs = 5,
+           area = NULL, ratio = NULL, height = NULL, azimuth = 0, nstrs = 5,
            shell_wall = sample$shell_wall, abs_wall = 0.5,
            abs_roof = 0.6, shell_roof = sample$shell_roof,
-           wwr_liv = NA, wwr_dorm = NA, u_window = 5.7, shgc = 0.87, open_factor = 0.45,
+           wwr_liv = NULL, wwr_dorm = NULL, u_window = 5.7, shgc = 0.87, open_factor = 0.45,
            blind = FALSE, balcony = 0,
            model_path = sample$model_path,
            boundary = sample$boundary, scale = FALSE,
