@@ -29,20 +29,20 @@ invisible({
   sample = TidySample(saltelli_path, seeds_dir, models_dir, epws_dir, inmet)
   sample = sample[1:(nrow(sample) %/% 3), ]
   # build cases
-  with(sample, mcmapply(BuildModel, seed_path, nstrs, area, ratio, height, azimuth,
+  with(sample, mcmapply(BuildModel, seed_path, 3, area, ratio, height, azimuth,
                         shell_wall, abs_wall, shell_roof, abs_roof, wwr_liv, wwr_dorm,
                         u_window, shgc, open_factor, blind, balcony, mirror, model_path,
                         MoreArgs = list('op_temp', construction, fill, setup, geometry),
                         mc.cores = detectCores() - cores_left))
   # run simulations
   ProcessEPSims(sample, NULL, NULL, NULL, output_dir, 0)
-  # calculate targets and add them to the sample
-  periods = c('year', 'month')
-  samples = lapply(periods, ApplyCalcTarget, sample, output_dir, occup, inmet)
-  # write sample file
-  periods = paste0('_', periods, '.csv')
-  sample_paths = sapply(periods, str_replace, string = sample_path, pattern = '\\.csv')
-  mapply(write.csv, samples, sample_paths, MoreArgs = list(row.names = FALSE))
+  # # calculate targets and add them to the sample
+  # periods = c('year', 'month')
+  # samples = lapply(periods, ApplyCalcTarget, sample, output_dir, occup, inmet)
+  # # write sample file
+  # periods = paste0('_', periods, '.csv')
+  # sample_paths = sapply(periods, str_replace, string = sample_path, pattern = '\\.csv')
+  # mapply(write.csv, samples, sample_paths, MoreArgs = list(row.names = FALSE))
   # # join samples
   # JoinSamples(saltelli_path, sample_paths[1])
 })
