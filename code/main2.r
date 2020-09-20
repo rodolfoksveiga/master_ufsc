@@ -27,9 +27,9 @@ invisible({
   py_run_file('./code/saltelli_sample.py')
   # read and tidy up sample
   sample = TidySample(saltelli_path, seeds_dir, models_dir, epws_dir, inmet)
-  sample = sample[1:(nrow(sample) %/% 5), ]
+  sample = sample[1:(nrow(sample) %/% 10), ]
   # build cases
-  with(sample, mcmapply(BuildModel, seed_path, 3, area, ratio, height, azimuth,
+  with(sample, mcmapply(BuildModel, seed_path, nstrs, area, ratio, height, azimuth,
                         shell_wall, abs_wall, shell_roof, abs_roof, wwr_liv, wwr_dorm,
                         u_window, shgc, open_factor, blind, balcony, mirror, model_path,
                         MoreArgs = list('op_temp', construction, fill, setup, geometry),
