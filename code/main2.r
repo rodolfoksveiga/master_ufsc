@@ -16,10 +16,10 @@ invisible({
   # variables ####
   saltelli_path = './result/saltelli_sample.csv'
   seeds_dir = './seed/'
-  models_dir = '~/rolante/master/model/'
+  models_dir = '~/rolante/master/model/1/'
   epws_dir = '~/rolante/weather/'
-  output_dir = '~/rolante/master/output/'
-  sample_path = './result/sample.csv'
+  output_dir = '~/rolante/master/output/1/'
+  sample_path = './result/1/sample.csv'
   cores_left = 0
   
   # main code ####
@@ -27,7 +27,7 @@ invisible({
   py_run_file('./code/saltelli_sample.py')
   # read and tidy up sample
   sample = TidySample(saltelli_path, seeds_dir, models_dir, epws_dir, inmet)
-  sample = sample[1:(nrow(sample) %/% 3), ]
+  sample = sample[1:(nrow(sample) %/% 5), ]
   # build cases
   with(sample, mcmapply(BuildModel, seed_path, 3, area, ratio, height, azimuth,
                         shell_wall, abs_wall, shell_roof, abs_roof, wwr_liv, wwr_dorm,
@@ -36,13 +36,13 @@ invisible({
                         mc.cores = detectCores() - cores_left))
   # run simulations
   ProcessEPSims(sample, NULL, NULL, NULL, output_dir, 0)
-  # # calculate targets and add them to the sample
-  # periods = c('year', 'month')
-  # samples = lapply(periods, ApplyCalcTarget, sample, output_dir, occup, inmet)
-  # # write sample file
-  # periods = paste0('_', periods, '.csv')
-  # sample_paths = sapply(periods, str_replace, string = sample_path, pattern = '\\.csv')
-  # mapply(write.csv, samples, sample_paths, MoreArgs = list(row.names = FALSE))
+  # calculate targets and add them to the sample
+  periods = c('year', 'month')
+  samples = lapply(periods, ApplyCalcTarget, sample, output_dir, occup, inmet)
+  # write sample file
+  periods = paste0('_', periods, '.csv')
+  sample_paths = sapply(periods, str_replace, string = sample_path, pattern = '\\.csv')
+  mapply(write.csv, samples, sample_paths, MoreArgs = list(row.names = FALSE))
   # # join samples
   # JoinSamples(saltelli_path, sample_paths[1])
 })
