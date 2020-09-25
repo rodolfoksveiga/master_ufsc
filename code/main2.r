@@ -16,10 +16,10 @@ invisible({
   # variables ####
   saltelli_path = './result/saltelli_sample.csv'
   seeds_dir = './seed/'
-  models_dir = '~/rolante/master/model/1/'
+  models_dir = '~/rolante/master/model/'
   epws_dir = '~/rolante/weather/'
-  output_dir = '~/rolante/master/output/1/'
-  sample_path = './result/1/sample.csv'
+  output_dir = '~/rolante/master/output/'
+  sample_path = './result/1-3/sample.csv'
   cores_left = 0
   
   # main code ####
@@ -27,15 +27,16 @@ invisible({
   py_run_file('./code/saltelli_sample.py')
   # read and tidy up sample
   sample = TidySample(saltelli_path, seeds_dir, models_dir, epws_dir, inmet)
-  sample = sample[1:(nrow(sample) %/% 10), ]
-  # build cases
-  with(sample, mcmapply(BuildModel, seed_path, nstrs, area, ratio, height, azimuth,
-                        shell_wall, abs_wall, shell_roof, abs_roof, wwr_liv, wwr_dorm,
-                        u_window, shgc, open_factor, blind, balcony, mirror, model_path,
-                        MoreArgs = list('op_temp', construction, fill, setup, geometry),
-                        mc.cores = detectCores() - cores_left))
-  # run simulations
-  ProcessEPSims(sample, NULL, NULL, NULL, output_dir, 0)
+  n = nrow(sample) %/% 10
+  sample = sample[1:(3*n), ]
+  # # build cases
+  # with(sample, mcmapply(BuildModel, seed_path, nstrs, area, ratio, height, azimuth,
+  #                       shell_wall, abs_wall, shell_roof, abs_roof, wwr_liv, wwr_dorm,
+  #                       u_window, shgc, open_factor, blind, balcony, mirror, model_path,
+  #                       MoreArgs = list('op_temp', construction, fill, setup, geometry),
+  #                       mc.cores = detectCores() - cores_left))
+  # # run simulations
+  # ProcessEPSims(sample, NULL, NULL, NULL, output_dir, 0)
   # calculate targets and add them to the sample
   periods = c('year', 'month')
   samples = lapply(periods, ApplyCalcTarget, sample, output_dir, occup, inmet)

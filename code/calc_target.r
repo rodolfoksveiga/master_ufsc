@@ -26,6 +26,7 @@ CalcPHFT = function(op_temp, occup, mean_temp) {
 # main functions ####
 CalcTarget = function(input_path, storey, weather, period, occup, inmet) {
   df = read.csv(input_path, nrows = 1)
+  storey = ifelse(storey %in% c(2, 3), 2, 1)
   cols = df %>% colnames() %>% str_which(paste0('^F', storey, '_(LIV|DORM)'))
   df = input_path %>%
     fread(nrows = 52560, select = cols, colClasses = 'numeric') %>%

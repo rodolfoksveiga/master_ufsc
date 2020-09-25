@@ -7,13 +7,13 @@ source('~/git/handy/rm_idf_order.r')
 # edit building surface characteristics
 EditBuildSurf = function(surf) {
   type = surf$surface_type
+  discard = 'view_factor_to_ground'
   if (type == 'Floor') {
-    discard = c('construction_name', 'outside_boundary_condition', 'view_factor_to_ground')
+    discard = c(discard, 'construction_name', 'outside_boundary_condition')
   } else if (type == 'Roof') {
-    discard = c('construction_name', 'outside_boundary_condition', 'sun_exposure',
-                'wind_exposure', 'view_factor_to_ground')
+    discard = c(discard, 'construction_name', 'outside_boundary_condition',
+                'sun_exposure', 'wind_exposure')
   } else {
-    discard = 'view_factor_to_ground'
     surf$construction_name = ifelse(surf$outside_boundary_condition == 'Outdoors',
                                     'ext_wall', 'int_wall')
   }
@@ -50,12 +50,12 @@ CleanRawGeom = function(geom_path) {
   # edit building surfaces
   geom$'BuildingSurface:Detailed' = lapply(geom$'BuildingSurface:Detailed', EditBuildSurf)
   # edit fenestration surfaces
-  geom$`FenestrationSurface:Detailed` = lapply(geom$'FenestrationSurface:Detailed', EditFen)
+  geom$'FenestrationSurface:Detailed' = lapply(geom$'FenestrationSurface:Detailed', EditFen)
   # write new json
   write_json(geom, geom_path, pretty = TRUE, auto_unbox = TRUE)
 }
 
 # application ####
-geom_paths = dir('~/rolante/master/seed/', pattern = 'json', full.names = TRUE)
-lapply(geom_paths, RmIDFOrder)
-lapply(geom_paths, CleanRawGeom)
+seed_path = '/home/rodox/git/nbr/auto_gen/seed_uni.json'
+RmIDFOrder(seed_path)
+CleanRawGeom(seed_path)
