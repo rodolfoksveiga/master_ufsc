@@ -17,14 +17,14 @@ invisible({
   
   # variables ####
   seeds_dir = './seed/'
-  large_models_dir = '~/rolante/master/large_model/'
-  shrink_models_dir = '~/rolante/master/shrink_model/'
+  large_models_dir = '~/rolante/master/model/'
+  shrink_dir = '~/rolante/master/shrink/'
   epws_dir = '~/rolante/weather/'
   weathers = c('curitiba', 'rio_de_janeiro', 'sao_paulo', 'sorriso', 'teresina')
   output_dir = '~/rolante/master/output/'
   split_dir = '~/rolante/master/split/'
   result_dir = '~/rolante/master/result/'
-  cores_left = 0
+  cores_left = 6
   
   # functions ####
   ManageFiles = function(temp_dir, pattern) {
@@ -40,7 +40,7 @@ invisible({
   sample = expand.grid(simp = 0:1, typo = 'linear', stringsAsFactors = FALSE,
                        shell = c('ref17', 'ref8', 'tm', 'tv', 'sf'))
   # link sample to appropriate values
-  sample = LinkSample(sample, seeds_dir, large_models_dir)
+  sample = LinkSample(sample, seeds_dir, models_dir)
   # build cases
   outputs = c('mean_temp', 'op_temp', 'air_change', 'therm_bal', 'surf_temp')
   mcmapply(BuildModel,
@@ -55,19 +55,12 @@ invisible({
            MoreArgs = list(outputs, construction, fill, setup, geometry),
            mc.cores = detectCores() - cores_left)
   # shrink building
-  ApplyShrinkBuild(large_models_dir, 'linear', 5, shrink_models_dir, cores_left)
+  ApplyShrinkBuild(large_models_dir, 'linear', 5, shrink_dir, cores_left)
   # run simulations
-  use_one_core = detectCores() - 1
-  temp_output_dir = paste0(output_dir, 'large/')
-  dir.create(temp_output_dir)
-  ProcessEPSims(NULL, large_models_dir, epws_dir, weathers, temp_output_dir, use_one_core, inmet)
-  ManageFiles(temp_output_dir, 'large')
-  temp_output_dir = paste0(output_dir, 'shrink/')
-  dir.create(temp_output_dir)
-  ProcessEPSims(NULL, shrink_models_dir, epws_dir, weathers, temp_output_dir, cores_left, inmet)
-  ManageFiles(temp_output_dir, 'shrink')
+  sim_cores = 2
+  ProcessEPSims(NULL, models_dir, epws_dir, weathers, output_dir, sim_cores, inmet)
   # split outputs
   ApplySplOut(output_dir, 'linear', 5, split_dir, cores_left)
-  # process outputs
-  ApplyProcessOut(split_dir, 'linear', 5, result_dir)
+  # # process outputs
+  # ApplyProcessOut(split_dir, 'linear', 5, result_dir)
 })
