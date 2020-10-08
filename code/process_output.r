@@ -72,15 +72,6 @@ LabelZone = function(tag) {
             'position' = position, 'orient' = orient, 'room' = room, 'weather' = weather)
   return(label)
 }
-# load files
-LoadFiles = function(pattern, input_dir) {
-  # pattern: 
-  # input_dir: 
-  files_paths = dir(input_dir, paste0('*', pattern, '.*csv'), full.names = TRUE)
-  dfs_list = lapply(files_paths, function(x) as.data.frame(fread(x)))
-  names(dfs_list) = str_remove(basename(files_paths), '\\.csv$')
-  return(dfs_list)
-}
 # rename data frame columns
 RnmCols = function(df, tag) {
   cols = df %>% colnames() %>% tolower()
@@ -101,20 +92,13 @@ SumCol = function(val, var) {
   return(val)
 }
 
-# main functions ####
-# apply ProcessOutput()
-ApplyProcessOut = function(input_dir, typos, nstrs, output_dir,
-                           shells = c('ref', 'tm', 'tv', 'sf')) {
-  grid = expand.grid(sim = 0, typo = typos, shell = shells,
-                     level = 1:nstrs, stringsAsFactors = FALSE)
-  mapply(ProcessOutput, input_dir, grid$sim, grid$typo,
-         grid$shell, grid$level, output_dir, SIMPLIFY = FALSE)
-}
+# main function ####
 # process output and generate a summarized table
-ProcessOutput = function(input_dir, sim, typo, shell, level, output_dir) {
+ProcessOutput = function(input_dir, output_path) {
   # load files
-  pattern = paste0(sim, '_', typo, '_', shell, '_f', level)
-  dfs_list = LoadFiles(pattern, input_dir)
+  files_paths = dir(input_dir, '\\csv', full.names = TRUE)
+  dfs_list = lapply(files_paths, function(x) as.data.frame(fread(x)))
+  names(dfs_list) = str_remove(basename(files_paths), '\\.csv$')
   # rename columns
   dfs_list = mapply(RnmCols, dfs_list, names(dfs_list), SIMPLIFY = FALSE)
   # generates a data frame report
@@ -122,7 +106,6 @@ ProcessOutput = function(input_dir, sim, typo, shell, level, output_dir) {
   df = mapply(GenReport, dfs_list, names(dfs_list), MoreArgs = complement) %>%
     as.data.frame() %>% t() %>% as.data.frame(row.names = FALSE)
   # write report
-  output_path = paste0(output_dir, pattern, '.csv')
   write.csv(df, file = output_path, row.names = FALSE)
   # clean cache
   rm(dfs_list, df)

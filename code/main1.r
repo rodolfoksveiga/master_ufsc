@@ -27,12 +27,25 @@ invisible({
   cores_left = 0
   
   # functions ####
-  ManageFiles = function(temp_dir, pattern) {
-    file_names = dir(temp_dir, 'errors')
-    file.rename(paste0(temp_dir, file_names), paste0(temp_dir, pattern, '_', file_names))
-    file_names = dir(temp_dir, full.names = TRUE)
-    file.rename(file_names, str_replace(file_names, paste0(pattern, '/'), ''))
-    unlink(temp_dir, recursive = TRUE)
+  # process slices of simulations
+  ProcessSlices = function(sample, n, size) {
+    # run simulations
+    ProcessEPSims(sample, NULL, NULL, NULL, output_dir, cores_left)
+    # split outputs
+    ApplySplOut(output_dir, 'linear', 5, split_dir, cores_left)
+    # process outputs
+    pattern = str_pad(n, str_length(size), 'left', 0)
+    output_path = paste0(result_dir, pattern, '.csv')
+    ProcessOutput(split_dir, output_path)
+    # remove simulation files
+    sapply(c(output_dir, split_dir), RemoveCSVs)
+    file_paths = dir(output_dir, pattern = '\\.txt', full.names = TRUE)
+    file.rename(file_paths, paste0(result_dir, pattern, '_', basename(file_paths)))
+  }
+  # remove csv files
+  RemoveCSVs = function(folder) {
+    file_names = dir(folder, pattern = '\\.csv', full.names = TRUE)
+    file.remove(file_names)
   }
   
   # main code ####
@@ -56,12 +69,14 @@ invisible({
            mc.cores = detectCores() - cores_left)
   # shrink building
   ApplyShrinkBuild(models_dir, 'linear', 5, shrink_dir, cores_left)
-  # run simulations
-  sim_cores_left = detectCores() - 2
-  ProcessEPSims(NULL, models_dir, epws_dir, weathers, output_dir, sim_cores_left, inmet)
-  # ProcessEPSims(NULL, shrink_dir, epws_dir, weathers, split_dir, cores_left, inmet)
-  # split outputs
-  ApplySplOut(output_dir, 'linear', 5, split_dir, cores_left)
-  # process outputs
-  ApplyProcessOut(split_dir, 'linear', 5, result_dir)
+  file_names = dir(shrink_dir, '\\.epJSON')
+  file.rename(paste0(shrink_dir, file_names), paste0(models_dir, file_names))
+  # define and split simulation grid
+  sample = DefSimGrid(models_dir, epws_dir, weathers, inmet, '\\.epJSON')
+  ncores = detectCores()
+  size = nrow(sample)%/%ncores
+  n = 1:size
+  sample = split(sample, c(rep(n, each = ncores), rep(length(n + 1), nrow(sample)%%ncores)))
+  # run simulations in slices
+  mapply(ProcessSlices, sample, n, size)
 })
