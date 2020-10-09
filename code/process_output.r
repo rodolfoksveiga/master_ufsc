@@ -1,10 +1,6 @@
 # base functions ####
 # calculate percentage of hours feeling uncomfortable (ph)
 CalcPH = function (lim, op_temp, occup, mean_temp) {
-  # lim: 'sup' (ph superior) or 'inf' (ph inferior)
-  # op_temp: operative temperature vector
-  # occup: occupancy vector
-  # mean_temp: dry bulb temperature annual mean
   lim_sup = DefLimSup(mean_temp)
   occup = occup > 0
   if (lim == 'sup') {
@@ -22,7 +18,6 @@ CalcPH = function (lim, op_temp, occup, mean_temp) {
 DefLimSup = function(x) ifelse(x < 25, 26, ifelse(x < 27, 28, 30))
 # extract string in between other two patterns
 ExtrStrBetween = function(string, pattern, before = '_', after = '_') {
-  # string: 
   string = str_extract(string, paste0('(?<=', before, ')', pattern,
                                       '(?=', after, ')'))
   return(string)
@@ -58,7 +53,6 @@ GenReport = function(df, tag, geometry, occup, out_temp, unit = 'kwh') {
 # label zone according to simlification, typology, shell, position, orientation, room,
   # room index and weather
 LabelZone = function(tag) {
-  # tag: 
   sim = ExtrStrBetween(tag, '[0-9]')
   typo = ExtrStrBetween(tag, '(h|linear)')
   shell = ExtrStrBetween(tag, '(ref|tm|tv|sf)')
@@ -85,29 +79,25 @@ RnmCols = function(df, tag) {
 }
 # sume an output column considering the heat flow direction
 SumCol = function(val, var) {
-  # val: 
-  # var: 
   mult = ifelse(str_detect(var, '(?<!afn|il)_hg'), -1, 1)
   val = sum(val)*mult
   return(val)
 }
 
-# main function ####
+# main functions ####
+# apply ProcessOutput()
+ApplyProcessOut = function(input_dir, output_dir, geometry, occup, out_temp) {
+  file_paths = dir(input_dir, '\\.csv', full.names = TRUE)
+  sapply(file_paths, ProcessOutput, output_dir, geometry, occup, out_temp)
+}
 # process output and generate a summarized table
-ProcessOutput = function(input_dir, output_path) {
-  # load files
-  files_paths = dir(input_dir, '\\csv', full.names = TRUE)
-  dfs_list = lapply(files_paths, function(x) as.data.frame(fread(x)))
-  names(dfs_list) = str_remove(basename(files_paths), '\\.csv$')
-  # rename columns
-  dfs_list = mapply(RnmCols, dfs_list, names(dfs_list), SIMPLIFY = FALSE)
-  # generates a data frame report
-  complement = list(geometry, occup, out_temp)
-  df = mapply(GenReport, dfs_list, names(dfs_list), MoreArgs = complement) %>%
-    as.data.frame() %>% t() %>% as.data.frame(row.names = FALSE)
-  # write report
-  write.csv(df, file = output_path, row.names = FALSE)
-  # clean cache
-  rm(dfs_list, df)
-  gc()
+ProcessOutput = function(file_path, output_dir, geometry, occup, out_temp) {
+  pattern = str_remove(basename(file_path), '\\.csv$')
+  file_path %>%
+    fread() %>%
+    as.data.frame() %>%
+    RnmCols(pattern) %>%
+    GenReport(pattern, geometry, occup, out_temp) %>%
+    t() %>%
+    write.csv(paste0(output_dir, pattern, '.csv'), row.names = FALSE)
 }

@@ -34,13 +34,12 @@ invisible({
     # split outputs
     ApplySplOut(output_dir, 'linear', 5, split_dir, cores_left)
     # process outputs
-    pattern = str_pad(n, str_length(size), 'left', 0)
-    output_path = paste0(result_dir, pattern, '.csv')
-    ProcessOutput(split_dir, output_path)
+    ApplyProcessOut(split_dir, result_dir, geometry, occup, out_temp)
     # remove simulation files
     sapply(c(output_dir, split_dir), RemoveCSVs)
     file_paths = dir(output_dir, pattern = '\\.txt', full.names = TRUE)
-    file.rename(file_paths, paste0(result_dir, pattern, '_', basename(file_paths)))
+    case = str_pad(n, str_length(size), 'left', 0)
+    file.rename(file_paths, paste0(result_dir, case, '_', basename(file_paths)))
   }
   # remove csv files
   RemoveCSVs = function(folder) {
@@ -74,9 +73,16 @@ invisible({
   # define and split simulation grid
   sample = DefSimGrid(models_dir, epws_dir, weathers, inmet, '\\.epJSON')
   ncores = detectCores()
-  size = nrow(sample)%/%ncores
+  size = nrow(sample) %/% ncores
   n = 1:size
-  sample = split(sample, c(rep(n, each = ncores), rep(length(n + 1), nrow(sample)%%ncores)))
+  sample = split(sample, c(rep(n, each = ncores), rep(length(n + 1), nrow(sample) %% ncores)))
   # run simulations in slices
-  mapply(ProcessSlices, sample, n, size)
+  mapply(ProcessSlices, sample[20:21], n[20:21], size)
+  # pile up results
+  file_paths = dir(result_dir, '\\.csv', full.names = TRUE)
+   file_paths %>%
+    lapply(read.csv) %>%
+    bind_rows() %>%
+    write.csv(paste0(result_dir, 'data_linear.csv'), row.names = FALSE)
+  file.remove(file_paths)
 })
