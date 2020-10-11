@@ -77,7 +77,7 @@ invisible({
   n = 1:size
   sample = split(sample, c(rep(n, each = ncores), rep(length(n + 1), nrow(sample) %% ncores)))
   # run simulations in slices
-  mapply(ProcessSlices, sample[20:21], n[20:21], size)
+  mapply(ProcessSlices, sample, n, size)
   # pile up results
   file_paths = dir(result_dir, '\\.csv', full.names = TRUE)
    file_paths %>%
