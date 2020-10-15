@@ -13,6 +13,19 @@ invisible({
 RenameRsq = function(x) sub('Rsquared', 'R²', x)
 
 # machine learning model functions ####
+# select features according to sobol analysis
+SelectFeats = function(data, sa_path, threshold) {
+  unvar = sa_path %>%
+    RJSONIO::fromJSON() %>%
+    keep(names(.) %in% c('S1', 'ST')) %>%
+    as.data.frame() %>%
+    mutate(var = colnames(data)[-1]) %>%
+    filter(ST <= threshold) %>%
+    pull(var)
+  data = data %>%
+    select(-all_of(unvar))
+  return(data)
+}
 # create dummy variables
 CreateDummies = function(data) {
   dummy_model = dummyVars(targ ~ ., data = data)
@@ -147,30 +160,30 @@ SummAccuracy = function(model, train_tech, pred, targ) {
 }
 
 # main function ####
-GenMLModels = function(data_path, weather_var, nfolds, tune_length, save_results,
-                       save_models, models_dir, plots_dir, cores_left, inmet) {
+GenMLModels = function(data_path, weather_var, nfolds, tune_length, sa_path,
+                       threshold, save_results, save_models, models_dir,
+                       plots_dir, cores_left, inmet) {
   # load data
   raw_data = read.csv(data_path)
-  str(raw_data)
   # define qualitative and quantitative variables
   qual_vars = c('seed', 'storey', 'shell_wall', 'shell_roof', 'blind', 'facade')
   quant_vars = colnames(raw_data[-length(raw_data)])
   quant_vars = quant_vars[!quant_vars %in% qual_vars]
+  raw_data[, qual_vars] = lapply(raw_data[, qual_vars], factor)
   # edit sample
   raw_data$epw = inmet[raw_data$epw, weather_var]
+  # select features according to sensitivity analysis
+  data = SelectFeats(raw_data, sa_path, threshold)
   # create dummy variables
-  raw_data[, qual_vars] = lapply(raw_data[, qual_vars], factor)
   dummy_data = CreateDummies(raw_data)
+  str(raw_data)
   # split data into train and test sets
   raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
   dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
   # train
   models_list = list(lm = 'lm', svmr = 'svmRadial', svmp = 'svmPoly', brnn = 'brnn')
-  tune_grids = list(lm = NULL,
-                    svmr = NULL,
-                    svmp = expand.grid(.degree = 5, .scale = 0.05, .C = 0.15),
-                    brnn = expand.grid(.neurons = c(35)))
-  models = mapply(FitModel, models_list[1:2], tune_grids, SIMPLIFY = FALSE,
+  tune_grids = list(lm = NULL, svmr = NULL)
+  models = mapply(FitModel, models_list, tune_grids, SIMPLIFY = FALSE,
                   MoreArgs = list('cv', nfolds, dummy_data$train, cores_left, tune_length))
   # test
   predictions = models %>%
@@ -182,16 +195,16 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, save_results
   models_comp = CompModels(models)
   models_summ = summary(models_comp)
   if (save_results) {
-    # # plot comparison between models
-    # PlotComp(models_comp, suffix, plots_dir)
-    # # plot training process
-    # mapply(PlotFit, models[-1], names(models[-1]), suffix, MoreArgs = list(plots_dir))
-    # # plot model performance
-    # mapply(PlotPerf, names(models), predictions,
-    #        MoreArgs = list(dummy_data$test$targ, suffix, plots_dir))
-    # # plot variables importance
-    # mapply(PlotVarImp, names(models), predictions,
-    #        MoreArgs = list(raw_data$test, suffix, plots_dir))
+    # plot comparison between models
+    PlotComp(models_comp, suffix, plots_dir)
+    # plot training process
+    mapply(PlotFit, models[-1], names(models[-1]), suffix, MoreArgs = list(plots_dir))
+    # plot model performance
+    mapply(PlotPerf, names(models), predictions,
+           MoreArgs = list(dummy_data$test$targ, suffix, plots_dir))
+    # plot variables importance
+    mapply(PlotVarImp, names(models), predictions,
+           MoreArgs = list(raw_data$test, suffix, plots_dir))
     # generate accuracy table
     GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, plots_dir)
   }
@@ -203,5 +216,5 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, save_results
 }
 
 # application ####
-GenMLModels('./result/sample.csv', 'tbsm', 5, NULL, TRUE, TRUE,
-            './result/', './plot_table/', 0, inmet)
+GenMLModels('./result/sample_year.csv', 'tbsm', 2, 10, './result/sobol_analysis.json',
+            0.01, TRUE, TRUE, './result/', './plot_table/', 0, inmet)

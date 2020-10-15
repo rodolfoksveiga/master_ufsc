@@ -19,7 +19,7 @@ invisible({
   models_dir = '~/rolante/master/model/'
   epws_dir = '~/rolante/weather/'
   output_dir = '~/rolante/master/output/'
-  sample_path = './result/8/sample.csv'
+  sample_path = './result/sample.csv'
   cores_left = 0
   
   # main code ####
