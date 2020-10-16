@@ -1,7 +1,7 @@
 # load libraries and global environment ####
 invisible({
   pkgs = c('caret', 'doParallel', 'data.table', 'dplyr',
-           'ggplot2', 'hydroGOF', 'Metrics', 'parallel')
+           'ggplot2', 'hydroGOF', 'Metrics', 'parallel', 'purrr')
   # required packages to fit models
   # pkgs = c(pkgs, 'quantregForest', 'party', 'mboost', 'plyr', 'kernlab', 'brnn')
   lapply(pkgs, library, character.only = TRUE)
@@ -19,7 +19,7 @@ SelectFeats = function(data, sa_path, threshold) {
     RJSONIO::fromJSON() %>%
     keep(names(.) %in% c('S1', 'ST')) %>%
     as.data.frame() %>%
-    mutate(var = colnames(data)[-1]) %>%
+    mutate(var = colnames(data)[-length(data)]) %>%
     filter(ST <= threshold) %>%
     pull(var)
   data = data %>%
@@ -160,8 +160,8 @@ SummAccuracy = function(model, train_tech, pred, targ) {
 }
 
 # main function ####
-GenMLModels = function(data_path, weather_var, nfolds, tune_length, sa_path,
-                       threshold, save_results, save_models, models_dir,
+GenMLModels = function(data_path, weather_var, nfolds, tune_length, tune_grid,
+                       sa_path, threshold, save_results, save_models, models_dir,
                        plots_dir, cores_left, inmet) {
   # load data
   raw_data = read.csv(data_path)
@@ -173,17 +173,16 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, sa_path,
   # edit sample
   raw_data$epw = inmet[raw_data$epw, weather_var]
   # select features according to sensitivity analysis
-  data = SelectFeats(raw_data, sa_path, threshold)
+  raw_data = SelectFeats(raw_data, sa_path, threshold)
   # create dummy variables
   dummy_data = CreateDummies(raw_data)
-  str(raw_data)
+  summary(raw_data)
   # split data into train and test sets
-  raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
-  dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
+  raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.1)
+  dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.1)
   # train
-  models_list = list(lm = 'lm', svmr = 'svmRadial', svmp = 'svmPoly', brnn = 'brnn')
-  tune_grids = list(lm = NULL, svmr = NULL)
-  models = mapply(FitModel, models_list, tune_grids, SIMPLIFY = FALSE,
+  models_list = list(lm = 'lm', svmr = 'svmRadial', brnn = 'brnn')
+  models = mapply(FitModel, models_list, tune_grid, SIMPLIFY = FALSE,
                   MoreArgs = list('cv', nfolds, dummy_data$train, cores_left, tune_length))
   # test
   predictions = models %>%
@@ -209,12 +208,13 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, sa_path,
     GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, plots_dir)
   }
   if (save_models) {
-    save(models, file = paste0(models_dir, 'models_', suffix, '.rds'))
+    saveRDS(models, file = paste0(models_dir, 'models_', suffix, '.rds'))
   } else {
     return(models)
   }
 }
 
 # application ####
-GenMLModels('./result/sample_year.csv', 'tbsm', 2, 10, './result/sobol_analysis.json',
-            0.01, TRUE, TRUE, './result/', './plot_table/', 0, inmet)
+GenMLModels('./result/sample_year.csv', 'tbsm', 2, 5, list(NULL),
+            './result/sobol_analysis.json', 0.01, TRUE, TRUE,
+            './result/', './plot_table/', 0, inmet)
