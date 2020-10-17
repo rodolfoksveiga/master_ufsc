@@ -178,8 +178,8 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, tune_grid,
   dummy_data = CreateDummies(raw_data)
   summary(raw_data)
   # split data into train and test sets
-  raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.1)
-  dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.1)
+  raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
+  dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
   # train
   models_list = list(lm = 'lm', svmr = 'svmRadial', brnn = 'brnn')
   models = mapply(FitModel, models_list, tune_grid, SIMPLIFY = FALSE,
