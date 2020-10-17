@@ -190,7 +190,7 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, tune_grid,
     as.data.frame()
   # plots and results
   # stats comparison between models
-  suffix = paste0(weather_var, '_f', nfolds)
+  suffix = paste0(weather_var, '_f', nfolds, '_', ncol(raw_data$train))
   models_comp = CompModels(models)
   models_summ = summary(models_comp)
   if (save_results) {
@@ -216,5 +216,5 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, tune_grid,
 
 # application ####
 GenMLModels('./result/sample_year.csv', 'tbsm', 2, 5, list(NULL),
-            './result/sobol_analysis.json', 0.01, TRUE, TRUE,
+            './result/sobol_analysis.json', 0.012, TRUE, TRUE,
             './result/', './plot_table/', 0, inmet)
