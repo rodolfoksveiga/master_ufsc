@@ -3,9 +3,8 @@ invisible({
   pkgs = c('caret', 'doParallel', 'data.table', 'dplyr',
            'ggplot2', 'hydroGOF', 'Metrics', 'parallel', 'purrr')
   # required packages to fit models
-  # pkgs = c(pkgs, 'quantregForest', 'party', 'mboost', 'plyr', 'kernlab', 'brnn')
+  # pkgs = c(pkgs, 'brnn', 'kernlab', 'plyr', 'xgboost')
   lapply(pkgs, library, character.only = TRUE)
-  inmet = read.csv('./source/inmet_list.csv', stringsAsFactors = FALSE)
 })
 
 # base functions ####
@@ -160,18 +159,17 @@ SummAccuracy = function(model, train_tech, pred, targ) {
 }
 
 # main function ####
-GenMLModels = function(data_path, weather_var, nfolds, tune_length, tune_grid,
+GenMLModels = function(data_path, nfolds, tune_length, tune_grid,
                        sa_path, threshold, save_results, save_models, models_dir,
                        plots_dir, cores_left, inmet) {
   # load data
   raw_data = read.csv(data_path)
   # define qualitative and quantitative variables
-  qual_vars = c('seed', 'storey', 'shell_wall', 'shell_roof', 'blind', 'facade')
+  qual_vars = c('seed', 'storey', 'shell_wall',
+                'shell_roof', 'blind', 'facade', 'mirror')
   quant_vars = colnames(raw_data[-length(raw_data)])
   quant_vars = quant_vars[!quant_vars %in% qual_vars]
   raw_data[, qual_vars] = lapply(raw_data[, qual_vars], factor)
-  # edit sample
-  raw_data$epw = inmet[raw_data$epw, weather_var]
   # select features according to sensitivity analysis
   raw_data = SelectFeats(raw_data, sa_path, threshold)
   # create dummy variables
@@ -181,7 +179,8 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, tune_grid,
   raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
   dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
   # train
-  models_list = list(lm = 'lm', svmr = 'svmRadial', brnn = 'brnn')
+  # models_list = list(lm = 'lm', svmr = 'svmRadial', brnn = 'brnn')
+  models_list = list(lm = 'lm', xgbt = 'xgbTree')
   models = mapply(FitModel, models_list, tune_grid, SIMPLIFY = FALSE,
                   MoreArgs = list('cv', nfolds, dummy_data$train, cores_left, tune_length))
   # test
@@ -190,7 +189,7 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, tune_grid,
     as.data.frame()
   # plots and results
   # stats comparison between models
-  suffix = paste0(weather_var, '_f', nfolds, '_', ncol(raw_data$train))
+  suffix = paste0('f', nfolds, '_', ncol(raw_data$train))
   models_comp = CompModels(models)
   models_summ = summary(models_comp)
   if (save_results) {
@@ -215,6 +214,6 @@ GenMLModels = function(data_path, weather_var, nfolds, tune_length, tune_grid,
 }
 
 # application ####
-GenMLModels('./result/sample_year.csv', 'tbsm', 2, 5, list(NULL),
-            './result/sobol_analysis.json', 0.012, TRUE, TRUE,
+GenMLModels('./result/sample_year.csv', 2, 10, list(NULL),
+            './result/sobol_analysis.json', 0, TRUE, TRUE,
             './result/', './plot_table/', 0, inmet)
