@@ -50,7 +50,8 @@ FitModel = function(train_tech, tune_grid, samp_tech, nfolds, train_data,
   # run training in parallel
   cores = detectCores() - cores_left
   registerDoParallel(cores)
-  fit_ctrl = trainControl(samp_tech, nfolds, returnData = FALSE, verboseIter = TRUE)
+  fit_ctrl = trainControl(samp_tech, nfolds, search = 'random',
+                          returnData = FALSE, verboseIter = TRUE)
   # reproduce results
   set.seed(seed)
   if (!is.null(tune_grid)) {
@@ -176,8 +177,8 @@ GenMLModels = function(data_path, nfolds, tune_length, tune_grid,
   dummy_data = CreateDummies(raw_data)
   summary(raw_data)
   # split data into train and test sets
-  raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
-  dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
+  raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.01)
+  dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.01)
   # train
   # models_list = list(lm = 'lm', svmr = 'svmRadial', brnn = 'brnn')
   models_list = list(lm = 'lm', xgbt = 'xgbTree')
@@ -214,6 +215,17 @@ GenMLModels = function(data_path, nfolds, tune_length, tune_grid,
 }
 
 # application ####
-GenMLModels('./result/sample_year.csv', 2, 10, list(NULL),
-            './result/sobol_analysis.json', 0, TRUE, TRUE,
-            './result/', './plot_table/', 0, inmet)
+GenMLModels(
+  data_path = './result/sample_year.csv',
+  nfolds = 2,
+  tune_length = 2,
+  tune_grid = list(NULL),
+  sa_path = './result/sobol_analysis.json',
+  threshold = 0,
+  save_results = TRUE,
+  save_models = TRUE,
+  models_dir = './result/',
+  plots_dir = './plot_table/',
+  cores_left = 0,
+  inmet = inmet
+)

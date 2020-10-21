@@ -1,8 +1,12 @@
-# load libraries
+# load libraries ####
 library(tidymodels)
-# define input variables
+
+# variables ####
 data_path = './result/sample_year.csv'
-qual_vars = c('seed', 'storey', 'shell_wall', 'shell_roof', 'blind', 'facade')
+qual_vars = c('seed', 'storey', 'shell_wall', 'shell_roof',
+              'blind', 'facade', 'mirror')
+
+# main code ####
 # load data
 data = data_path %>%
   read.csv() %>%
@@ -28,10 +32,6 @@ data_train = juice(model_recipe)
 data_test = model_recipe %>%
   bake(data_test)
 # train models
-model_lm = linear_reg() %>%
-  set_mode('regression') %>%
-  set_engine('lm') %>%
-  fit_resamples(targ ~ ., resamples = data_folds)
 model_mlp = mlp(hidden_units = tune(), activation = 'relu') %>%
   set_mode('regression') %>%
   set_engine('keras') %>%

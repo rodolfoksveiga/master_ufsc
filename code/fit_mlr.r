@@ -1,3 +1,36 @@
+# notes ####
+  # # simple train
+  # model = train(learner = , task = regr, measures = list(mae, rmse))
+  # # tune model
+  # # resampling train
+  # model = resample(learner = , task = regr,
+  #                  resampling = cv, measures = list(mae, rmse))
+  # # tune train
+  # model = tuneParams(learner = svm_learner, task = regr, resampling = cv,
+  #                    measures = list(mae, rmse, rsq), par.set = svm_hps,
+  #                    control = random_search)
+  # # nested cross-validation
+  # cv_in = makeResampleDesc(method = 'Holdout', split = 4/5)
+  # cv_out = makeResampleDesc(method = 'CV', iters = 4)
+  # nnet_wrapper = makeTuneWrapper(learner = nnet_learner, resampling = cv_in,
+  #                                par.set = nnet_hps, control = random_search,
+  #                                measures = list(mae, rmse, rsq))
+  # model = resample(learner = nnet_wrapper, task = regr, resampling = cv_out,
+  #                  measures = list(mae, rmse, rsq), extract = getTuneResult)
+  # # svm
+  # svm_hps = makeParamSet(makeDiscreteParam(id = 'kernel', values = c('polynomial', 'radial')),
+  #                        makeIntegerParam(id = 'degree', lower = 1, upper = 5,
+  #                                         requires = quote(kernel == 'polynomial')),
+  #                        makeNumericParam(id = 'cost', lower = 5, upper = 20),
+  #                        makeNumericParam(id = 'gamma', lower = 0, upper = 2),
+  #                        makeNumericParam(id = 'nu', lower = -2, upper = 2))
+  # svm_learner = makeLearner(id = 'svm', cl = 'regr.svm')
+  # # brnn
+  # brnn_hps = makeParamSet(
+  #   makeIntegerParam(id = 'neurons', lower = 5, upper = 20)
+  # )
+  # brnn_learner = makeLearner(id = 'brnn', cl = 'regr.brnn')
+
 # load libraries and global environment ####
 invisible({
   pkgs = c('dplyr', 'mlr', 'parallel', 'parallelMap')
@@ -74,38 +107,3 @@ opt_df = model %>%
   getTuneResultOptPath() %>%
   arrange(mae.test.mean)
 View(opt_df)
-
-
-
-# NOTES ####
-# # simple train
-# model = train(learner = , task = regr, measures = list(mae, rmse))
-# # tune model
-# # resampling train
-# model = resample(learner = , task = regr,
-#                  resampling = cv, measures = list(mae, rmse))
-# # tune train
-# model = tuneParams(learner = svm_learner, task = regr, resampling = cv,
-#                    measures = list(mae, rmse, rsq), par.set = svm_hps,
-#                    control = random_search)
-# # nested cross-validation
-# cv_in = makeResampleDesc(method = 'Holdout', split = 4/5)
-# cv_out = makeResampleDesc(method = 'CV', iters = 4)
-# nnet_wrapper = makeTuneWrapper(learner = nnet_learner, resampling = cv_in,
-#                                par.set = nnet_hps, control = random_search,
-#                                measures = list(mae, rmse, rsq))
-# model = resample(learner = nnet_wrapper, task = regr, resampling = cv_out,
-#                  measures = list(mae, rmse, rsq), extract = getTuneResult)
-# # svm
-# svm_hps = makeParamSet(makeDiscreteParam(id = 'kernel', values = c('polynomial', 'radial')),
-#                        makeIntegerParam(id = 'degree', lower = 1, upper = 5,
-#                                         requires = quote(kernel == 'polynomial')),
-#                        makeNumericParam(id = 'cost', lower = 5, upper = 20),
-#                        makeNumericParam(id = 'gamma', lower = 0, upper = 2),
-#                        makeNumericParam(id = 'nu', lower = -2, upper = 2))
-# svm_learner = makeLearner(id = 'svm', cl = 'regr.svm')
-# # brnn
-# brnn_hps = makeParamSet(
-#   makeIntegerParam(id = 'neurons', lower = 5, upper = 20)
-# )
-# brnn_learner = makeLearner(id = 'brnn', cl = 'regr.brnn')

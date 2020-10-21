@@ -1,11 +1,16 @@
-# load library
-library(h2o)
+# load library ####
+invisible({
+  pkgs = c('h2o', 'parallel', 'stringr')
+  lapply(pkgs, library, character.only = TRUE)
+})
 
-# initialize the package with some configurations
-h2o.init(nthreads = 3)
-# clean all busy clusters
-h2o.removeAll()
+# variables ####
+cores_left = 2
 
+# initialize the h2o ####
+h2o.init(nthreads = detectCores() - cores_left)
+
+# main code ####
 # load data
 data = h2o.importFile('./result/sample_year.csv')
 
@@ -15,36 +20,51 @@ qual_vars = c('seed', 'storey', 'shell_wall', 'shell_roof',
 data[qual_vars] = h2o.asfactor(data[qual_vars])
 
 # split data
+# small
+pre_splits = h2o.splitFrame(
+  data,
+  ratios = c(0.2, 0.1),
+  destination_frames = paste0('pre_', c('train', 'test', 'leave'))
+)
+# large
 splits = h2o.splitFrame(
   data,
   ratios = 0.8,
   destination_frames = c('train', 'test')
 )
-train = splits[[1]]
-test = splits[[2]]
-
-# # load pre-trained model
-# model = h2o.loadModel('./result/h2o_best_model/XGBoost_3_AutoML_20201020_174322')
 
 # auto-fit model
-model = h2o.automl(
+# algorithms = c('GLM', 'DRF', 'GBM', 'XGBoost')
+models = h2o.automl(
   y = 'targ',
-  training_frame = data[[1]],
-  nfolds = 2,
-  include_algos = 'XGBoost',
+  training_frame = 'pre_train',
+  nfolds = 5,
+  include_algos = 'DRF',
   stopping_metric = 'MAE',
   sort_metric = 'MAE',
-  max_models = 5,
+  max_models = 8,
   seed = 100,
   project_name = 'master',
   verbosity = 'warn'
 )
 
-# sort out best model
-leaderboard = as.data.frame(model@leaderboard)
-index = str_which(leaderboard$model_id, 'AllModels|BestOfFamily', negate = TRUE)[1]
-model_id = leaderboard$model_id[index]
-best_model = h2o.getModel(model_id)
+# sort out best 5 models
+leaderboard = as.data.frame(models@leaderboard)
+index = str_which(leaderboard$model_id, 'AllModels|BestOfFamily', negate = TRUE)[1:5]
+model_ids = leaderboard$model_id[index]
+
+ExtractHPs = function(model_id) {
+  model_id = model_ids[1]
+  
+  techs = str_flatten(c('GLM', 'DRF', 'GBM', 'XGBoost'), collapse = '|')
+  tech = str_extract(model_id, techs)
+  
+  hps_list = list('GLM' = NA, 'DRF' = )
+  hps = 
+  
+  model = h2o.getModel(model_id)
+  model@allparameters[]
+}
 
 # save models
 h2o.saveModel(
@@ -53,10 +73,7 @@ h2o.saveModel(
   force = TRUE
 )
 
-# evaluate test set
-h2o.performance(model, newdata = test)
-
-# clean all busy clusters
+# clean cluster
 h2o.removeAll()
 
 # # 60% training / 20% validation / 20% testing

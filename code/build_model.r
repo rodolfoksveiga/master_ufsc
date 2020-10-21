@@ -411,6 +411,7 @@ BuildModel = function(seed_path, nstrs, area, ratio, height, azimuth, shell_wall
                       blind, balcony, mirror, model_path, outputs, construction, fill, setup,
                       geometry, boundary = 'surface', scale = TRUE) {
   # seed_path: seed file path
+  # nstrs: number of storeys
   # area: sum of the long occupancy rooms (living rooms and dormitories) [30 ~ 150]
   # ratio: ratio between the 'y' and the 'x' axis [0.25 ~ 4]
   # height: right foot [2.5 ~ 3.5]
