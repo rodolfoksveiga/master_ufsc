@@ -30,7 +30,7 @@ invisible({
   # process slices of simulations
   ProcessSlices = function(sample, n, size) {
     # run simulations
-    ProcessEPSims(sample, NULL, NULL, NULL, output_dir, cores_left)
+    ProcessEPSims(sample, output_dir, cores_left)
     # split outputs
     ApplySplOut(output_dir, 'linear', 5, split_dir, cores_left)
     # process outputs
@@ -43,8 +43,8 @@ invisible({
   }
   # remove csv files
   RemoveCSVs = function(folder) {
-    file_names = dir(folder, pattern = '\\.csv', full.names = TRUE)
-    file.remove(file_names)
+    file_paths = dir(folder, pattern = '\\.csv', full.names = TRUE)
+    file.remove(file_paths)
   }
   
   # main code ####

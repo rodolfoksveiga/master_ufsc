@@ -1,29 +1,16 @@
 # base functions ####
 # define coordinates according to orientation
 DefCoord = function(side) ifelse(side %in% c('s', 'n'), 'x', 'y')
-# define name pattern
-DefNamePattern = function(pattern) {
-  pattern = pattern %>%
-    str_split('\\|', simplify = TRUE) %>%
-    as.character() %>%
-    sort()
-    if (length(pattern) == 3) {
-      pattern = pattern[2]
-    } else {
-      pattern = ifelse(grepl('f1', pattern[1]), pattern[1], pattern[2])
-    }
-  return(pattern)
-}
 # define start and end points to calculate the width
 DefStartEnd = function(side) c(ifelse(IsSE(side), 3, 1), ifelse(IsSE(side), 1, 3))
 # edit airflow network surfaces
 EditAFNSurfs = function(group, zones) {
-  orders = 1:2
   if (!grepl('\\|', zones)) {
     zones = paste0(zones, '_window')
   }
   group = SelectObjects(group, zones)
   if (length(group) == 1) {
+    orders = c('a', 'b')
     tags = paste0(names(group), orders)
     group = lapply(orders, RnmSplWindow, group[[1]])
     names(group) = tags
@@ -31,9 +18,16 @@ EditAFNSurfs = function(group, zones) {
   return(group)
 }
 # edit building surfaces
-EditBuildSurfs = function(group, zones) {
+EditBuildSurfs = function(group, zones, lvls) {
   group = SelectObjects(group, zones)
-  group = lapply(group, RmBounds, zones)
+  if (length(lvls) == 1) {
+    group = lapply(group, RmBounds, zones)
+  } else {
+    walls = grepl('wall', names(group))
+    group[walls] = lapply(group[walls], RmBounds, zones)
+    hsurfs = grepl('floor|roof', names(group))
+    group[hsurfs] = lapply(group[hsurfs], EditHBounds, lvls)
+  }
   return(group)
 }
 # edit fenestrations
@@ -44,9 +38,26 @@ EditFens = function(group, zones) {
   if (length(group) == 1) {
     tag = names(group)
     group = lapply(1:2, SplitWindow, group[[1]], tag)
-    names(group) = paste0(tag, 1:2)
+    names(group) = paste0(tag, c('a', 'b'))
   }
   return(group)
+}
+# edit horizontal boundaries
+EditHBounds = function(object, lvls) {
+  floor = paste0('(?<=f)', min(lvls))
+  roof = paste0('(?<=f)', max(lvls))
+  if (str_detect(object$zone_name, floor) & object$surface_type == 'Floor') {
+    object$construction_name = 'slab'
+    object$outside_boundary_condition = 'OtherSideConditionsModel'
+    object$outside_boundary_condition_object = 'ground_coupled_oscm'
+  } else if (str_detect(object$zone_name, roof) & object$surface_type == 'Roof') {
+    object$construction_name = 'roof'
+    object$sun_exposure = 'SunExposed'
+    object$wind_exposure = 'WindExposed'
+    object$outside_boundary_condition = 'Outdoors'
+    object$outside_boundary_condition_object = NULL
+  }
+  return(object)
 }
 # edit internal loads
 EditIntLoads = function(groups, room) {
@@ -68,18 +79,18 @@ IsSE = function(side) side %in% c('s', 'e')
 LabelVert = function(verts, coord) paste0('vertex_', verts, '_', coord, '_coordinate')
 # pile habitations
 PileHabs = function(tag, nstrs) {
-  level = str_sub(tag, 2, 2)
-  if (level == 1) {
-    habs = str_replace(tag, 'f1', 'f2')
-  } else if (level < nstrs) {
-    habs = tag %>% str_sub(2, 2) %>% as.numeric()
-    habs = as.character(habs + c(-1, 1))
-    habs = sapply(habs, function(x, y) str_replace(y, '(?<=f)[0-9]', x), tag)
+  lvl = tag %>% str_sub(2, 2) %>% as.numeric()
+  if (lvl == 1) {
+    strs = c(1, 2)
+  } else if (lvl < nstrs) {
+    strs = c(-1, 1)
   } else {
-    habs = str_replace(tag, paste0('f', nstrs), paste0('f', nstrs -1))
+    strs = c(-2, -1)
   }
-  habs = tag %>% append(habs) %>% str_flatten(collapse = '|')
-  return(habs)
+  lvls = as.character(lvl + strs) %>%
+    sapply(function(x, y) str_replace(y, '(?<=f)[0-9]', x), tag) %>%
+    append(tag) %>% str_flatten(collapse = '|')
+  return(lvls)
 }
 # remove boundary condition object
 RmBounds = function(object, zones) {
@@ -102,15 +113,6 @@ RmFens = function(object, zones) {
   } else {
     return(object)
   }
-}
-# remove groun domain
-RmGroundDomain = function(model, pattern) {
-  if (!grepl('f1', pattern)) {
-    items = c('Site:GroundDomain:Slab', 'SurfaceProperty:OtherSideConditionsModel',
-              'Site:GroundTemperature:Undisturbed:FiniteDifference')
-    model[items] = NULL
-  }
-  return(model)
 }
 # remove internal loads
 RmIntLoads = function(group, room) {
@@ -160,9 +162,6 @@ SplitWindow = function(order, window, tag) {
 # main functions ####
 # shrink building
 ShrinkBuilding = function(seed_path, pattern, output_dir) {
-  # seed_path = grid$seed_path[1]
-  # pattern = grid$pattern[1]
-  # output_dir = '~/rolante/master/simp/model/split/'
   # load seed model
   model = read_json(seed_path)
   # find zones associated to the habitation
@@ -171,8 +170,9 @@ ShrinkBuilding = function(seed_path, pattern, output_dir) {
   model$'Zone' = model$'Zone'[zones]
   zones = str_flatten(zones, collapse = '|')
   # building surfaces
+  lvls = zones %>% str_extract_all('(?<=f)\\d') %>% pluck(1) %>% as.numeric() %>% unique()
   group = model$'BuildingSurface:Detailed'
-  model$'BuildingSurface:Detailed' = EditBuildSurfs(group, zones)
+  model$'BuildingSurface:Detailed' = EditBuildSurfs(group, zones, lvls)
   # fenestrations
   group = model$'FenestrationSurface:Detailed'
   model$'FenestrationSurface:Detailed' = EditFens(group, zones)
@@ -193,14 +193,19 @@ ShrinkBuilding = function(seed_path, pattern, output_dir) {
   group = model$'AirflowNetwork:MultiZone:Surface'
   model$'AirflowNetwork:MultiZone:Surface' = EditAFNSurfs(group, zones)
   # ground domain
-  model = RmGroundDomain(model, pattern)
+  if (!(length(lvls) > 1 | grepl('f1', pattern))) {
+    items = c('Site:GroundDomain:Slab', 'SurfaceProperty:OtherSideConditionsModel',
+              'Site:GroundTemperature:Undisturbed:FiniteDifference')
+    model[items] = NULL
+  }
   # write epJSON file
-  count = str_count(zones, '\\|')
-  if (count <= 4) {
-    sim = ifelse(count == 0, '3', '2')
+  c = str_count(zones, '\\|')
+  if (c <= 4) {
+    sim = ifelse(c == 0, '3', '2')
   } else {
     sim = '4'
-    pattern = DefNamePattern(pattern)
+    pattern = pattern %>% str_split('\\|') %>% pluck(1)
+    pattern = pattern[3]
   }
   output_name = seed_path %>% basename() %>%
     str_remove('.epJSON') %>% str_replace('^0', sim)
@@ -208,16 +213,19 @@ ShrinkBuilding = function(seed_path, pattern, output_dir) {
   write_json(model, output_path, pretty = TRUE, auto_unbox = TRUE)
 }
 # apply ShrinkBuilding()
-ApplyShrinkBuild = function(seed_dir, typo, nstrs, output_dir, cores_left,
-                         shells = c('ref17', 'ref8', 'tm', 'tv', 'sf')) {
+ApplyShrinkBuild = function(seed_dir, typo, nstrs, output_dir, cores_left) {
+  rooms = c('liv', 'dorm1', 'dorm2')
   if (typo == 'linear') {
     habs = c('csw', 'msw', 'mse', 'cse', 'cne', 'mne', 'mnw', 'cnw')
-    rooms = c('liv', 'dorm1', 'dorm2')
+  } else if (typo == 'h') {
+    habs = c('csw', 'cse', 'cne', 'cnw')
+  } else {
+    stop('Typology not recognized!')
   }
   habs = paste0('f', rep(c(1:nstrs), each = length(habs)), '_', habs)
   piles = sapply(habs, PileHabs, nstrs)
   patterns = c(habs, paste0(habs, '_', rep(rooms, each = length(habs))), piles)
-  seed_paths = paste0(seed_dir, '0_linear_', shells, '.epJSON')
+  seed_paths = dir(seed_dir, patter = '^0.*epJSON', full.names = TRUE)
   grid = expand.grid('seed_path' = seed_paths, 'pattern' = patterns,
                      stringsAsFactors = FALSE)
   mcmapply(ShrinkBuilding, grid$seed_path, grid$pattern, output_dir,

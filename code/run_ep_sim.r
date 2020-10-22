@@ -34,7 +34,7 @@ CountErrs = function(dir, ind, comp_path,
 # create a grid with model and weather files
 # add a column epw's respective weathers
 # it's be used to name output files
-DefSimGrid = function(models_dir, epws_dir, weathers, inmet, form) {
+DefSimGrid = function(models_dir, epws_dir, weathers, inmet, form = '\\.epJSON') {
   # models_dir: models directory
   # epws_dir: weather files directory
   # weathers: weathers of interest
@@ -102,14 +102,9 @@ RunEPSim = function(model_path, epw_path, prefix, output_dir) {
 }
 
 # main function ####
-ProcessEPSims = function(sample, models_dir, epws_dir, weathers, output_dir,
-                         cores_left, inmet, form = '\\.epJSON') {
+ProcessEPSims = function(sample, output_dir, cores_left) {
   # create simulation grid
-  if (is.null(sample)) {
-    sims_grid = DefSimGrid(models_dir, epws_dir, weathers, inmet, form)
-  } else {
-    sims_grid = select(sample, model_path, epw_path, prefix)
-  }
+  sims_grid = select(sample, model_path, epw_path, prefix)
   # run simulation in parallel
   errs_ind = mcmapply(RunEPSim, sims_grid$model_path, sims_grid$epw_path,
                       sims_grid$prefix, output_dir, mc.cores = detectCores() - cores_left)
