@@ -20,8 +20,7 @@ TidySample = function(sample_path, seeds_dir, models_dir, epws_dir, inmet) {
            dbt = inmet$tbsm[epw])
   write.csv(sample, sample_path, row.names = FALSE)
   sample = sample %>%
-    mutate(seed_path = paste0(seeds_dir, 'seed', seed, 'c', facade,
-                              ifelse(balcony > 0, 'b', ''), '.json'),
+    mutate(seed_path = paste0(seeds_dir, 'seed', seed, 'c', facade, '.json'),
            epw_path = paste0(epws_dir, inmet$arquivo_climatico[epw], '.epw'),
            .before = 1) %>%
     unique() %>%

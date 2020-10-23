@@ -3,7 +3,7 @@ invisible({
   # load global environment ####
   pkgs = c('data.table', 'dplyr', 'jsonlite', 'parallel', 'purrr', 'stringr', 'tibble')
   lapply(pkgs, library, character.only = TRUE)
-  codes = c('build_model', 'link_sample', 'process_output',
+  codes = c('build_model', 'make_slices', 'link_sample', 'process_output',
             'run_ep_sim', 'shrink_building', 'split_output')
   codes = paste0('./code/', codes, '.r')
   lapply(codes, source)
@@ -24,35 +24,11 @@ invisible({
   output_dir = '~/rolante/master/output/'
   split_dir = '~/rolante/master/split/'
   result_dir = '~/rolante/master/result/'
+  sample_path = './result/sample_simp.csv'
   nstrs = 5
   cores_left = 0
   
-  # functions ####
-  # handle results
-  HandleResults = function(pattern, folder) {
-    file_paths = dir(folder, pattern, full.names = TRUE)
-    if (pattern == 'csv') {
-      file_paths %>%
-        lapply(read.csv) %>%
-        bind_rows() %>%
-        write.csv(paste0(result_dir, 'data_simp.csv'), row.names = FALSE)
-    } else {
-      files = lapply(file_paths, readLines)
-      if (pattern == 'summary') {
-        file = files %>%
-          lapply(function(x) as.numeric(str_extract(x, '\\d'))) %>%
-          as.data.frame() %>%
-          slice(-1) %>%
-          AddSumms()
-      } else if (pattern == 'description') {
-        file = unlist(files)
-      } else {
-        stop('Pattern is not supported!')
-      }
-      writeLines(file, paste0(result_dir, 'errors_', pattern, '.txt'))
-    }
-    file.remove(file_paths)
-  }
+  # base function ####
   # process slices of simulations
   ProcessSlices = function(sample, n, size) {
     # run simulations
@@ -62,22 +38,11 @@ invisible({
     # process outputs
     ApplyProcessOut(split_dir, result_dir, geometry, occup, out_temp)
     # remove simulation files
-    sapply(c(output_dir, split_dir), RemoveCSVs)
-    # rename error files
-    file_paths = dir(output_dir, pattern = '\\.txt', full.names = TRUE)
+    sapply(c(output_dir, split_dir), RmCSVs)
+    # rename and move error files
     case = str_pad(n, str_length(size), 'left', 0)
-    file.rename(file_paths, paste0(result_dir, case, '_', basename(file_paths)))
+    MvErrs(output_dir, result_dir, case)
   }
-  # remove csv files
-  RemoveCSVs = function(folder) {
-    file_paths = dir(folder, pattern = '\\.csv', full.names = TRUE)
-    file.remove(file_paths)
-  }
-  # sum errors in summary files
-  AddSumms = function(df) c('Number of simulations with:',
-                            paste('    Terminal errors =', sum(df[1, ])),
-                            paste('    Severe errors =', sum(df[2, ])),
-                            paste('    Terminal errors =', sum(df[3, ])))
   
   # main code ####
   # generate and link sample to appropriate values
@@ -86,6 +51,7 @@ invisible({
     LinkSample(seeds_dir, models_dir) %>%
     arrange(typo, simp, shell)
   # build cases
+  cores = detectCores() - cores_left
   outputs = c('mean_temp', 'op_temp', 'air_change', 'therm_bal', 'surf_temp')
   mcmapply(BuildModel,
            seed_path = sample$seed_path, nstrs = nstrs,
@@ -97,19 +63,19 @@ invisible({
            scale = FALSE, boundary = sample$boundary,
            model_path = sample$model_path,
            MoreArgs = list(outputs, construction, fill, setup, geometry),
-           mc.cores = detectCores() - cores_left)
+           mc.cores = cores)
   # shrink building
   lapply(c('l', 'h'), ApplyShrinkBuild, models_dir, nstrs, shrink_dir, cores_left)
   file_names = dir(shrink_dir, '\\.epJSON')
   file.rename(paste0(shrink_dir, file_names), paste0(models_dir, file_names))
   # define and split simulation grid
-  sample = DefSimGrid(models_dir, epws_dir, weathers, inmet, '\\.epJSON')
-  ncores = detectCores()
-  size = nrow(sample) %/% ncores
+  size = nrow(sample) %/% cores
   n = 1:size
-  sample = split(sample, c(rep(n, each = ncores), rep(length(n + 1), nrow(sample) %% ncores)))
+  sample = DefSimGrid(models_dir, epws_dir, weathers, inmet, '\\.epJSON') %>%
+    MakeSlices(n, size, cores)
   # run simulations in slices
   mapply(ProcessSlices, sample, n, size)
   # pile up results
-  lapply(c('csv', 'summary', 'description'), HandleResults, result_dir)
+  WriteSample('.*\\.csv', sample_path, result_dir)
+  lapply(c('summary', 'description'), HandleSlices, result_dir)
 })
