@@ -34,7 +34,8 @@ invisible({
     # run simulations
     ProcessEPSims(sample, output_dir, cores_left)
     # split outputs
-    lapply(c('l', 'h'), ApplySplOut, output_dir, nstrs, split_dir, cores_left)
+    typos = sample$prefix %>% str_extract('(?<=_)(l|h)(?=_)') %>% unique()
+    lapply(typos, ApplySplOut, output_dir, nstrs, split_dir, cores_left)
     # process outputs
     ApplyProcessOut(split_dir, result_dir, geometry, occup, out_temp)
     # remove simulation files
@@ -46,22 +47,21 @@ invisible({
   
   # main code ####
   # generate and link sample to appropriate values
-  sample = expand.grid(simp = 0:1, typo = c('l', 'h'), stringsAsFactors = FALSE,
+  grid = expand.grid(simp = 0:1, typo = c('l', 'h'), stringsAsFactors = FALSE,
                        shell = c('ref17', 'ref8', 'tm', 'tv', 'sf')) %>%
-    LinkSample(seeds_dir, models_dir) %>%
-    arrange(typo, simp, shell)
+    LinkSample(seeds_dir, models_dir)
   # build cases
   cores = detectCores() - cores_left
   outputs = c('mean_temp', 'op_temp', 'air_change', 'therm_bal', 'surf_temp')
   mcmapply(BuildModel,
-           seed_path = sample$seed_path, nstrs = nstrs,
+           seed_path = grid$seed_path, nstrs = nstrs,
            area = NA, ratio = NA, height = NA, azimuth = 0,
-           shell_wall = sample$shell_wall, abs_wall = 0.5,
-           shell_roof = sample$shell_roof, abs_roof = 0.6,
+           shell_wall = grid$shell_wall, abs_wall = 0.5,
+           shell_roof = grid$shell_roof, abs_roof = 0.6,
            wwr_liv = NA, wwr_dorm = NA, u_window = 5.7, shgc = 0.87, open_factor = 0.45,
            blind = FALSE, balcony = 0, mirror = FALSE,
-           scale = FALSE, boundary = sample$boundary,
-           model_path = sample$model_path,
+           scale = FALSE, boundary = grid$boundary,
+           model_path = grid$model_path,
            MoreArgs = list(outputs, construction, fill, setup, geometry),
            mc.cores = cores)
   # shrink building
@@ -69,13 +69,13 @@ invisible({
   file_names = dir(shrink_dir, '\\.epJSON')
   file.rename(paste0(shrink_dir, file_names), paste0(models_dir, file_names))
   # define and split simulation grid
+  sample = DefSimGrid(models_dir, epws_dir, weathers, inmet, '\\.epJSON')
   size = nrow(sample) %/% cores
   n = 1:size
-  sample = DefSimGrid(models_dir, epws_dir, weathers, inmet, '\\.epJSON') %>%
-    MakeSlices(n, size, cores)
+  sample = MakeSlices(sample, n, size, cores)
   # run simulations in slices
   mapply(ProcessSlices, sample, n, size)
   # pile up results
-  WriteSample('.*\\.csv', sample_path, result_dir)
+  WriteSample('\\.csv', sample_path, result_dir)
   lapply(c('summary', 'description'), HandleSlices, result_dir)
 })
