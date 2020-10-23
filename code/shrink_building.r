@@ -1,6 +1,6 @@
 # base functions ####
 # define coordinates according to orientation
-DefCoord = function(side) ifelse(side %in% c('s', 'n'), 'x', 'y')
+DefCoord = function(side) ifelse(side %in% c(1, 3), 'x', 'y')
 # define start and end points to calculate the width
 DefStartEnd = function(side) c(ifelse(IsSE(side), 3, 1), ifelse(IsSE(side), 1, 3))
 # edit airflow network surfaces
@@ -74,7 +74,7 @@ EditZoneList = function(group, zones) {
   return(group)
 }
 # is the window south or east?
-IsSE = function(side) side %in% c('s', 'e')
+IsSE = function(side) side %in% c(1, 2)
 # label vertices
 LabelVert = function(verts, coord) paste0('vertex_', verts, '_', coord, '_coordinate')
 # pile habitations
@@ -136,8 +136,7 @@ RnmSplWindow = function(order, object) {
 SelectObjects = function(group, zones) group[grep(zones, names(group))]
 # split window in two
 SplitWindow = function(order, window, tag) {
-  pos = ifelse(grepl('\\D$', tag), -1, -2)
-  side = str_sub(tag, pos, pos)
+  side = tag %>% str_extract('(?<=window)\\D')
   coord = DefCoord(side)
   wv = LabelVert(DefStartEnd(side), coord)
   width = window[[wv[1]]] - window[[wv[2]]]
@@ -213,9 +212,9 @@ ShrinkBuilding = function(seed_path, pattern, output_dir) {
   write_json(model, output_path, pretty = TRUE, auto_unbox = TRUE)
 }
 # apply ShrinkBuilding()
-ApplyShrinkBuild = function(seed_dir, typo, nstrs, output_dir, cores_left) {
+ApplyShrinkBuild = function(typo, seed_dir, nstrs, output_dir, cores_left) {
   rooms = c('liv', 'dorm1', 'dorm2')
-  if (typo == 'linear') {
+  if (typo == 'l') {
     habs = c('csw', 'msw', 'mse', 'cse', 'cne', 'mne', 'mnw', 'cnw')
   } else if (typo == 'h') {
     habs = c('csw', 'cse', 'cne', 'cnw')
@@ -225,7 +224,7 @@ ApplyShrinkBuild = function(seed_dir, typo, nstrs, output_dir, cores_left) {
   habs = paste0('f', rep(c(1:nstrs), each = length(habs)), '_', habs)
   piles = sapply(habs, PileHabs, nstrs)
   patterns = c(habs, paste0(habs, '_', rep(rooms, each = length(habs))), piles)
-  seed_paths = dir(seed_dir, patter = '^0.*epJSON', full.names = TRUE)
+  seed_paths = dir(seed_dir, paste0('^0_', typo, '.*epJSON$'), full.names = TRUE)
   grid = expand.grid('seed_path' = seed_paths, 'pattern' = patterns,
                      stringsAsFactors = FALSE)
   mcmapply(ShrinkBuilding, grid$seed_path, grid$pattern, output_dir,

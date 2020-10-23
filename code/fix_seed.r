@@ -38,3 +38,6 @@ FixSeed = function(seed_path) {
   seed$'FenestrationSurface:Detailed' = lapply(seed$'FenestrationSurface:Detailed', FixFenestration)
   write_json(seed, seed_path, pretty = TRUE, auto_unbox = TRUE)
 }
+
+# application ####
+FixSeed('~/rolante/test/h.epJSON')

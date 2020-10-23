@@ -18,8 +18,7 @@ CalcPH = function (lim, op_temp, occup, mean_temp) {
 DefLimSup = function(x) ifelse(x < 25, 26, ifelse(x < 27, 28, 30))
 # extract string in between other two patterns
 ExtrStrBetween = function(string, pattern, before = '_', after = '_') {
-  string = str_extract(string, paste0('(?<=', before, ')', pattern,
-                                      '(?=', after, ')'))
+  string = str_extract(string, paste0('(?<=', before, ')', pattern, '(?=', after, ')'))
   return(string)
 }
 # generate full report
@@ -36,8 +35,7 @@ GenReport = function(df, tag, geometry, occup, out_temp, unit = 'kwh') {
   report['afn_hg'] = report['afn_hg'] - report['afn_hl']
   sides = c('s', 'e', 'n', 'w')
   patterns = c(paste0('wall_', sides), 'int', 'ext', 'window', 'door')
-  names(patterns) = paste0(c(paste0('walls_', c(sides, 'int', 'ext')),
-                             'windows', 'doors'), '_hg')
+  names(patterns) = paste0(c(paste0('walls_', c(sides, 'int', 'ext')), 'windows', 'doors'), '_hg')
   surfs = sapply(patterns, function(x, y) sum(y[grepl(x, names(y))]), report)
   air = c('air_change' = mean(df$air_change))
   top = c('top_max' = max(df$zone_top), 'top_min' = min(df$zone_top))
@@ -46,23 +44,22 @@ GenReport = function(df, tag, geometry, occup, out_temp, unit = 'kwh') {
                occup[, room], mean(out_temp[, label['weather']]))
   phft = c('phft' = 100 - sum(phs))
   report = report[c('il_hg', 'afn_hg', 'floor_hg', 'roof_hg')]
-  report = report %>% c(surfs, air, top, phs, phft) %>%
-    round(1) %>% c(label)
+  report = report %>% c(surfs, air, top, phs, phft) %>% round(1) %>% c(label)
   return(report)
 }
 # label zone according to simlification, typology, shell, position, orientation, room,
   # room index and weather
 LabelZone = function(tag) {
   sim = ExtrStrBetween(tag, '[0-9]')
-  typo = ExtrStrBetween(tag, '(h|linear)')
+  typo = ExtrStrBetween(tag, '(h|l)')
   shell = ExtrStrBetween(tag, '(ref|tm|tv|sf)')
   room = str_extract(tag, '(?<=_)(liv|dorm[12])')
-  level = ExtrStrBetween(tag, '[1-9]?', '_f')
-  hab = ExtrStrBetween(tag, '.*', paste0('f', level, '_'), paste0('_', room))
+  storey = ExtrStrBetween(tag, '[1-9]?', '_f')
+  hab = ExtrStrBetween(tag, '.*', paste0('f', storey, '_'), paste0('_', room))
   position = hab %>% str_detect('^c') %>% ifelse('corner', 'middle')
   orient =  str_sub(hab, -2, -1)
   weather = str_extract(tag, paste0('.*(?=_', sim, ')'))
-  label = c('sim' = sim, 'typo' = typo, 'shell' = shell, 'level' = level,
+  label = c('sim' = sim, 'typo' = typo, 'shell' = shell, 'storey' = storey,
             'position' = position, 'orient' = orient, 'room' = room, 'weather' = weather)
   return(label)
 }
@@ -92,12 +89,8 @@ ApplyProcessOut = function(input_dir, output_dir, geometry, occup, out_temp) {
 }
 # process output and generate a summarized table
 ProcessOutput = function(file_path, output_dir, geometry, occup, out_temp) {
-  pattern = str_remove(basename(file_path), '\\.csv$')
-  file_path %>%
-    fread() %>%
-    as.data.frame() %>%
-    RnmCols(pattern) %>%
-    GenReport(pattern, geometry, occup, out_temp) %>%
-    t() %>%
+  pattern = file_path %>% basename() %>% str_remove('\\.csv$')
+  file_path %>% fread() %>% as.data.frame() %>% RnmCols(pattern) %>%
+    GenReport(pattern, geometry, occup, out_temp) %>% t() %>%
     write.csv(paste0(output_dir, pattern, '.csv'), row.names = FALSE)
 }
