@@ -40,7 +40,7 @@ ApplySplOut = function(typo, input_dir, nstrs, output_dir, cores_left) {
   } else {
     stop('Typology not recognized!')
   }
-  input_paths = dir(input_dir, paste0('0_', typo, '.*csv$'), full.names = TRUE)
+  input_paths = dir(input_dir, paste0(typo, '.*csv$'), full.names = TRUE)
   zones = lapply(input_paths, DefZones, habs, nstrs)
   mapply(SplitOutput, input_paths, zones, output_dir, cores_left)
 }

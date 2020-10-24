@@ -33,18 +33,21 @@ GenReport = function(df, tag, geometry, occup, out_temp, unit = 'kwh') {
   cols = cols[grepl('hg|hl', cols)]
   report = mapply(SumCol, df[, cols], cols)/(div*area)
   report['afn_hg'] = report['afn_hg'] - report['afn_hl']
-  sides = c('s', 'e', 'n', 'w')
-  patterns = c(paste0('wall_', sides), 'int', 'ext', 'window', 'door')
-  names(patterns) = paste0(c(paste0('walls_', c(sides, 'int', 'ext')), 'windows', 'doors'), '_hg')
+  sides = c('s' = 1, 'e' = 2, 'n' = 3, 'w' = 4)
+  patterns = c(paste0('wall', sides), 'int', 'ext', 'window', 'door')
+  names(patterns) = paste0(c(paste0('walls_', c(names(sides), 'int', 'ext')),
+                             'windows', 'doors'), '_hg')
   surfs = sapply(patterns, function(x, y) sum(y[grepl(x, names(y))]), report)
   air = c('air_change' = mean(df$air_change))
-  top = c('top_max' = max(df$zone_top), 'top_min' = min(df$zone_top))
+  tbs = c('tbs_min' = min(df$zone_tbs), 'tbs_max' = max(df$zone_tbs))
+  top = c('top_min' = min(df$zone_top), 'top_max' = max(df$zone_top))
   room = str_remove(label[['room']], '[12]$')
   phs = sapply(c('ph_sup' = 'sup', 'ph_inf' = 'inf'), CalcPH, df$zone_top,
                occup[, room], mean(out_temp[, label['weather']]))
   phft = c('phft' = 100 - sum(phs))
   report = report[c('il_hg', 'afn_hg', 'floor_hg', 'roof_hg')]
-  report = report %>% c(surfs, air, top, phs, phft) %>% round(1) %>% c(label)
+  report = report %>% c(surfs, air, tbs, top, phs, phft) %>% c(label) %>% t() %>%
+    as.data.frame() %>% mutate_at(1:20, function(x) round(as.numeric(x), 2))
   return(report)
 }
 # label zone according to simlification, typology, shell, position, orientation, room,
@@ -67,7 +70,8 @@ LabelZone = function(tag) {
 RnmCols = function(df, tag) {
   cols = df %>% colnames() %>% tolower()
   len = length(cols)
-  cols[c(1, (len - 3):len)] = c('il_hg', 'zone_top', 'afn_hg', 'afn_hl', 'air_change')
+  cols[c(1, (len - 4):len)] = c('il_hg', 'zone_tbs', 'zone_top',
+                                'afn_hg', 'afn_hl', 'air_change')
   room = tag %>% str_extract('(?<=f[0-9]_).*')
   cond = ifelse(grepl('temperature', cols), 'temp', 'hg')
   colnames(df) = cols %>% str_remove(paste0(room, '_')) %>%
@@ -90,7 +94,7 @@ ApplyProcessOut = function(input_dir, output_dir, geometry, occup, out_temp) {
 # process output and generate a summarized table
 ProcessOutput = function(file_path, output_dir, geometry, occup, out_temp) {
   pattern = file_path %>% basename() %>% str_remove('\\.csv$')
-  file_path %>% fread() %>% as.data.frame() %>% RnmCols(pattern) %>%
-    GenReport(pattern, geometry, occup, out_temp) %>% t() %>%
+  test = file_path %>% fread() %>% as.data.frame() %>% RnmCols(pattern) %>%
+    GenReport(pattern, geometry, occup, out_temp) %>%
     write.csv(paste0(output_dir, pattern, '.csv'), row.names = FALSE)
 }

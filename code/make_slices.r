@@ -7,15 +7,6 @@ AddSumms = function(df) {
            paste('    Terminal errors =', sum(df[3, ])))
   return(summ)
 }
-# bind csv files
-WriteSample = function(pattern, output_path, input_dir) {
-  file_paths = dir(input_dir, pattern, full.names = TRUE)
-  file_paths %>%
-    lapply(read.csv) %>%
-    bind_rows() %>%
-    write.csv(output_path, row.names = FALSE)
-  file.remove(file_paths)
-}
 # handle slices
 HandleSlices = function(pattern, input_dir) {
   file_paths = dir(input_dir, pattern, full.names = TRUE)
@@ -42,6 +33,15 @@ MvErrs = function(input_dir, output_dir, case) {
 # remove csv files
 RmCSVs = function(input_dir) {
   file_paths = dir(input_dir, pattern = '\\.csv', full.names = TRUE)
+  file.remove(file_paths)
+}
+# write samples
+WriteSample = function(pattern, output_path, input_dir) {
+  file_paths = dir(input_dir, pattern, full.names = TRUE)
+  file_paths %>%
+    lapply(read.csv) %>%
+    bind_rows() %>%
+    write.csv(output_path, row.names = FALSE)
   file.remove(file_paths)
 }
 # write slice

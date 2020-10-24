@@ -45,7 +45,6 @@ invisible({
   py_run_file('./code/saltelli_sample.py')
   # read and tidy up sample
   sample = TidySample(saltelli_path, seeds_dir, models_dir, epws_dir, inmet)
-  sample = sample[1:8, ]
   # build cases
   cores = detectCores() - cores_left
   with(sample, mcmapply(BuildModel, seed_path, area, ratio, height, azimuth, shell_wall,
