@@ -1,6 +1,6 @@
 # load libraries ####
-pkgs = c('dplyr', 'forcats', 'ggplot2', 'ggthemr',
-         'jsonlite', 'purrr', 'RColorBrewer', 'reshape2')
+pkgs = c('data.table', 'dplyr', 'forcats', 'ggplot2', 'ggthemr',
+         'jsonlite', 'purrr', 'RColorBrewer', 'reshape2', 'stringr')
 lapply(pkgs, library, character.only = TRUE)
 
 # base function ####
@@ -17,7 +17,7 @@ CalcDiff = function(df1, df0, rel, hab) {
   }
   return(df)
 }
-# classificate habitations -> VERY INEFFICIENT FUNCTION!
+# classificate habitations -> VERY INEFFICIENT FUNCTION! -> USE GROUP_BY AND SUMMARIZE!
 CalcHab = function(df) {
   Test = function(index, df) {
     df = df[index:(index + 2), -grep('room', colnames(df))]
@@ -64,13 +64,13 @@ IsLabel = function(col) is.character(col) | is.logical(col)
 ProcessDiff = function(rel, df, hab = FALSE) {
   simps = unique(df$sim)[-1]
   df = simps %>% lapply(function(x, y) filter(y, sim == x), df) %>%
-    lapply(CalcDiff, filter(df, sim == '00'), rel, hab) %>%
+    lapply(CalcDiff, filter(df, sim == '0'), rel, hab) %>%
     bind_rows()
   return(df)
 }
 # pre process data to plot
 RnmValues = function(df) {
-  df$sim = str_pad(df$sim, 2, side = 'left', pad = 0)
+  df$sim = as.character(df$sim)
   df$typo = str_to_title(df$typo)
   df$shell = ifelse(df$shell == 'ref', 'Referência',
                     ifelse(df$shell == 'tm', 'Tijolo\nMaciço',
@@ -83,9 +83,8 @@ RnmValues = function(df) {
     str_replace_all('_', ' ') %>%
     str_to_title() %>%
     str_replace('(?<= )D(?=e )', 'd')
-  df$storey = ifelse(df$level == 1, 'Terreo',
-                     ifelse(df$level < max(df$level), 'Intermediario', 'Cobertura'))
-  df$level = as.character(df$level)
+  df$storey = ifelse(df$storey == 1, 'Terreo',
+                     ifelse(df$storey < max(df$storey), 'Intermediário', 'Cobertura'))
   return(df)
 }
 
@@ -280,22 +279,23 @@ WritePlot = function(plot, plot_name, output_dir) {
 
 # main function ####
 DisplayMain1 = function(input_path, output_dir) {
+  input_path = './result/sample_simp.csv'
+  output_dir = './plot_table/'
+  
   # load and process data
   df = input_path %>%
     fread() %>%
     as.data.frame() %>%
-    bind_rows() %>%
     RnmValues()
   df = df %>% CalcHab() %>% ClassHab()
-  rels = c(FALSE, TRUE)
-  diff_dfs_list = lapply(rels, ProcessDiff, df, TRUE)
+  diff_dfs_list = lapply(c(FALSE, TRUE), ProcessDiff, df, TRUE)
   # plot
   BoxPlotPHFT(df, output_dir)
-  mapply(BoxPlotDiffPHFT, diff_dfs_list, rels, output_dir)
+  mapply(BoxPlotDiffPHFT, diff_dfs_list, c(FALSE, TRUE), output_dir)
   SummResults(diff_dfs_list[[1]], output_dir)
   BarPlotClass(df, output_dir)
   BarPlotDiffClass(diff_dfs_list[[1]], output_dir)
 }
 
-DisplayMain1('./result/data_linear.csv', './plot_table/')
+DisplayMain1('./result/sample_simp.csv', './plot_table/')
 BarPlotSA('./result/sobol_analysis.json', './result/sobol_problem.json', './plot_table/')

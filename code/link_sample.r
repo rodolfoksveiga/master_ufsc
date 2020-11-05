@@ -1,7 +1,7 @@
 # main function ####
 LinkSample = function(sample, seeds_dir, models_dir) {
   seed_paths = paste0(seeds_dir, sample$typo, '.json')
-  construction = list(ref17 = c(1, 1), ref8 = c(1, 2), tm20 = c(4, 1), tv = c(5, 3), sf = c(6, 4))
+  construction = list(ref17 = c(1, 1), ref8 = c(1, 2), tm20 = c(3, 1), tv = c(4, 3), sf = c(5, 4))
   index = sapply(sample$shell, grep, names(construction))
   shells = index %>% lapply(function(x, y) c(shell_wall = y[[x]][1], shell_roof = y[[x]][2]),
                             construction) %>% bind_rows()

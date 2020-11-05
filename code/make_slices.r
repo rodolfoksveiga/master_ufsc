@@ -4,7 +4,7 @@ AddSumms = function(df) {
   summ = c('Number of simulations with:',
            paste('    Terminal errors =', sum(df[1, ])),
            paste('    Severe errors =', sum(df[2, ])),
-           paste('    Terminal errors =', sum(df[3, ])))
+           paste('    Warnings =', sum(df[3, ])))
   return(summ)
 }
 # handle slices
