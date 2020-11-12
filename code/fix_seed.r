@@ -40,4 +40,4 @@ FixSeed = function(seed_path) {
 }
 
 # application ####
-FixSeed('~/rolante/test/h.epJSON')
+FixSeed('~/rolante/consult/consult4_rv_90.epJSON')
