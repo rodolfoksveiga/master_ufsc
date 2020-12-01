@@ -50,7 +50,7 @@ FitModel = function(train_tech, tune_grid, samp_tech, nfolds, train_data,
   # run training in parallel
   cores = detectCores() - cores_left
   registerDoParallel(cores)
-  fit_ctrl = trainControl(samp_tech, nfolds, search = 'random',
+  fit_ctrl = trainControl(samp_tech, nfolds, search = 'grid',
                           returnData = FALSE, verboseIter = TRUE)
   # reproduce results
   set.seed(seed)
@@ -159,10 +159,22 @@ SummAccuracy = function(model, train_tech, pred, targ) {
   return(table)
 }
 
-# main function ####
-GenMLModels = function(data_path, nfolds, tune_length, tune_grid,
-                       sa_path, threshold, save_results, save_models, models_dir,
-                       plots_dir, cores_left, inmet) {
+# # main function ####
+# GenMLModels = function(data_path, nfolds, tune_length, tune_grid, sa_path, threshold,
+#                        save_results, save_models, models_dir, plots_dir, cores_left) {
+  
+  data_path = './result/sample_year.csv'
+  nfolds = 2
+  tune_length = 2
+  tune_grid = list(NULL)
+  sa_path = './result/sobol_analysis.json'
+  threshold = 0
+  save_results = TRUE
+  save_models = TRUE
+  models_dir = './result/'
+  plots_dir = './plot_table/'
+  cores_left = 0
+  
   # load data
   raw_data = read.csv(data_path)
   # define qualitative and quantitative variables
@@ -177,55 +189,63 @@ GenMLModels = function(data_path, nfolds, tune_length, tune_grid,
   dummy_data = CreateDummies(raw_data)
   summary(raw_data)
   # split data into train and test sets
-  raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.01)
-  dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.01)
+  raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
+  dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
   # train
   # models_list = list(lm = 'lm', svmr = 'svmRadial', brnn = 'brnn')
-  models_list = list(lm = 'lm', xgbt = 'xgbTree')
+  models_list = list(lm = 'lm', rf = 'rf', ranger = 'ranger',
+		     svm = 'svmRadial', xgbt = 'xgbTree', brnn = 'brnn')
   models = mapply(FitModel, models_list, tune_grid, SIMPLIFY = FALSE,
                   MoreArgs = list('cv', nfolds, dummy_data$train, cores_left, tune_length))
-  # test
-  predictions = models %>%
-    lapply(predict, newdata = dummy_data$test) %>%
-    as.data.frame()
-  # plots and results
-  # stats comparison between models
-  suffix = paste0('f', nfolds, '_', ncol(raw_data$train))
-  models_comp = CompModels(models)
-  models_summ = summary(models_comp)
-  if (save_results) {
-    # plot comparison between models
-    PlotComp(models_comp, suffix, plots_dir)
-    # plot training process
-    mapply(PlotFit, models[-1], names(models[-1]), suffix, MoreArgs = list(plots_dir))
-    # plot model performance
-    mapply(PlotPerf, names(models), predictions,
-           MoreArgs = list(dummy_data$test$targ, suffix, plots_dir))
-    # plot variables importance
-    mapply(PlotVarImp, names(models), predictions,
-           MoreArgs = list(raw_data$test, suffix, plots_dir))
-    # generate accuracy table
-    GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, plots_dir)
+  
+  Funka = function(model, tag, dir) {
+    write.csv(model$results, paste0(dir, 'hps1_', tag, '.csv'), row.names = FALSE)
   }
-  if (save_models) {
-    saveRDS(models, file = paste0(models_dir, 'models_', suffix, '.rds'))
-  } else {
-    return(models)
-  }
-}
-
-# application ####
-GenMLModels(
-  data_path = './result/sample_year.csv',
-  nfolds = 2,
-  tune_length = 2,
-  tune_grid = list(NULL),
-  sa_path = './result/sobol_analysis.json',
-  threshold = 0,
-  save_results = TRUE,
-  save_models = TRUE,
-  models_dir = './result/',
-  plots_dir = './plot_table/',
-  cores_left = 0,
-  inmet = inmet
-)
+  
+  mapply(Funka, models[-1], names(models)[-1], models_dir)
+  
+#   # test
+#   predictions = models %>%
+#     lapply(predict, newdata = dummy_data$test) %>%
+#     as.data.frame()
+#   # plots and results
+#   # stats comparison between models
+#   suffix = paste0('f', nfolds, '_', ncol(raw_data$train))
+#   models_comp = CompModels(models)
+#   models_summ = summary(models_comp)
+#   if (save_results) {
+#     # plot comparison between models
+#     PlotComp(models_comp, suffix, plots_dir)
+#     # plot training process
+#     mapply(PlotFit, models[-1], names(models[-1]), suffix, MoreArgs = list(plots_dir))
+#     # plot model performance
+#     mapply(PlotPerf, names(models), predictions,
+#            MoreArgs = list(dummy_data$test$targ, suffix, plots_dir))
+#     # plot variables importance
+#     mapply(PlotVarImp, names(models), predictions,
+#            MoreArgs = list(raw_data$test, suffix, plots_dir))
+#     # generate accuracy table
+#     GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, plots_dir)
+#   }
+#   if (save_models) {
+#     saveRDS(models, file = paste0(models_dir, 'models_', suffix, '.rds'))
+#   } else {
+#     return(models)
+#   }
+# }
+# 
+# # application ####
+# GenMLModels(
+#   data_path = './result/sample_year.csv',
+#   nfolds = 2,
+#   tune_length = 2,
+#   tune_grid = list(NULL),
+#   sa_path = './result/sobol_analysis.json',
+#   threshold = 0,
+#   save_results = TRUE,
+#   save_models = TRUE,
+#   models_dir = './result/',
+#   plots_dir = './plot_table/',
+#   cores_left = 0,
+#   inmet = inmet
+# )

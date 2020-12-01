@@ -1,5 +1,5 @@
 # load libraries ####
-pkgs = c('data.table', 'dplyr', 'forcats', 'ggplot2', 'ggthemr',
+pkgs = c('caret', 'data.table', 'dplyr', 'forcats', 'ggplot2',
          'jsonlite', 'purrr', 'RColorBrewer', 'reshape2', 'stringr')
 lapply(pkgs, library, character.only = TRUE)
 
@@ -12,9 +12,6 @@ CalcDiff = function(df1, df0, rel, hab) {
     df = df/abs(df0[, !label])*100
   }
   df = cbind(df, df1[, label])
-  if (hab == TRUE) {
-    df$min = df1$min == df0$min
-  }
   return(df)
 }
 # classificate habitations -> VERY INEFFICIENT FUNCTION! -> USE GROUP_BY AND SUMMARIZE!
@@ -24,7 +21,7 @@ CalcHab = function(df) {
     label = sapply(df, IsLabel)
     df = data.frame('top_max' = max(df$top_max), 'top_min' = min(df$top_min),
                     'ph_sup' = mean(df$ph_sup), 'ph_inf' = mean(df$ph_inf),
-                    'phft' = mean(df$phft), df[1, label])
+                    'phft' = mean(df$phft), df[1, label[-length(label)]])
     label = sapply(df, IsLabel)
     df[!label] = round(df[!label], 1)
     return(df)
@@ -32,15 +29,45 @@ CalcHab = function(df) {
   df = seq(1, nrow(df), 3) %>% lapply(Test, df) %>% bind_rows()
   return(df)
 }
-
-#classificate habitation
-ClassHab = function(df) {
-  reals = unique(df$shell)
-  reals = reals[reals != 'Referência']
-  df = reals  %>% lapply(function(x, y) filter(y, shell == x), df) %>%
-    lapply(IdentMin, filter(df, shell == 'Referência')) %>%
-    bind_rows()
-  return(df)
+# calculate thermal balance
+CalcTB = function(input_path, walls, storey, dwel, area, bwcs) {
+  # define constants
+  sources = c('Zone Total Internal Convective Heating Energy',
+              'AFN Zone Infiltration Sensible Heat Gain Energy',
+              'AFN Zone Infiltration Sensible Heat Loss Energy',
+              rep('Surface Inside Face Convection Heat Gain Energy', 8))
+  names(sources) = c('int', 'afn_gain', 'afn_loss', 'floor', 'roof',
+                     'window', 'door', rep('wall', 4))
+  spec = c('floor', 'roof', 'window', 'door')
+  rooms = c('liv', 'dorm1', 'dorm2', bwcs)
+  sim = str_extract(input_path, '(?<=_)\\d(?=_)')
+  # edit inputs
+  walls = lapply(walls, function(x) paste0(x[['label']], '_wall', x[['index']]))
+  storey = paste0('f', storey)
+  targs = c(rep(list(rooms), 7), walls)
+  names(targs)[1:7] = names(sources)[1:7]
+  # load data frame
+  df = as.data.frame(fread(input_path))
+  # define column names
+  cols = df %>% colnames() %>% str_remove('_(INT|EXT)')
+  # define inner function to calculate heat flow
+  CalcHF = function(targ, type) {
+    targ = targ %>% str_flatten('|')
+    surf = ifelse(type %in% spec, paste0('_', type), '')
+    pattern = paste0(storey, '_', dwel, '_(', targ, ')', surf, '.*') %>%
+      str_to_upper() %>% paste0(':', sources[[type]])
+    index =  cols %>% str_which(pattern)
+    mult = ifelse(type %in% c(spec, 'wall'), -1, 1)
+    heat_flow = df %>% select(all_of(index)) %>% colSums() %>% sum() %>% prod(mult)
+    return(heat_flow)
+  }
+  # calculate heat flow
+  heat_flow = mapply(CalcHF, targs, names(sources))/3600000/area
+  heat_flow['afn'] = heat_flow['afn_gain'] - heat_flow['afn_loss']
+  heat_flow = heat_flow[!str_detect(names(heat_flow), 'afn_(gain|loss)')]
+  heat_flow = heat_flow %>% as.data.frame() %>% rename(load = '.') %>%
+    tibble::rownames_to_column('source') %>% cbind(sim = sim)
+  return(heat_flow)
 }
 # estimate mae
 EstMAE = function(var) {
@@ -52,16 +79,10 @@ EstRMSE = function(var) {
   rmse = sqrt(sum(var^2)/length(var))
   return(rmse)
 }
-# identify cases with performance higher than the minimum
-IdentMin = function(df1, df0) {
-  df1$min = df1$phft > df0$phft & df1$top_max < df0$top_max + 1 &
-    !(df1$weather == 'Curitiba' & df1$top_min < df0$top_min - 1)
-  return(df1)
-}
 # is label?
 IsLabel = function(col) is.character(col) | is.logical(col)
 # differentiate
-ProcessDiff = function(rel, df, hab = FALSE) {
+ProcessDiff = function(rel, df, hab = TRUE) {
   simps = unique(df$sim)[-1]
   df = simps %>% lapply(function(x, y) filter(y, sim == x), df) %>%
     lapply(CalcDiff, filter(df, sim == '0'), rel, hab) %>%
@@ -78,102 +99,191 @@ RnmValues = function(df) {
   df$position = ifelse(df$position == 'corner', 'Canto', 'Meio')
   df$orient = str_to_upper(df$orient)
   df$index = ifelse(grepl('dorm', df$room), str_extract(df$room, '(?<=dorm)[12]'), NA)
-  df$room = ifelse(df$room == 'liv', 'Sala', 'Dormitorio')
+  df$room = ifelse(df$room == 'liv', 'Sala', 'Dormitório')
   df$weather = df$weather %>%
     str_replace_all('_', ' ') %>%
     str_to_title() %>%
     str_replace('(?<= )D(?=e )', 'd')
-  df$storey = ifelse(df$storey == 1, 'Terreo',
-                     ifelse(df$storey < max(df$storey), 'Intermediário', 'Cobertura'))
+  df$weather = ifelse(df$weather == 'Rio de Janeiro', 'Rio de\nJaneiro',
+                      ifelse(df$weather == 'Sao Paulo', 'São\nPaulo', df$weather))
+  df = filter(df, storey %in% c(1, 3, 5))
+  df$storey = ifelse(df$storey == 1, 'Térreo',
+                     ifelse(df$storey == 3, 'Intermediário', 'Cobertura'))
   return(df)
 }
 
 # plot and table functions ####
-# bar plot classifications count
-BarPlotClass = function(df, output_dir) {
-  df$min = ifelse(df$min == TRUE, 'Sim', 'Não')
-  plot = ggplot(df, aes(x = sim, fill = min)) +
-    geom_bar(stat = 'count', position = 'dodge', colour = 'black') +
-    labs(x = 'Simplificação',
-         y = 'Contagem',
-         fill = 'Desempenho maior do que o mínimo?') +
-    coord_flip() +
-    scale_fill_brewer(palette = 'Dark2') +
-    theme(axis.title = element_text(size = 16, face = 'bold'),
-          axis.text.x = element_text(size = 14, colour = 'black'),
-          axis.text.y = element_text(size = 14, colour = 'black'),
-          axis.line = element_line(colour = 'grey'),
-          panel.background = element_rect(fill = 'cornsilk'),
-          panel.grid = element_line(linetype = 'dotted', size = 0.75, colour = 'lightgrey'),
-          legend.text = element_text(size = 14),
-          legend.title = element_text(size = 15),
-          legend.position = 'bottom')
-  WritePlot(plot, 'class_barplot', output_dir)
+# summarize results
+SummResults = function(df, output_dir) {
+  df %>%
+    mutate(sim = as.factor(sim)) %>%
+    group_by(sim) %>%
+    summarize('min' = min(phft),
+              '5_percent' = quantile(phft, probs = c(0.05), names = F),
+              '1_quart' = quantile(phft, probs = c(0.25), names = F),
+              'mean' = mean(phft),
+              'median' = median(phft),
+              '3_quart' = quantile(phft, probs = c(0.75), names = F),
+              '95_percent' = quantile(phft, probs = c(0.95), names = F),
+              'max' = max(phft),
+              'mae' = EstMAE(phft),
+              'rmse' = EstRMSE(phft)) %>%
+    mutate_at(names(.)[-1], round, 1) %>%
+    write.csv(paste0(output_dir, 'simp_summ_table.csv'), row.names = FALSE)
 }
-# bar plot classification differences count
-BarPlotDiffClass = function(df, output_dir) {
-  df = df %>% group_by(sim, weather) %>% summarize('count' = sum(min)/length(min)*100)
-  plot = ggplot(df, aes(x = sim, y = count, fill = weather, label = sim)) +
-    geom_bar(stat = 'identity', position = 'dodge', colour = 'black') +
+# plot density of phft differences
+PlotDiffPHFTDist = function(df, output_dir) {
+  plot = ggplot(df, aes(x = phft, colour = sim, fill = sim)) +
+    geom_density(alpha = 0.1) +
+    geom_vline(xintercept = 0, colour = 'black', linetype = 'dashed') +
+    labs(x = 'ΔPHFT (%)', y = 'Probabilidade',
+         fill = 'Simplificação: ', colour = 'Simplificação: ') +
+    theme(legend.text = element_text(size = 12),
+          legend.title = element_text(size = 13),
+          legend.position = 'bottom',
+          axis.title.x = element_text(size = 15),
+          axis.title.y = element_text(size = 15),
+          axis.text.x = element_text(size = 14),
+          axis.text.y = element_text(size = 14))
+  WritePlot(plot, 'simp_diff_phft_dist', output_dir)
+}
+# box plot phft
+PlotPHFT = function(df, output_dir) {
+  plot = ggplot(df, aes(x = sim, y = phft)) +
+    facet_grid(storey ~ weather) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_jitter(aes(colour = shell), size = 0.5, alpha = 0.75) +
     labs(x = 'Simplificação',
-         y = 'Contagem (%)',
-         fill = 'Clima:') +
-    scale_y_continuous(breaks = seq(0, 100, 20)) +
-    scale_fill_brewer(palette = 'Dark2') +
-    theme(axis.title = element_text(size = 16, face = 'bold'),
-          axis.text.x = element_text(size = 14, colour = 'black'),
-          axis.text.y = element_text(size = 14, colour = 'black'),
-          axis.line = element_line(colour = 'grey'),
-          panel.background = element_rect(fill = 'cornsilk'),
-          panel.grid = element_line(linetype = 'dotted', size = 0.75, colour = 'lightgrey'),
-          legend.text = element_text(size = 14),
-          legend.title = element_text(size = 15),
-          legend.position = 'bottom')
-  WritePlot(plot, 'class_diff_barplot', output_dir)
+         y = 'PHFT (%)',
+         colour = 'Envoltória: ') +
+    theme(legend.text = element_text(size = 11),
+          legend.title = element_text(size = 12),
+          legend.position = 'bottom',
+          axis.title.x = element_text(size = 14),
+          axis.title.y = element_text(size = 14),
+          axis.text.x = element_text(size = 13),
+          axis.text.y = element_text(size = 13),
+          strip.text.x = element_text(size = 16),
+          strip.text.y = element_text(size = 16))
+  WritePlot(plot, 'simp_phft_boxplot', output_dir, 18, 29)
+}
+# box plot phft differences
+PlotDiffPHFT = function(df, rel, output_dir) {
+  plot = ggplot(df, aes(x = sim, y = phft)) +
+    facet_grid(storey ~ weather) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_jitter(aes(colour = shell), size = 0.5, alpha = 0.75) +
+    geom_hline(yintercept = 0, colour = 'black', linetype = 'dashed') +
+    labs(x = 'Simplificação',
+         y = ifelse(rel == FALSE, 'ΔPHFT (%)', 'ΔPHFT Relativa (%)'),
+         colour = 'Envoltória: ') +
+    theme(legend.text = element_text(size = 11),
+          legend.title = element_text(size = 12),
+          legend.position = 'bottom',
+          axis.title.x = element_text(size = 14),
+          axis.title.y = element_text(size = 14),
+          axis.text.x = element_text(size = 13),
+          axis.text.y = element_text(size = 13),
+          strip.text.x = element_text(size = 16),
+          strip.text.y = element_text(size = 16))
+  plot_name = paste0('simp_diff_phft_', ifelse(rel == FALSE, 'abs', 'rel'), '_boxplot')
+  WritePlot(plot, plot_name, output_dir, 18, 29)
+}
+# define extreme cases
+DefExtremes = function(df, output_dir) {
+  df %>%
+    group_by(sim) %>%
+    slice(c(which.min(phft), which.max(phft))) %>%
+    mutate_if(is.numeric, round, 2) %>%
+    write.csv(paste0(output_dir, 'simp_extremes.csv'), row.names = FALSE)
 }
 # bar plot thermal balance
-BarPlotTB = function(df, si, tp, sh, st, po, or, ro, id, we, output_dir) {
-  df = filter(df, (sim == '00' | sim == si) & typo == tp & shell == sh & storey == st &
-                position == po & orient == or & room == ro & (index == id | is.na(id)) &
-                weather == we)
-  df$sim = paste0(ifelse(df$sim == '00', 'Modelo Base', paste0('Simplificação n° ', df$sim)))
-  plot_title = paste(tp, '-', sh, '-', po, or, '-', st, '-', we)
-  variables = c('il_hg', 'floor_hg', 'roof_hg', 'walls_int_hg',
-                'walls_ext_hg', 'windows_hg', 'doors_hg', 'afn_hg')
-  df = melt(df, id.vars = 'sim', measure.vars = variables)
-  variables = c('Cargas Internas', 'Piso', 'Cobertura', 'Parede Internas',
-                'Parede Externas', 'Janelas', 'Portas', 'Ventilação Natural')
-  png(filename = paste0(output_dir, plot_name), width = 33.8, height = 19, units = 'cm', res = 500)
-  plot = ggplot(data = df, aes(x = variable, y = value, fill = variable)) +
-      facet_grid(. ~ sim) +
-      geom_bar(stat = 'identity', position = 'dodge') +
-      labs(title = plot_title,
-           subtitle = paste(ro, ifelse(is.na(id), '', id)),
-           x = NULL,
-           y = 'Carga Térmica (kWh/m²)') +
-      scale_fill_discrete(name = 'Troca de calor:',
-                          labels = variables) +
-      theme(axis.title = element_text(size = 16, face = 'bold'),
-            axis.text.x = element_text(size = 14, colour = 'black'),
-            axis.text.y = element_text(size = 14, colour = 'black'),
-            axis.line = element_line(colour = 'grey'),
-            panel.background = element_rect(fill = 'cornsilk'),
-            panel.grid = element_line(linetype = 'dotted', size = 0.75, colour = 'lightgrey'),
-            legend.text = element_text(size = 14),
-            legend.title = element_text(size = 15),
-            legend.position = 'bottom')
-  plot_name = tolower(paste0('tb_', si, '_', tp, '_', sh, '_', str_sub(str_to_lower(st), 1, 3),
-                             '_', str_sub(str_to_lower(po), 1, 1), str_to_lower(or), '_',
-                             str_sub(str_to_lower(ro), 1, 4), '_', gsub(' ', '_', we), '.png'))
+PlotTB = function(input_paths, tag, walls, storey, dwel, area, bwcs, output_dir) {
+  sources = c('Cargas Internas', 'Piso', 'Cobertura', 'Janelas', 'Portas', 'Fachada Sul',
+              'Fachada Leste', 'Fachada Norte', 'Fachada Oeste', 'Ventilação Natural')
+  df = lapply(input_paths, CalcTB, walls, storey, dwel, area, bwcs) %>%
+    bind_rows() %>%
+    mutate(source = factor(source, unique(source), sources),
+           sim = ifelse(sim == 0, 'Modelo inicial', paste0('Simplificação n° ', sim)))
+  # plot
+  plot = ggplot(data = df, aes(x = source, y = load, fill = source)) +
+    facet_grid(. ~ sim) +
+    geom_bar(stat = 'identity', position = 'dodge', colour = 'black', size = 0.25) +
+    labs(x = NULL,
+         y = 'Carga térmica (kWh/m².ano)',
+         fill = 'Troca de calor: ') +
+    theme(legend.text = element_text(size = 10),
+          legend.title = element_text(size = 12),
+          legend.position = 'right',
+          axis.title.x = element_text(size = 14),
+          axis.title.y = element_text(size = 14),
+          axis.text.x = element_blank(),
+          axis.text.y = element_text(size = 13),
+          strip.text.x = element_text(size = 15),
+          strip.text.y = element_text(size = 15),
+          axis.ticks = element_blank())
+  plot_name = paste0('simp_tb_', tag)
   WritePlot(plot, plot_name, output_dir)
 }
+# histograms of the datasets inputs
+PlotInputHists = function(input_path, output_dir, sample) {
+  df = read.csv(input_path)
+  set.seed(100)
+  train_part = createDataPartition(df$targ, p = 0.8, list = FALSE)
+  df$targ = NULL
+  mult = ifelse(sample == 'train', 1, -1)
+  psych::multi.hist(df[mult*train_part, ], density = FALSE, freq = TRUE)
+}
+# histograms of the datasets outputs
+PlotTargDist = function(input_path, output_dir) {
+  df = read.csv(input_path)
+  set.seed(100)
+  train_part = createDataPartition(df$targ, p = 0.8, list = FALSE)
+  df$label[train_part] = 'Treino'
+  df$label[-train_part] = 'Teste'
+  plot = ggplot(df) +
+    geom_density(aes(x = targ, colour = label, fill = label), alpha = 0.1) +
+    labs(x = 'PHFT (%)',
+         y = 'Probabilidade',
+         colour = 'Amostra: ',
+         fill = 'Amostra: ') +
+    theme(legend.text = element_text(size = 12),
+          legend.title = element_text(size = 13),
+          legend.position = 'bottom',
+          axis.title.x = element_text(size = 15),
+          axis.title.y = element_text(size = 15),
+          axis.text.x = element_text(size = 14),
+          axis.text.y = element_text(size = 14))
+  WritePlot(plot, 'targ_dist', output_dir)
+}
+# box plot database distribution according to 
+PlotInterDist = function(input_path, output_dir) {
+  df = read.csv(input_path)
+  df$int = with(df, ifelse(dbt < 25, 1, ifelse(dbt >= 25 & dbt < 27, 2, 3)))
+  df$int = factor(df$int, c(1, 2, 3))
+  inters = c('TBSm < 25°C', '25°C ≤ TBSm < 27°C', 'TBSm ≥ 27°C')
+  plot = ggplot(df) +
+    geom_boxplot(aes(y = targ, x = int, fill = int)) +
+    coord_flip() +
+    labs(x = 'Intervalo',
+         y = 'PHFT (%)') +
+    scale_fill_discrete(name = 'Intervalo: ', labels = inters) +
+    theme(legend.text = element_text(size = 12),
+          legend.title = element_text(size = 13),
+          legend.position = 'bottom',
+          axis.title.x = element_text(size = 15),
+          axis.title.y = element_text(size = 15),
+          axis.text.x = element_text(size = 14),
+          axis.text.y = element_text(size = 14),
+          strip.text = element_text(size = 15))
+  WritePlot(plot, 'int_boxplot', output_dir)
+}
 # bar plot sobol effects
-BarPlotSA = function(result_path, problem_path, output_dir) {
+PlotSA = function(result_path, problem_path, output_dir) {
   vars = problem_path %>%
     read_json() %>%
     pluck('names') %>%
     unlist()
-  ggthemr('pale', layout = 'scientific')
   plot = result_path %>%
     RJSONIO::fromJSON() %>%
     keep(names(.) %in% c('S1', 'ST')) %>%
@@ -185,117 +295,108 @@ BarPlotSA = function(result_path, problem_path, output_dir) {
     melt() %>%
     ggplot() +
     geom_bar(aes(x = Variable, y = value, fill = variable),
-             stat = 'identity', position = 'dodge', colour = 'black') +
-    geom_text(aes(x = Variable, y = value, label = round(value, 3)), size = 3,
-              position = position_dodge2(width = 1), hjust = -0.15) +
-    geom_hline(yintercept = 0.01, linetype = 'dashed', colour = 'black') +
-    labs(x = 'Input variable', y = 'Sensitivity index value (adim.)') +
+             stat = 'identity', position = 'dodge', colour = 'black', size = 0.1) +
+    geom_text(aes(x = Variable, y = value, label = round(value, 3)), size = 2.5,
+              position = position_dodge2(width = 1), hjust = -0.075) +
+    geom_hline(yintercept = c(0.01, 0.02), linetype = 'dashed', colour = 'black') +
+    labs(x = 'Parâmetro de entrada', y = 'Índice de sensibilidade') +
     coord_flip() +
-    scale_fill_manual(name = 'Legend:', values = brewer.pal(2, 'Paired'),
-                      labels = c('1st order', 'Total effect')) +
-    theme(axis.title = element_text(size = 16, face = 'bold'),
-          axis.text.x = element_text(size = 14),
-          axis.text.y = element_text(size = 14, angle = 30),
-          legend.title = element_text(size = 15, face = 'bold'),
-          legend.text = element_text(size = 14),
-          legend.position = 'bottom')
-  WritePlot(plot, 'sobol_barplot', output_dir)
-  ggthemr_reset()
-}
-# box plot phft differences
-BoxPlotDiffPHFT = function(df, rel, output_dir) {
-  # df: data frame with compiled results
-  # output_dir: output directory
-  # rel: 'TRUE' (relative) or 'FALSE' (absolute)
-  plot = ggplot(df, aes(x = sim, y = phft, group = sim)) +
-    facet_grid(storey ~ weather) +
-    geom_boxplot(outlier.shape = 4) +
-    labs(x = 'Simplificação',
-         y = ifelse(rel == FALSE, 'Diff. Abs. PHFT (%)', 'Diff. Rel. PHFT (%)')) +
-    scale_fill_brewer(palette = 'Dark2') +
-    theme(legend.text = element_text(size = 11),
-          legend.title = element_text(size = 12),
+    scale_fill_manual(name = 'Índice: ', values = brewer.pal(2, 'Paired'),
+                      labels = c('Efeito de primeira ordem', 'Efeito total')) +
+    theme(legend.title = element_text(size = 14),
+          legend.text = element_text(size = 13),
           legend.position = 'bottom',
-          axis.title.x = element_text(size = 15),
-          axis.title.y = element_text(size = 15),
-          axis.text.x = element_text(size = 14),
-          axis.text.y = element_text(size = 14),
-          strip.text.x = element_text(size = 17),
-          strip.text.y = element_text(size = 17))
-  plot_name = ifelse(rel == FALSE, 'phft_diff_abs_boxplot', 'phft_diff_rel_boxplot')
-  WritePlot(plot, plot_name, output_dir)
+          axis.title.x = element_text(size = 14),
+          axis.title.y = element_text(size = 14),
+          axis.text.x = element_text(size = 12),
+          axis.text.y = element_text(size = 11, angle = 30))
+  WritePlot(plot, 'sobol_barplot', output_dir, height = 20)
 }
-# box plot phft
-BoxPlotPHFT = function(df, output_dir) {
-  # df: data frame with compiled results
-  # output_dir: output directory
-  plot = ggplot(df, aes(x = sim, y = phft, group = sim)) +
-    facet_grid(storey ~ weather) +
-    geom_boxplot(outlier.shape = 4) +
-    labs(x = 'Simplificação',
-         y = 'PHFT (%)') +
-    scale_fill_brewer(palette = 'Dark2') +
-    theme(legend.text = element_text(size = 11),
-          legend.title = element_text(size = 12),
-          legend.position = 'bottom',
-          axis.title.x = element_text(size = 15),
-          axis.title.y = element_text(size = 15),
-          axis.text.x = element_text(size = 14),
-          axis.text.y = element_text(size = 14),
-          strip.text.x = element_text(size = 17),
-          strip.text.y = element_text(size = 17))
-  WritePlot(plot, 'phft_simp_boxplot', output_dir)
-}
-# summarize results
-SummResults = function(df, output_dir) {
-  # df: 
-  # output_dir: 
-  df$sim = as.factor(df$sim)
-  summ = df %>%
-    group_by(sim) %>%
-    summarize('min' = min(phft),
-              '5_percent' = quantile(phft, probs = c(0.05), names = F),
-              '1_quart' = quantile(phft, probs = c(0.25), names = F),
-              'mean' = mean(phft),
-              'median' = median(phft),
-              '3_quart' = quantile(phft, probs = c(0.75), names = F),
-              '95_percent' = quantile(phft, probs = c(0.95), names = F),
-              'max' = max(phft),
-              'mae' = EstMAE(phft),
-              'rmse' = EstRMSE(phft))
-  summ[, -1] = round(summ[, -1], 1)
-  write.csv(summ, paste0(output_dir, 'summ_table_simp.csv'), row.names = FALSE)
-}
+
 # define characteristics to save the plot
-WritePlot = function(plot, plot_name, output_dir) {
+WritePlot = function(plot, plot_name, output_dir, width = 18, height = 10) {
   # plot: plot variable
   # plot_name: file name (without extension)
   # output_dir: output directory
   png(filename = paste0(output_dir, plot_name, '.png'),
-      width = 33.8, height = 19, units = 'cm', res = 500)
+      width, height, units = 'cm', res = 500)
   plot(plot)
   dev.off()
 }
 
-# main function ####
-DisplayMain1 = function(input_path, output_dir) {
+# main functions ####
+# display statistics of the simplifications
+DisplayStats = function(input_path, output_dir) {
   input_path = './result/sample_simp.csv'
-  output_dir = './plot_table/'
   
   # load and process data
-  df = input_path %>%
-    fread() %>%
-    as.data.frame() %>%
-    RnmValues()
-  df = df %>% CalcHab() %>% ClassHab()
-  diff_dfs_list = lapply(c(FALSE, TRUE), ProcessDiff, df, TRUE)
+  df = input_path %>% fread() %>% as.data.frame() %>% RnmValues()
+  df = df %>% CalcHab()
+  diff_dfs_list = lapply(c(FALSE, TRUE), ProcessDiff, df)
   # plot
-  BoxPlotPHFT(df, output_dir)
-  mapply(BoxPlotDiffPHFT, diff_dfs_list, c(FALSE, TRUE), output_dir)
   SummResults(diff_dfs_list[[1]], output_dir)
-  BarPlotClass(df, output_dir)
-  BarPlotDiffClass(diff_dfs_list[[1]], output_dir)
+  PlotDiffPHFTDist(diff_dfs_list[[1]], output_dir)
+  PlotPHFT(df, output_dir)
+  mapply(PlotDiffPHFT, diff_dfs_list, c(FALSE, TRUE), output_dir)
+  DefExtremes(diff_dfs_list[[1]], output_dir)
+}
+# display thermal balance of the simplifications
+DisplayTB = function(output_dir) {
+  # define variables to calculate thermal balances
+  input_paths = list(
+    caso1 = c('~/rolante/master/sorriso_0_h_tm_f1_cne.csv',
+              '~/rolante/master/sorriso_1_h_tm_f1_cne.csv'),
+    caso2 = c('~/rolante/master/curitiba_0_l_tm_f1_mse.csv',
+              '~/rolante/master/curitiba_2_l_tm_f1_mse.csv'),
+    caso3 = c('~/rolante/master/teresina_0_l_tm_f3_mnw.csv',
+              '~/rolante/master/teresina_4_l_tm_f3_mnw.csv'),
+    caso4 = c('~/rolante/master/rio_de_janeiro_0_l_sf_f1_mse.csv',
+              '~/rolante/master/rio_de_janeiro_4_l_sf_f1_mse.csv')
+  )
+  walls = list(
+    caso1 = list(wall1 = list(label = 'liv',
+                              index = 1),
+                 wall2 = list(label = c('liv', 'bwc', 'dorm1'),
+                              index = c(21, 2, 2)),
+                 wall3 = list(label = c('dorm1', 'dorm2', 'liv'),
+                              index = c(3, 3, 34)),
+                 wall4 = list(label = c('liv', 'dorm2'),
+                              index = c(4, 4))),
+    caso2 = list(wall1 = list(label = c('liv', 'dorm2', 'dorm1'),
+                              index = c(11, 1, 12)),
+                 wall2 = list(label = 'dorm1',
+                              index = 21),
+                 wall3 = list(label = c(rep('dorm1', 3), rep('bwc1', 2),
+                                        'liv', 'bwc2', 'bwc2'),
+                              index = c(31, 22, 32, 3, 4, 31, 2, 3)),
+                 wall4 = list(label = c('bwc2', 'liv'),
+                              index = c(4, 4))),
+    caso3 = list(wall1 = list(label = c(rep('liv', 3), rep('bwc', 2), 'dorm1'),
+                              index = c(11, 41, 12, 1, 2, 12)),
+                 wall2 = list(label = 'dorm1',
+                              index = 2),
+                 wall3 = list(label = c('dorm1', 'dorm2', 'liv'),
+                              index = c(31, 3, 32)),
+                 wall4 = list(label = rep('liv', 2),
+                              index = c(41, 42))),
+    caso4 = list(wall1 = list(label = c('liv', 'dorm2', 'dorm1'),
+                              index = c(11, 1, 12)),
+                 wall2 = list(label = 'dorm1',
+                              index = 21),
+                 wall3 = list(label = c(rep('dorm1', 3), rep('bwc1', 2),
+                                        'liv', 'bwc2', 'bwc2'),
+                              index = c(31, 22, 32, 3, 4, 31, 2, 3)),
+                 wall4 = list(label = c('bwc2', 'liv'),
+                              index = c(4, 4)))
+  )
+  area = c(caso1 = 44.24, caso2 = 41.24, caso3 = 38.65, caso4 = 41.24)
+  storey = c(caso1 = 1, caso2 = 1, caso3 = 3, caso4 = 1)
+  dwel = c(caso1 = 'cne', caso2 = 'mse', caso3 = 'mnw', caso4 = 'mse')
+  bwcs = list(caso1 = 'bwc', caso2 = paste0('bwc', 1:2),
+              caso3 = 'bwc', caso4 = paste0('bwc', 1:2))
+  mapply(PlotTB, input_paths, names(input_paths), walls, storey, dwel, area, bwcs, output_dir)
 }
 
-DisplayMain1('./result/sample_simp.csv', './plot_table/')
-BarPlotSA('./result/sobol_analysis.json', './result/sobol_problem.json', './plot_table/')
+# application ####
+DisplayStats('./result/sample_simp.csv', './plot_table/')
+DisplayTB('./plot_table/')

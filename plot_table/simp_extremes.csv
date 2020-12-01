@@ -1,0 +1,18 @@
+"top_max","top_min","ph_sup","ph_inf","phft","sim","typo","shell","storey","position","orient","weather"
+0.3,0.1,6.5,0,-6.5,"1","L","Tijolo
+Maciço","Cobertura","Meio","NE","Teresina"
+-0.6,0,-5.1,0,5.1,"1","H","Tijolo
+Maciço","Térreo","Canto","NE","Sorriso"
+-0.5,-0.7,0,13,-13,"2","L","Tijolo
+Maciço","Térreo","Meio","SE","Curitiba"
+0,-0.5,-8.5,0,8.5,"2","L","Steel
+Frame","Térreo","Meio","SW","Rio de
+Janeiro"
+2.6,-2.3,0.5,11.5,-12,"3","L","Steel
+Frame","Térreo","Canto","SE","Curitiba"
+2,-1.4,-11.6,0,11.6,"3","H","Tijolo
+Maciço","Cobertura","Canto","NE","Teresina"
+0.1,-0.9,0,12.1,-12.1,"4","L","Tijolo
+Maciço","Térreo","Meio","SW","Curitiba"
+0,-0.6,-5.9,0,5.9,"4","L","Steel
+Frame","Térreo","Meio","SE","Sorriso"

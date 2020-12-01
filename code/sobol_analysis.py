@@ -22,7 +22,7 @@ def SobolAnalysis(saltelli_path, problem_path, output_dir):
     json.dump(solution, file, indent = 4)
 
 # main code
-problem_path = '/home/rodox/git/master/result/sobol_problem.json'
 saltelli_path = '/home/rodox/git/master/result/saltelli_sample.csv'
+problem_path = '/home/rodox/git/master/result/sobol_problem.json'
 output_dir = '/home/rodox/git/master/result/'
 SobolAnalysis(saltelli_path, problem_path, output_dir)

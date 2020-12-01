@@ -50,6 +50,11 @@ invisible({
   grid = expand.grid(simp = 0:1, typo = c('l', 'h'), stringsAsFactors = FALSE,
                        shell = c('ref17', 'ref8', 'tm', 'tv', 'sf')) %>%
     LinkSample(seeds_dir, models_dir)
+  
+  #####
+  grid = grid[c(9, 11, 12, 17), ]
+  #####
+  
   # build cases
   cores = detectCores() - cores_left
   outputs = c('mean_temp', 'op_temp', 'air_change', 'therm_bal', 'surf_temp')
@@ -70,6 +75,15 @@ invisible({
   file.rename(paste0(shrink_dir, file_names), paste0(models_dir, file_names))
   # define and split simulation grid
   sample = DefSimGrid(models_dir, epws_dir, weathers, inmet, '\\.epJSON')
+  
+  #####
+  prefixes = c('sorriso_0_h_tm', 'sorriso_1_h_tm',
+               'curitiba_0_l_tm', 'curitiba_2_l_tm_f1_mse',
+               'teresina_0_l_tm', 'teresina_4_l_tm_f3_mnw',
+               'rio_de_janeiro_0_l_sf', 'rio_de_janeiro_4_l_sf_f1_mse')
+  sample = filter(sample, prefix %in% prefixes)
+  #####
+  
   size = nrow(sample) %/% cores
   n = 1:size
   sample = MakeSlices(sample, n, size, cores)

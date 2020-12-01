@@ -65,4 +65,6 @@ invisible({
   lapply(c('summary', 'description'), HandleSlices, result_dir)
   # join samples
   JoinSamples(saltelli_path, sample_paths[1])
+  # perform sensitivity analysis
+  py_run_file('./code/saltelli_sample.py')
 })
