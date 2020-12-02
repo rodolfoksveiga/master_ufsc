@@ -185,7 +185,7 @@ GenMLModels = function(threshold, sa_path, data_path, nfolds, tune_length,
   raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
   dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
   # train
-  models_list = list(lm = 'lm', brnn = 'brnn')
+  models_list = list(lm = 'lm', rf = 'rf', svm = 'svmRadial')
   models = mapply(FitModel, models_list, tune_grid, SIMPLIFY = FALSE,
                   MoreArgs = list('cv', nfolds, dummy_data$train, cores_left, tune_length))
   # test
