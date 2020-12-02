@@ -226,8 +226,8 @@ GenMLModels = function(threshold, sa_path, data_path, nfolds, tune_length,
 }
 
 # application ####
-hps = list(lm = NULL, brnn = expand.grid(.neurons = 30:40))
+hps = list(lm = NULL, rf = NULL, svm = expand.grid(.sigma = 0.01, .C = 2^(1:8)))
 lapply(c(0, 0.01, 0.02), GenMLModels, sa_path = './result/sobol_analysis_old.json',
-       data_path = './result/sample_year.csv', nfolds = 2, tune_length = 2, tune_grid = hps,
+       data_path = './result/sample_year.csv', nfolds = 2, tune_length = 8, tune_grid = hps,
        save_stats = TRUE, save_plots = FALSE, save_models = TRUE, results_dir = './result/',
        plots_dir = './plot_table/', cores_left = 0)
