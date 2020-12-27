@@ -69,6 +69,13 @@ CalcTB = function(input_path, walls, storey, dwel, area, bwcs) {
     tibble::rownames_to_column('source') %>% cbind(sim = sim)
   return(heat_flow)
 }
+# create dummy variables
+CreateDummies = function(data) {
+  dummy_model = dummyVars(targ ~ ., data = data)
+  dummy_data = data.frame(predict(dummy_model, newdata = data))
+  dummy_data$targ = data$targ
+  return(dummy_data)
+}
 # estimate mae
 EstMAE = function(var) {
   mae = sum(abs(var))/length(var)
@@ -88,6 +95,19 @@ ProcessDiff = function(rel, df, hab = TRUE) {
     lapply(CalcDiff, filter(df, sim == '0'), rel, hab) %>%
     bind_rows()
   return(df)
+}
+# select features according to sobol analysis
+SelectFeats = function(data, sa_path, threshold) {
+  unvar = sa_path %>%
+    RJSONIO::fromJSON() %>%
+    keep(names(.) %in% c('S1', 'ST')) %>%
+    as.data.frame() %>%
+    mutate(var = colnames(data)[-length(data)]) %>%
+    filter(ST <= threshold) %>%
+    pull(var)
+  data = data %>%
+    select(-all_of(unvar))
+  return(data)
 }
 # pre process data to plot
 RnmValues = function(df) {
@@ -256,7 +276,7 @@ PlotTargDist = function(input_path, output_dir) {
           axis.text.y = element_text(size = 14))
   WritePlot(plot, 'targ_dist', output_dir)
 }
-# box plot database distribution according to 
+# box plot database distribution according to dbt thresholds
 PlotInterDist = function(input_path, output_dir) {
   df = read.csv(input_path)
   df$int = with(df, ifelse(dbt < 25, 1, ifelse(dbt >= 25 & dbt < 27, 2, 3)))
@@ -312,6 +332,93 @@ PlotSA = function(result_path, problem_path, output_dir) {
           axis.text.y = element_text(size = 11, angle = 30))
   WritePlot(plot, 'sobol_barplot', output_dir, height = 20)
 }
+# plot distribution of quantitative variables after pre-processing
+PlotQuantsDist = function(input_path, output_dir) {
+  quant_vars = c('area', 'ratio', 'height', 'azimuth', 'abs_wall',
+                 'abs_roof', 'wwr_liv', 'wwr_dorm', 'u_window', 'shgc',
+                 'open_factor', 'balcony', 'dbt', 'targ')
+  set.seed(100)
+  data = input_path %>%
+    read.csv() %>%
+    select(all_of(quant_vars)) %>%
+    slice(createDataPartition(targ, p = 0.8, list = FALSE))
+  pp_model = preProcess(data, method = c('center', 'scale'))
+  data = predict(pp_model, data)
+  psych::multi.hist(data[, -ncol(data)], density = FALSE, freq = TRUE)
+}
+# plot train accuracy
+PlotTrainAccuracy = function(input_path, output_dir) {
+  plot = input_path %>%
+    read.csv() %>%
+    select(-'rsquared') %>%
+    melt(id.vars = c('model', 'nvar')) %>%
+    mutate_at(c('model', 'variable'), str_to_upper) %>%
+    ggplot(aes(x = as.factor(nvar), y = value, fill = model)) +
+    geom_boxplot(show.legend = FALSE) +
+    facet_grid(model ~ variable, scales = 'free_x') +
+    coord_flip() +
+    labs(x = 'N° de variáveis consideradas',
+         y = 'Valor do índice estatístico (%)') +
+    theme(axis.title.x = element_text(size = 14),
+          axis.title.y = element_text(size = 14),
+          axis.text.x = element_text(size = 13),
+          axis.text.y = element_text(size = 13),
+          strip.text = element_text(size = 14))
+  WritePlot(plot, 'perf_train', output_dir, height = 15)
+}
+# plot test accuracy
+PlotTestAccuracy = function(input_path, output_dir) {
+  plot = input_path %>%
+    read.csv() %>%
+    mutate(model = str_to_upper(model)) %>%
+    melt(id.vars = c('model', 'nvar')) %>%
+    mutate(variable = str_to_upper(variable)) %>%
+    ggplot(aes(x = model, y = value, fill = as.factor(nvar))) +
+    geom_bar(stat = 'identity', position = 'dodge', colour = 'black') +
+    facet_grid(. ~ variable, scales = 'free_y') +
+    labs(y = 'Valor do índice estatístico (%)',
+         fill = 'N° de\nvariáveis:') +
+    theme(legend.title = element_text(size = 14),
+          legend.text = element_text(size = 13),
+          axis.title.x = element_blank(),
+          axis.title.y = element_text(size = 15),
+          axis.text.x = element_text(size = 14, angle = 30),
+          axis.text.y = element_text(size = 14),
+          strip.text = element_text(size = 15))
+  WritePlot(plot, 'perf_test', output_dir)
+}
+# plot performance of the final model
+PlotFinalPerf = function(data_path, model_path, sa_path, threshold, output_dir) {
+  data = read.csv(data_path)
+  qual_vars = c('seed', 'storey', 'shell_wall',
+                'shell_roof', 'blind', 'facade', 'mirror')
+  quant_vars = colnames(data)[-length(data)]
+  quant_vars = quant_vars[!quant_vars %in% qual_vars]
+  set.seed(100)
+  data = data %>%
+    mutate_at(qual_vars, factor) %>%
+    SelectFeats(sa_path, threshold) %>%
+    CreateDummies() %>%
+    slice(-createDataPartition(targ, p = 0.8, list = FALSE))
+  model = readRDS(model_path)
+  plot = data.frame(sim = data$targ,
+                    pred = predict(model, newdata = data)) %>%
+    ggplot(aes(x = sim, y = pred)) +
+    geom_point(size = 0.2, alpha = 0.5) +
+    geom_abline(slope = 1, colour = 'red', size = 0.75) +
+    labs(x = 'PHFT Simulado (%)',
+         y = 'PHFT Predito (%)') +
+    scale_x_continuous(limits = c(0, 100)) +
+    scale_y_continuous(limits = c(0, 100)) +
+    theme(legend.text = element_text(size = 12),
+          legend.title = element_text(size = 13),
+          legend.position = 'bottom',
+          axis.title.x = element_text(size = 15),
+          axis.title.y = element_text(size = 15),
+          axis.text.x = element_text(size = 14),
+          axis.text.y = element_text(size = 14))
+  WritePlot(plot, 'perf_final', output_dir)
+}
 
 # define characteristics to save the plot
 WritePlot = function(plot, plot_name, output_dir, width = 18, height = 10) {
@@ -327,8 +434,6 @@ WritePlot = function(plot, plot_name, output_dir, width = 18, height = 10) {
 # main functions ####
 # display statistics of the simplifications
 DisplayStats = function(input_path, output_dir) {
-  input_path = './result/sample_simp.csv'
-  
   # load and process data
   df = input_path %>% fread() %>% as.data.frame() %>% RnmValues()
   df = df %>% CalcHab()

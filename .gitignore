@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+model/
 *.rds
 *.rdata
 sample_month.csv
