@@ -185,7 +185,7 @@ PlotPHFT = function(df, output_dir) {
           axis.text.y = element_text(size = 13),
           strip.text.x = element_text(size = 16),
           strip.text.y = element_text(size = 16))
-  WritePlot(plot, 'simp_phft_boxplot', output_dir, 18, 29)
+  WritePlot(plot, 'simp_phft_boxplot', output_dir, 18, 27)
 }
 # box plot phft differences
 PlotDiffPHFT = function(df, rel, output_dir) {
@@ -207,7 +207,7 @@ PlotDiffPHFT = function(df, rel, output_dir) {
           strip.text.x = element_text(size = 16),
           strip.text.y = element_text(size = 16))
   plot_name = paste0('simp_diff_phft_', ifelse(rel == FALSE, 'abs', 'rel'), '_boxplot')
-  WritePlot(plot, plot_name, output_dir, 18, 29)
+  WritePlot(plot, plot_name, output_dir, 18, 27)
 }
 # define extreme cases
 DefExtremes = function(df, output_dir) {
@@ -434,6 +434,10 @@ WritePlot = function(plot, plot_name, output_dir, width = 18, height = 10) {
 # main functions ####
 # display statistics of the simplifications
 DisplayStats = function(input_path, output_dir) {
+  input_path = './result/sample_simp.csv'
+  output_dir = './plot_table/'
+  
+  
   # load and process data
   df = input_path %>% fread() %>% as.data.frame() %>% RnmValues()
   df = df %>% CalcHab()
