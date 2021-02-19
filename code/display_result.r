@@ -14,7 +14,9 @@ CalcDiff = function(df1, df0, rel, hab) {
   df = cbind(df, df1[, label])
   return(df)
 }
-# classificate habitations -> VERY INEFFICIENT FUNCTION! -> USE GROUP_BY AND SUMMARIZE!
+# classify habitations
+  # VERY INEFFICIENT FUNCTION!
+  # SHOULD USE GROUP_BY AND SUMMARIZE!
 CalcHab = function(df) {
   Test = function(index, df) {
     df = df[index:(index + 2), -grep('room', colnames(df))]
@@ -348,6 +350,9 @@ PlotQuantsDist = function(input_path, output_dir) {
 }
 # plot train accuracy
 PlotTrainAccuracy = function(input_path, output_dir) {
+  input_path = 'result/train_accuracy.csv'
+  output_dir = 'plot_table/'
+  
   plot = input_path %>%
     read.csv() %>%
     select(-'rsquared') %>%
