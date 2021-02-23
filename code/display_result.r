@@ -169,6 +169,69 @@ PlotDiffPHFTDist = function(df, output_dir) {
           axis.text.y = element_text(size = 14))
   WritePlot(plot, 'simp_diff_phft_dist', output_dir)
 }
+# plot phft in simplification 2
+PlotPHFTS2 = function(input_path, output_dir) {
+  plot = input_path %>%
+    read.csv() %>%
+    filter(sim %in% c(0, 2), storey %in% c(1, 3, 5)) %>%
+    mutate(orient = ifelse(str_detect(orient, '^n'), 'N', 'S')) %>%
+    group_by(sim, orient, storey, weather) %>%
+    summarize(mean_phft = mean(phft)) %>%
+    mutate(sim = ifelse(sim == 0, 'Modelo inicial', 'S2'),
+           weather = str_replace_all(weather, '_', ' ') %>%
+                        str_to_title() %>%
+                        str_replace('De ', 'de\n') %>%
+                        str_replace('Sao ', 'São\n'),
+           storey = ifelse(storey == 1, 'Térreo',
+                           ifelse(storey == 3, 'Intermediário',
+                                  'Cobertura'))) %>%
+    ggplot(aes(x = orient, y = mean_phft, shape = storey)) +
+    geom_point(size = 1.5) +
+    facet_grid(sim ~ weather, scale = 'free_y') +
+    labs(x = 'Orientação da UH',
+         y = 'PHFT médio (%)',
+         shape = 'Pavimento:') +
+    theme(legend.text = element_text(size = 11),
+          legend.title = element_text(size = 12),
+          legend.position = 'right',
+          axis.title.x = element_text(size = 14),
+          axis.title.y = element_text(size = 14),
+          axis.text.x = element_text(size = 13),
+          axis.text.y = element_text(size = 13),
+          strip.text.x = element_text(size = 15),
+          strip.text.y = element_text(size = 15))
+  WritePlot(plot, 'simp2_phft', output_dir)
+}
+# plot heat flow in the initial model
+PlotHeatFlowS0 = function(input_path, output_dir) {
+  plot = input_path %>%
+    read.csv() %>%
+    filter(sim == 0) %>%
+    mutate(room = ifelse(str_detect(room, 'dorm'), 'Dormitório', 'Sala')) %>%
+    melt(id.vars = 'room', measure.vars = c('il_hg', 'afn_hg')) %>%
+    mutate(variable = ifelse(variable == 'il_hg', 'Cargas\ninternas',
+                             'Ventilação\nNatural')) %>%
+    group_by(room, variable) %>%
+    summarize(mean_cgt = abs(mean(value))) %>%
+    ggplot(aes(x = variable, y = mean_cgt, fill = variable), show) +
+    geom_bar(stat = 'identity', position = 'dodge',
+             colour = 'black', size = 0.25) +
+    facet_grid(. ~ room) +
+    labs(y = 'Carga térmica (kWh/m².ano)',
+         fill = 'Direção do\nfluxo de calor:') +
+    scale_fill_manual(values = brewer.pal(2, 'Set1'),
+                      labels = c('Entrando\nna UH', 'Saindo\nda UH')) +
+    theme(legend.text = element_text(size = 10),
+          legend.title = element_text(size = 12),
+          legend.position = 'right',
+          axis.title.x = element_blank(),
+          axis.title.y = element_text(size = 14),
+          axis.text.x = element_text(size = 13),
+          axis.text.y = element_text(size = 13),
+          strip.text.x = element_text(size = 15),
+          strip.text.y = element_text(size = 15))
+  WritePlot(plot, 'simp0_cgt', output_dir, 18, 7)
+}
 # box plot phft
 PlotPHFT = function(df, output_dir) {
   plot = ggplot(df, aes(x = sim, y = phft)) +
@@ -439,10 +502,6 @@ WritePlot = function(plot, plot_name, output_dir, width = 18, height = 10) {
 # main functions ####
 # display statistics of the simplifications
 DisplayStats = function(input_path, output_dir) {
-  input_path = './result/sample_simp.csv'
-  output_dir = './plot_table/'
-  
-  
   # load and process data
   df = input_path %>% fread() %>% as.data.frame() %>% RnmValues()
   df = df %>% CalcHab()
@@ -510,7 +569,3 @@ DisplayTB = function(output_dir) {
               caso3 = 'bwc', caso4 = paste0('bwc', 1:2))
   mapply(PlotTB, input_paths, names(input_paths), walls, storey, dwel, area, bwcs, output_dir)
 }
-
-# application ####
-DisplayStats('./result/sample_simp.csv', './plot_table/')
-DisplayTB('./plot_table/')
