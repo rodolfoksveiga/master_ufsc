@@ -1,18 +1,18 @@
-# Predicting the thermal performance of multifamily buildings
+# Predicting the thermal performance of naturally ventilated apartments
 
 This project is the outcome of my master thesis, carried out from 2019 to 2021, in the Federal University of Santa Catarina (UFSC).
-<br>
-The master thesis can be accessed, in Portuguese, at the official repository from [UFSC](http://repositorio.ufsc.br/). The text describes in details all the bibliographic references, the methodology, and the results.
-<br>
-A shorter version of the thesis was submitted, in English, to the [Building Simulation Conference 2021](https://bs2021.org/) in the form of an research paper. As soon as it gets approved, I'll provide the link for download.
+
+The master thesis can be accessed, in Portuguese, at the official repository from [UFSC](http://repositorio.ufsc.br/). The text describes in details the motivations and objectives of the research, all the bibliographic references used throughout the methodology, the methodology, the results, and the conclusions.
+
+A shorter version of the thesis was submitted, in English, to the [Building Simulation Conference 2021](https://bs2021.org/) in the form of a research paper. As soon as it is published, I'll provide you the link for download.
 
 ## Objective
 
-The Brazilian standard for the thermal performance of residential buildings offers a simulation-based methodology. However, building energy simulations (BES) are complex, time-consuming, and recquire qualified professionals. Data-driven models are an alternative to BES, since they significantly reduce the number of inputs parameters and can achieve high accuracy. Therefore, the objective of this project is to develop an accurate predictive model to estimate the thermal performance of multifamily buildings.
+The Brazilian standard for the thermal performance of residential buildings (NBR 15.575) offers a simulation-based method. However, building energy simulations (BES) are complex, time-consuming, and recquire qualified professionals. Data-driven models are an alternative to BES, since they significantly reduce the number of input parameters and can achieve high accuracy. Therefore, the objective of this project was to develop a predictive model to estimate the thermal performance of naturally ventilated apartments.
 
 ### Partnership
 
-The project was financed by the National Council for Scientific and Technological Development (CNPq).
+The project was financed by the Brazilian National Council for Scientific and Technological Development (CNPq).
 
 ### Methods
 
@@ -21,16 +21,32 @@ The project was financed by the National Council for Scientific and Technologica
 * Data processing
 * Machine learning
 
-### Technologies
-
-* R
- * Tidyverse, Caret, Shiny
-* Python
- * NumPy, Pandas, SALib
-
 ### Dependencies
 
-
+* [R 4.0.4](https://cran.r-project.org/src/base/R-4/)
+ * brnn
+ * caret
+ * data.table
+ * doParallel
+ * dplyr
+ * ggplot2
+ * hydroGOF
+ * jsonlite
+ * kernlab
+ * Metrics
+ * reticulate
+ * parallel
+ * plyr
+ * purrr
+ * stringr
+ * tibble
+ * xgboost
+* [Python 3.9.2](https://www.python.org/downloads/release/python-392/)
+ * json
+ * math
+ * numpy
+ * pandas
+ * SALib
 
 ## Project description
 
@@ -40,13 +56,17 @@ The project follows the fluxogram bellow.
 ![fluxogram](/home/rodox/Downloads/fluxogram.png)
 <br>
 <br>
-The main code to build the dataset, process it, and optimize the predictive models is located at *[./code/main2.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)*. As the file extension suggests, the code was developed using the [R](https://www.r-project.org/) language.
+All the programming codes to run this project are in the folder **[code](https://github.com/rodolfoksveiga/master_ufsc/tree/master/code)**.
 
-### Database design and sampling
+The *[main2.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* code samples and tidies the dataset and performs sensitivity analysis.
 
-To design and the database, *main2.r* performs the following steps:
+After trying many frameworks to develop the predictive model, such as Tidymodels and Keras, [Caret](https://topepo.github.io/caret/) was the chosen one, since it's simple and could achieve the desired model. The *[fit_caret.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/fit_caret.r) code pre-processes the dataset and optimizes the predictive model.
 
-**1.** Solves the dependencies, i.e. loads libraries and data, sources external code files, and defines global variables.
+### Database sampling
+
+To sample and tidy the database, *[main2.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* performs the following steps:
+
+**1.** Solve dependencies, i.e. load libraries and data, source external code files, and define global variables.
 
 ```R
 ## libraries and global environment
@@ -87,17 +107,18 @@ sample_path = './result/sample.csv'
 cores_left = 0
 ```
 
-**2.** Executes the Python code (location: *[./code/saltelli_sample.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/saltelli_sample.py)*), which generates a numeric dataset through the [Sensitivity Analysis Library in Python](https://salib.readthedocs.io/en/latest/) (SALib).
+**2.** Execute *[saltelli_sample.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/saltelli_sample.py)*), which generates a numeric dataset using the Saltelli's Sequence. Saltelli's Sequence is an extension of the so-called Sobol's Sequence. The [Sensitivity Analysis Library in Python](https://salib.readthedocs.io/en/latest/) (SALib) was used to achieve sample the dataset.
 
 ```R
+## main code
 # generate sample
 py_run_file('./code/saltelli_sample.py')
 ```
 
-The dataset contains 17 variables and 126000 instances, and the variables ranges were defined according to the table bellow. The table also describes the meaning of each variable.
+The dataset contains 17 variables and 126,000 instances. The variables ranges were defined according to the table bellow. The table also describes the meaning of each variable.
 
 | Variable | Meaning | Range |
-|:-|:-:|:-:|
+|:-:|:-:|:-:|
 | seed | Typology | 1 ~ 5 |
 | storey | Floor | 1 ~ 4 |
 | area | Total living room and beroom net floor area (m²) | 50 ~ 150 |
@@ -119,19 +140,19 @@ The dataset contains 17 variables and 126000 instances, and the variables ranges
 | mirror | Building floor plan mirroring | 0 ~ 2 |
 | dbt | Mean drybulb temperature (°C) | 10.83 ~ 28.24 |
 
-Ps.: for extra information related the dataset, I suggest reading either the short research paper or the thesis text, referenced at beginning of this **README**.
+Ps.: for extra information about the dataset, I suggest reading either the short research paper or the complete thesis text, referenced at beginning of this **README** file.
 
-**3.** Performs the function `TidySample` (location: *[./code/tidy_sample.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/tidy_sample.r)*), which tidies the data, so that the values become meaningful.
+**3.** Perform the function `TidySample`, from *[tidy_sample.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/tidy_sample.r)*, which tidies the dataset, so that the values become meaningful.
 
 ```R
 # read and tidy up sample
 sample = TidySample(saltelli_path, seeds_dir, models_dir, epws_dir, inmet)
 ```
 
-After tidying, the types and possible values assume the values onde the table bellow.
+The table bellow decribes the shape of the tidy dataset.
 
 | Variable | Meaning | Data Type | Possible Values |
-|:-|:-:|:-:|:-:|
+|:-:|:-:|:-:|:-:|
 | seed | Typology | Factor | 1; 2; 3; 4 |
 | storey | Floor | Factor | 1; 2; 3 |
 | area | Total living room and beroom net floor area (m²) | Numeric | 50 ~ 150 |
@@ -153,13 +174,17 @@ After tidying, the types and possible values assume the values onde the table be
 | mirror | Building floor plan mirroring | Factor | 0; 1 |
 | dbt | Mean drybulb temperature (°C) | Numeric | 10.83 ~ 28.24 |
 
-It's important to note that `TidySample` removes repeated the rows from the dataset. These repeated rows appears after `TidySample` rounds the values of the integer (or factor) variables. Therefore, the tidy dataset contains 109276 rows.
+It's important to note that `TidySample` removes repeated rows from the dataset. These repeated rows appears after `TidySample` rounds the values of the factor variables. Therefore, the tidy dataset contains 109,276 rows.
 
-**4.** Applies the function `BuildModel` (location: *[.code/build_model.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/build_model.r)*), for each row of the tidy dataset. This function takes as arguments each of the variables in the dataset and builds EnergyPlus simulation files (*JSON*) according to the variables values. Thus, after the execution of this function, 109276 simulation files are generated.
+**4.** Apply the function `BuildModel`, from *[build_model.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/build_model.r)*, for each row of the tidy dataset. This function takes as arguments each of the variables in the dataset, except for the variable *dbt*, and builds EnergyPlus simulation files according to these variables values. Thus, after the execution of this function, 109,276 simulation files are generated.
+
+The EnergyPlus simulation files have *epJSON* extension, which corresponds to *JSON* files.
 
 ```R
-# build cases
+## main code
+# define number of cores
 cores = detectCores() - cores_left
+# build simulation files
 with(sample, mcmapply(BuildModel, seed_path, area, ratio, height, azimuth, shell_wall,
                       abs_wall, shell_roof, abs_roof, wwr_liv, wwr_dorm, u_window, shgc,
                       open_factor, blind, balcony, mirror, model_path, 'op_temp',
@@ -167,13 +192,12 @@ with(sample, mcmapply(BuildModel, seed_path, area, ratio, height, azimuth, shell
                       mc.cores = cores))
 ```
 
-**5.** Performs the function `MakeSlices` (location: *[./code/make_slices.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/make_slices.r)*), which defines a list of slices of the dataset. The number of slices is defined according to the value of the global variable `cores_left` and the number of rows of the tidy dataset.
+**5.** Perform the function `MakeSlices`, from *[make_slices.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/make_slices.r)*, which defines a list of dataset slices. The number of slices is defined according to the value of the global variable `cores_left` and the number of rows of the tidy dataset.
 
-After that, each slice is processed by the function `ProcessSlices`. Firstly, this function runs the EnergyPlus simulations in parallel, thorough the function `ProcessEPSim` (location: *[./code/run_ep_sim.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/run_ep_sim.r)*). Then, it calculates the targets and attach them to the slice of dataset, through the function `ApplyCalcTarget` (location: *[./code/calc_target.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/calc_target.r)*). Finally, it writes the slice of sample as a *csv* file, remove useless files and compile the errors in a single a file.
-
+After that, each dataset slice is processed by the function `ProcessSlices`. Firstly, this function runs the EnergyPlus simulations in parallel, thorough the function `ProcessEPSim`, from *[run_ep_sim.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/run_ep_sim.r)*. Then, it runs the function `ApplyCalcTarget`, from *[calc_target.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/calc_target.r)*, which calculates the targets and attach them to the correspondent dataset slice. Finally, it writes the dataset slice with the targets as a *csv* file, remove useless simulation outputs and compile the simulation errors in a single a file.
 
 ```R
-# base function ####
+## base function
 # process slices of simulations
 ProcessSlices = function(sample, n, size) {
     # run simulations in parallel
@@ -190,7 +214,7 @@ ProcessSlices = function(sample, n, size) {
     MvErrs(output_dir, result_dir, case)
 }
 
-# main code ####
+## main code
 # define number of slices according to the number of cores
 size = nrow(sample) %/% cores
 # define a vector to apply MakeSlices()
@@ -201,32 +225,47 @@ slices = MakeSlices(sample, n, size, cores)
 mapply(ProcessSlices, slices, n, size)
 ```
 
-**6.** 
+The target represents the thermal performance of the apartment, which is described by an index named PHFT. PHFT stands for the percentage of occupied hours within an operative temperature range. The index was defined in the NBR 15.575 and its fundaments were published in [this](https://www.researchgate.net/publication/345742006_Proposta_de_metodo_de_avaliacao_do_desempenho_termico_de_residencias_NBR_15575) research paper, available in Portuguese.
+
+The following formula calculates the PHFT:
+
+**PHFT = ( Nh<sub>FT</sub> / Nh<sub>Occup</sub> ) \* 100**
+
+**Nh<sub>FT</sub>** is the number of hours throughout the year when the apartment is occupied and their operative temperature are within a specific range. **Nh<sub>Occup</sub>** is the total number of hours throughout the year when the apartment is occupied.
+
+The table bellow shows the operative temperature ranges.
+
+| Range ID | Mean drybulb temperature (mDBT) | Indoor operative temperature (T<sub>O</sub>) range |
+|:-:|:-:|:-:|
+| 1 | mDBT < 25°C | 18°C < T<sub>O</sub> < 26°C |
+| 2 | 25°C <= mDBT < 27°C | T<sub>O</sub> < 28°C |
+| 3 | mDBT >= 27°C | T<sub>O</sub> < 30°C |
+
+The mean drybulb temperature of each EnergyPlus weather file (*epw*) considered in this project was defined in the file *[inmet_list.csv](https://github.com/rodolfoksveiga/master_ufsc/blob/master/source/inmet_list.csv)*.
+
+**6.** Pile up the dataset slices into a single dataset and write it as a *csv* file. Also concatenate the simulation error files of each slice into a single error file.
 
 ```R
+## main code
 # pile up results
 patterns = paste0(periods, '.*\\.csv')
 sample_paths = paste0(dirname(sample_path), '/sample_', periods, '.csv')
 mapply(WriteSample, patterns, sample_paths, result_dir)
+# concatenate errors
 lapply(c('summary', 'description'), HandleSlices, result_dir)
+```
+
+### Sobol's Sensitivity Analysis
+
+The code chunk below first runs the function `JoinSamples`, from *[tidy_sample.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/tidy_sample.r), which join the tidy dataset (with targets) with the original numeric dataset (without targets). After that, it executes *[sobol_analysis.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/sobol_analysis.py), which perfmorms the Sobol's Sensitivity Analysis over the joined dataset. SALib was used to compute the sensitivity analysis.
+
+```R
+## main code
 # join samples
 JoinSamples(saltelli_path, sample_paths[1])
 # perform sensitivity analysis
 py_run_file('./code/saltelli_sample.py')
 ```
-
-**7.**
-
-```R
-# define list with hyperparameters
-hps = list(lm = NULL, rf = NULL, svm = expand.grid(.sigma = 0.01, .C = 2^(1:8)))
-# apply GenMLModels on the hyperparameters list
-lapply(c(0, 0.01, 0.02), GenMLModels, sa_path = './result/sobol_analysis.json',
-       data_path = './result/sample_year.csv', nfolds = 2, tune_length = 8, tune_grid = hps,
-       save_stats = TRUE, save_plots = TRUE, save_models = TRUE, results_dir = './result/',
-       plots_dir = './plot_table/', cores_left = 0)
-```
-
 
 ### Data pre-processing
 
