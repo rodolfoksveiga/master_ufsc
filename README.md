@@ -24,29 +24,28 @@ The project was financed by the Brazilian National Council for Scientific and Te
 ### Dependencies
 
 * [R 4.0.4](https://cran.r-project.org/src/base/R-4/)
- * brnn
- * caret
- * data.table
- * doParallel
- * dplyr
- * ggplot2
- * hydroGOF
- * jsonlite
- * kernlab
- * Metrics
- * reticulate
- * parallel
- * plyr
- * purrr
- * stringr
- * tibble
- * xgboost
+    * brnn 0.8
+    * caret 6.0-86
+    * data.table 1.14.0
+    * doParallel 1.0.16
+    * dplyr 1.0.5
+    * ggplot2 3.3.3
+    * hydroGOF 0.4-0
+    * jsonlite 1.7.2
+    * kernlab 0.9-29
+    * Metrics 0.1.4
+    * parallel 4.0.4
+    * plyr 1.8.6
+    * purrr 0.3.4
+    * reticulate 1.18
+    * RJSONIO 1.3-1.4
+    * stringr 1.4.0
+    * tibble 3.1.0
+    * xgboost 1.3.2.1
 * [Python 3.9.2](https://www.python.org/downloads/release/python-392/)
- * json
- * math
- * numpy
- * pandas
- * SALib
+    * numpy 1.20.1
+    * pandas 1.2.3
+    * SALib 1.3.12
 
 ## Project description
 
@@ -56,7 +55,7 @@ The project follows the fluxogram bellow.
 ![fluxogram](/home/rodox/Downloads/fluxogram.png)
 <br>
 <br>
-All the programming codes to run this project are in the folder **[code](https://github.com/rodolfoksveiga/master_ufsc/tree/master/code)**.
+All the programming codes to run this project are located in the folder **[code](https://github.com/rodolfoksveiga/master_ufsc/tree/master/code)**.
 
 The *[main2.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* code samples and tidies the dataset and performs sensitivity analysis.
 
@@ -70,12 +69,16 @@ To sample and tidy the database, *[main2.r](https://github.com/rodolfoksveiga/ma
 
 ```R
 ## libraries and global environment
-# define libraries to be loaded
+# define libraries to load
 pkgs = c('data.table', 'dplyr', 'jsonlite', 'reticulate',
        'parallel', 'purrr', 'stringr', 'tibble')
 # load libraries
 lapply(pkgs, library, character.only = TRUE)
-# define external codes to be sourced
+# define pipenv as the python virtual environment
+venv = system('pipenv --venv', inter = TRUE)
+use_virtualenv(venv, required = TRUE)
+py_config()
+# define external codes source
 codes = c('build_model', 'calc_target', 'make_slices', 'run_ep_sim', 'tidy_sample')
 codes = paste0('./code/', codes, '.r')
 # source codes
@@ -97,13 +100,13 @@ seeds_dir = './seed/'
 models_dir = '~/Documents/master/model/'
 # directory of the weather files
 epws_dir = '~/Documents/weather/'
-# directory to save the simulations's outputs
+# directory to save the simulations outputs
 output_dir = '~/Documents/master/output/'
 # directory to save the results
 result_dir = '~/Documents/master/result/'
 # path to save the tidy sample
 sample_path = './result/sample.csv'
-# number of cores to not use
+# number of cores not to use
 cores_left = 0
 ```
 
@@ -182,7 +185,7 @@ The EnergyPlus simulation files have *epJSON* extension, which corresponds to *J
 
 ```R
 ## main code
-# define number of cores
+# define number of cores to use
 cores = detectCores() - cores_left
 # build simulation files
 with(sample, mcmapply(BuildModel, seed_path, area, ratio, height, azimuth, shell_wall,
@@ -197,25 +200,25 @@ with(sample, mcmapply(BuildModel, seed_path, area, ratio, height, azimuth, shell
 After that, each dataset slice is processed by the function `ProcessSlices`. Firstly, this function runs the EnergyPlus simulations in parallel, thorough the function `ProcessEPSim`, from *[run_ep_sim.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/run_ep_sim.r)*. Then, it runs the function `ApplyCalcTarget`, from *[calc_target.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/calc_target.r)*, which calculates the targets and attach them to the correspondent dataset slice. Finally, it writes the dataset slice with the targets as a *csv* file, remove useless simulation outputs and compile the simulation errors in a single a file.
 
 ```R
-## base function
+## functions
 # process slices of simulations
 ProcessSlices = function(sample, n, size) {
-    # run simulations in parallel
-    ProcessEPSims(sample, output_dir, cores_left)
-    # calculate targets and add them to the sample
-    samples = ApplyCalcTarget(sample, output_dir, occup, inmet)
-    # define case
-    case = str_pad(n, str_length(size), 'left', 0)
-    # write sample file
-    lapply(samples, WriteSlice, result_dir)
-    # remove simulation files
-    RmCSVs(output_dir)
-    # rename error files
-    MvErrs(output_dir, result_dir, case)
+# run simulations in parallel
+ProcessEPSims(sample, output_dir, cores_left)
+# calculate targets and add them to the sample
+sample = ApplyCalcTarget(sample, output_dir, occup, inmet)
+# define case
+case = str_pad(n, str_length(size), 'left', 0)
+# write sample file
+WriteSlice(sample, result_dir, case)
+# remove useless simulation outputs
+RmCSVs(output_dir)
+# rename simulation error files
+MvErrs(output_dir, result_dir, case)
 }
 
 ## main code
-# define number of slices according to the number of cores
+# define number of slices
 size = nrow(sample) %/% cores
 # define a vector to apply MakeSlices()
 n = 1:size
@@ -248,21 +251,21 @@ The mean drybulb temperature of each EnergyPlus weather file (*epw*) considered 
 ```R
 ## main code
 # pile up results
-patterns = paste0(periods, '.*\\.csv')
-sample_paths = paste0(dirname(sample_path), '/sample_', periods, '.csv')
-mapply(WriteSample, patterns, sample_paths, result_dir)
+WriteSample('sample.csv', sample_path, result_dir)
 # concatenate errors
 lapply(c('summary', 'description'), HandleSlices, result_dir)
 ```
 
 ### Sobol's Sensitivity Analysis
 
-The code chunk below first runs the function `JoinSamples`, from *[tidy_sample.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/tidy_sample.r), which join the tidy dataset (with targets) with the original numeric dataset (without targets). After that, it executes *[sobol_analysis.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/sobol_analysis.py), which perfmorms the Sobol's Sensitivity Analysis over the joined dataset. SALib was used to compute the sensitivity analysis.
+To perform the sensitivity analysis, *[main2.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* executes the code chunk below.
+
+First, it runs the function `JoinSamples`, from *[tidy_sample.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/tidy_sample.r), which join the tidy dataset (with targets) with the original numeric dataset (without targets). After that, it executes *[sobol_analysis.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/sobol_analysis.py), which perfmorms the Sobol's Sensitivity Analysis over the joined dataset. SALib was used to compute the sensitivity analysis.
 
 ```R
 ## main code
 # join samples
-JoinSamples(saltelli_path, sample_paths[1])
+JoinSamples(saltelli_path, sample_path)
 # perform sensitivity analysis
 py_run_file('./code/saltelli_sample.py')
 ```
