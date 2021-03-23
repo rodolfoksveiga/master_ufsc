@@ -45,8 +45,8 @@ WriteSample = function(pattern, output_path, input_dir) {
   file.remove(file_paths)
 }
 # write slice
-WriteSlice = function(period, sample, output_dir, case) {
-  output_path = paste0(output_dir, case, '_sample_', period, '.csv')
+WriteSlice = function(sample, output_dir, case) {
+  output_path = paste0(output_dir, case, '_sample.csv')
   write.csv(sample, output_path, row.names = FALSE)
 }
 

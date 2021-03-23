@@ -31,6 +31,6 @@ bounds = [[1, 5], [1, 4], [50, 150], [0.5, 2], [2.5, 3.5], [0, 360], [1, 7],
           [0.2, 0.8], [1, 5], [0.2, 0.8], [0.2, 0.8], [0.2, 0.8], [2.8, 5.7],
           [0.22, 0.87], [0.4, 0.9], [0, 2], [-1.5, 2.5], [1, 3], [0, 2], [10.83, 28.24]]
 qual_vars = [0, 1, 6, 8, 15, 17, 18]
-output_dir = '/home/rodox/git/master/result/'
+output_dir = '/home/rodox/Git/master/result/'
 GenSample(names, bounds, 0.02, qual_vars, 3000, output_dir)
 

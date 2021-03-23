@@ -46,7 +46,7 @@ CalcTarget = function(input_path, storey, weather, period, occup, inmet) {
   return(target)
 }
 # add targets to sample data frame
-ApplyCalcTarget = function(period, sample, input_dir, occup, inmet) {
+ApplyCalcTarget = function(sample, input_dir, occup, inmet, period = 'year') {
   input_paths = dir(input_dir, '\\.csv', full.names = TRUE)
   weathers = sample %>% pull(epw_path) %>% basename() %>% str_remove('\\.epw')
   targets = mapply(CalcTarget, input_paths, sample$storey,
