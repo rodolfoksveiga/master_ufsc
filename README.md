@@ -272,6 +272,13 @@ py_run_file('./code/saltelli_sample.py')
 
 ### Data pre-processing
 
+To pre-process the data, *[fit_caret.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* performs the following steps:
+
+**1.** 
+
+**2.** 
+
+**3.** 
 
 ### Metamodel train and testing
 
