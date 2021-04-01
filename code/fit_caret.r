@@ -1,4 +1,4 @@
-# load libraries and global environment ####
+## load libraries and global environment
 invisible({
   pkgs = c('caret', 'doParallel', 'data.table', 'dplyr',
            'ggplot2', 'hydroGOF', 'Metrics', 'parallel', 'purrr')
@@ -7,22 +7,20 @@ invisible({
   lapply(pkgs, library, character.only = TRUE)
 })
 
-# base functions ####
+## functions
 # rename analysis index r squared
 RenameRsq = function(x) sub('Rsquared', 'R²', x)
-
-# machine learning model functions ####
 # select features according to sobol analysis
 SelectFeats = function(data, sa_path, threshold) {
-  unvar = sa_path %>%
-    RJSONIO::fromJSON() %>%
-    keep(names(.) %in% c('S1', 'ST')) %>%
-    as.data.frame() %>%
-    mutate(var = colnames(data)[-length(data)]) %>%
-    filter(ST <= threshold) %>%
-    pull(var)
-  data = data %>%
-    select(-all_of(unvar))
+  # define variables to be removed (low sensitivity)
+  unvar = sa_path %>% # define sensitivity analysis path
+    RJSONIO::fromJSON() %>% # load data (json is loaded as a list)
+    keep(names(.) %in% c('S1', 'ST')) %>% # keep only the total index
+    as.data.frame() %>% # transform list into a dataframe
+    mutate(var = colnames(data)[-length(data)]) %>% # create a column with variable names
+    filter(ST <= threshold) %>% # filter variables with sensitivity index lower than threshold
+    pull(var) # select the column with the names of the variables left
+  data = select(data, -all_of(unvar)) # remove variables with low sensitivity
   return(data)
 }
 # create dummy variables
@@ -142,7 +140,7 @@ GenAccuracyTable = function(models, pred, targ, suffix, output_dir) {
     bind_rows() %>% slice(2:n())
   write.csv(table, paste0(output_dir, 'summ_table_', suffix, '.csv'), row.names = FALSE)
 }
-# summarise fitting results
+# summarize fitting results
 SummAccuracy = function(model, train_tech, pred, targ) {
   best_tune = model$bestTune
   index = mapply(function(x, y, z) which(z[[4]][y] == x), best_tune,
@@ -164,70 +162,88 @@ WriteSearchResults = function(model, tag, output_dir) {
   write.csv(model$results, output_path, row.names = FALSE)
 }
 
-# main function ####
-GenMLModels = function(threshold, sa_path, data_path, nfolds, tune_length,
-                       tune_grid, save_stats, save_plots, save_models,
-                       results_dir, plots_dir, cores_left) {
-  # load data
-  raw_data = read.csv(data_path)
-  # define qualitative and quantitative variables
-  qual_vars = c('seed', 'storey', 'shell_wall',
-                'shell_roof', 'blind', 'facade', 'mirror')
-  quant_vars = colnames(raw_data[-length(raw_data)])
-  quant_vars = quant_vars[!quant_vars %in% qual_vars]
-  raw_data[, qual_vars] = lapply(raw_data[, qual_vars], factor)
-  # select features according to sensitivity analysis
-  raw_data = SelectFeats(raw_data, sa_path, threshold)
-  # create dummy variables
-  dummy_data = CreateDummies(raw_data)
-  summary(raw_data)
-  # split data into train and test sets
-  raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
-  dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
-  # train
-  models_list = list(lm = 'lm', rf = 'rf', svm = 'svmRadial')
-  models = mapply(FitModel, models_list, tune_grid, SIMPLIFY = FALSE,
-                  MoreArgs = list('cv', nfolds, dummy_data$train, cores_left, tune_length))
-  # test
-  predictions = models %>%
-    lapply(predict, newdata = dummy_data$test) %>%
-    as.data.frame()
-  # define suffix tag
-  suffix = paste0('nvar', ncol(raw_data$train))
-  # write statistical results
-  if (save_stats) {
-    # write results from hyperparameters search
-    mapply(WriteSearchResults, models[-1], names(models)[-1], suffix, results_dir)
-    # generate accuracy table
-    GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, plots_dir)
-  }
-  # write plots
-  if (save_plots) {
-    # stats comparison between models
-    models_comp = CompModels(models)
-    models_summ = summary(models_comp)
-    # plot comparison between models
-    PlotComp(models_comp, suffix, plots_dir)
-    # plot training process
-    mapply(PlotFit, models[-1], names(models[-1]), suffix, MoreArgs = list(plots_dir))
-    # plot model performance
-    mapply(PlotPerf, names(models), predictions,
-           MoreArgs = list(dummy_data$test$targ, suffix, plots_dir))
-    # plot variables importance
-    mapply(PlotVarImp, names(models), predictions,
-           MoreArgs = list(raw_data$test, suffix, plots_dir))
-  }
-  # write the full models
-  if (save_models) {
-    saveRDS(models, file = paste0(results_dir, 'models_', suffix, '.rds'))
-  } else {
-    return(models)
-  }
-}
+## variables
+# path to the dataset
+data_path = 'result/sample.csv'
+# path to the sensitivity analysis output (json)
+sa_path = 'result/sobol_analysis.json'
+# sensitivity analysis threshold to select features
+sa_threshold = 0.02
+# number of folders used on cross-validation
+nfolds = 2
+# hyperparameters grid
+tune_grid = list(
+  lm = NULL,
+  brnn = expand.grid(.neurons = seq(25, 45, 2)),
+  svm = expand.grid(.sigma = 0.01,
+                    .C = 2^(1:8)),
+  rf = expand.grid(.mtry = seq(5, 35, 5)),
+  xgbt = expand.grid(.eta = c(0.3, 0.4),
+                     .depth = c(6, 8, 10),
+                     .ncols = c(0.6, 0.8),
+                     .ntrees = seq(200, 600, 100))
+)
+# directory to write plots and tables
+pt_dir = '~/Documents/master/'
+# directory to write machine learning models
+models_dir = '~/Documents/master/'
+# number of cores not to use
+cores_left = 0
 
-# application ####
-hps = list(lm = NULL, rf = NULL, svm = expand.grid(.sigma = 0.01, .C = 2^(1:8)))
-lapply(c(0, 0.01, 0.02), GenMLModels, sa_path = './result/sobol_analysis.json',
-       data_path = './result/sample.csv', nfolds = 2, tune_length = 8, tune_grid = hps,
-       save_stats = TRUE, save_plots = FALSE, save_models = TRUE, results_dir = './result/',
-       plots_dir = './plot_table/', cores_left = 0)
+## main code
+# load data
+raw_data = read.csv(data_path)
+# define qualitative and quantitative variables
+qual_vars = c('seed', 'storey', 'shell_wall',
+              'shell_roof', 'blind', 'facade', 'mirror')
+# define quantitative variables (exclude the output variable, named as "targ")
+quant_vars = colnames(raw_data[-length(raw_data)])
+quant_vars = quant_vars[!quant_vars %in% qual_vars]
+# transform qualitative variables in factors
+raw_data[, qual_vars] = lapply(raw_data[, qual_vars], factor)
+# select features according to sensitivity analysis
+raw_data = SelectFeats(raw_data, sa_path, sa_threshold)
+# create dummy variables
+dummy_data = CreateDummies(raw_data)
+# split data into train and test sets
+raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
+dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
+# train
+models_list = list(lm = 'lm', rf = 'rf', svm = 'svmRadial')
+models = mapply(FitModel, models_list, tune_grid, SIMPLIFY = FALSE,
+                MoreArgs = list('cv', nfolds, dummy_data$train, cores_left, tune_length))
+# test
+predictions = models %>%
+  lapply(predict, newdata = dummy_data$test) %>%
+  as.data.frame()
+# define suffix tag
+suffix = paste0('nvar', ncol(raw_data$train))
+# write statistical results
+if (save_stats) {
+  # write results from hyperparameters search
+  mapply(WriteSearchResults, models[-1], names(models)[-1], suffix, results_dir)
+  # generate accuracy table
+  GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, plots_dir)
+}
+# write plots
+if (save_plots) {
+  # stats comparison between models
+  models_comp = CompModels(models)
+  models_summ = summary(models_comp)
+  # plot comparison between models
+  PlotComp(models_comp, suffix, plots_dir)
+  # plot training process
+  mapply(PlotFit, models[-1], names(models[-1]), suffix, MoreArgs = list(plots_dir))
+  # plot model performance
+  mapply(PlotPerf, names(models), predictions,
+         MoreArgs = list(dummy_data$test$targ, suffix, plots_dir))
+  # plot variables importance
+  mapply(PlotVarImp, names(models), predictions,
+         MoreArgs = list(raw_data$test, suffix, plots_dir))
+}
+# write the full models
+if (save_models) {
+  saveRDS(models, file = paste0(results_dir, 'models_', suffix, '.rds'))
+} else {
+  return(models)
+}
