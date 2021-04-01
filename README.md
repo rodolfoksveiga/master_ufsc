@@ -65,7 +65,7 @@ After trying many frameworks to develop the predictive model, such as Tidymodels
 
 To sample and tidy the database, *[main2.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* performs the following steps:
 
-**1.** Solve dependencies, i.e. load libraries and data, source external code files, and define global variables.
+**1.** Load libraries and data, source external code files, and define global variables.
 
 ```R
 ## libraries and global environment
@@ -110,7 +110,7 @@ sample_path = './result/sample.csv'
 cores_left = 0
 ```
 
-**2.** Execute *[saltelli_sample.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/saltelli_sample.py)*), which generates a numeric dataset using the Saltelli's Sequence. Saltelli's Sequence is an extension of the so-called Sobol's Sequence. The [Sensitivity Analysis Library in Python](https://salib.readthedocs.io/en/latest/) (SALib) was used to achieve sample the dataset.
+**2.** Execute *[saltelli_sample.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/saltelli_sample.py)*, which generates a numeric dataset using the Saltelli's Sequence. Saltelli's Sequence is an extension of the so-called Sobol's Sequence. The [Sensitivity Analysis Library in Python](https://salib.readthedocs.io/en/latest/) (SALib) was used to achieve sample the dataset.
 
 ```R
 ## main code
@@ -256,6 +256,8 @@ WriteSample('sample.csv', sample_path, result_dir)
 lapply(c('summary', 'description'), HandleSlices, result_dir)
 ```
 
+The final dataset contain 109,276 rows and 21 columns, corresponding to the variables: `seed`, `storey`, `area`, `ratio`, `height`, `azimuth`, `shell_wall`, `abs_wall`, `shell_roof`, `abs_roof`, `wwr_liv`, `wwr_dorm`, `u_window`, `shgc`, `open_factor`, `blind`, `balcony`, `facade`, `mirror`, `dbt`, `targ` (PHFT).
+
 ### Sobol's Sensitivity Analysis
 
 To perform the sensitivity analysis, *[main2.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* executes the code chunk below.
@@ -270,17 +272,7 @@ JoinSamples(saltelli_path, sample_path)
 py_run_file('./code/saltelli_sample.py')
 ```
 
-### Data pre-processing
-
-To pre-process the data, *[fit_caret.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* performs the following steps:
-
-**1.** 
-
-**2.** 
-
-**3.** 
-
-### Metamodel train and testing
+### Metamodel training and testing
 
 The development of the predictive model lies on the optimization of the following 5 machine learning techniques:
 * [Multiple Linear Regression](https://en.wikipedia.org/wiki/Linear_regression) (MLR)
@@ -289,8 +281,92 @@ The development of the predictive model lies on the optimization of the followin
 * [Random Forest](https://en.wikipedia.org/wiki/Random_forest) (RF)
 * [Extreme Gradient Boosted Trees](https://en.wikipedia.org/wiki/XGBoost) (XGBoost)
 
-All the codes needed to optimize 
+To train and test the model, *[fit_caret.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* performs the following steps:
 
+**1.** Load libraries and data, source external code files, and define global variables.
+
+```R
+## load libraries and global environment
+pkgs = c('caret', 'doParallel', 'data.table', 'dplyr',
+        'ggplot2', 'hydroGOF', 'Metrics', 'parallel', 'purrr')
+# required packages to fit models
+# pkgs = c(pkgs, 'brnn', 'kernlab', 'plyr', 'xgboost')
+lapply(pkgs, library, character.only = TRUE)
+
+## variables
+# path to the dataset
+data_path = 'result/sample.csv'
+# number of folders used on cross-validation
+# path to the sensitivity analysis output (json)
+sa_path = 'result/sobol_analysis.json'
+# sensitivity analysis threshold to select features
+sa_threshold = 0.02
+nfolds = 2
+# hyperparameters grid
+tune_grid = list(
+  lm = NULL,
+  brnn = expand.grid(.neurons = seq(25, 45, 2)),
+  svm = expand.grid(.sigma = 0.01,
+                    .C = 2^(1:8)),
+  rf = expand.grid(.mtry = seq(5, 35, 5)),
+  xgbt = expand.grid(.eta = c(0.3, 0.4),
+                     .depth = c(6, 8, 10),
+                     .ncols = c(0.6, 0.8),
+                     .ntrees = seq(200, 600, 100))
+)
+# directory to write plots and tables
+pt_dir = '~/Documents/master/'
+# directory to write machine learning models
+models_dir = '~/Documents/master/'
+# number of cores not to use
+cores_left = 0
+```
+
+**2.** Load dataset and transform qualitative variables in factors, so that it's possible to transform these variables in dummy variables.
+
+```R
+## main code
+# load data
+raw_data = read.csv(data_path)
+# define qualitative and quantitative variables
+qual_vars = c('seed', 'storey', 'shell_wall',
+              'shell_roof', 'blind', 'facade', 'mirror')
+# define quantitative variables (exclude the output variable, named as "targ")
+quant_vars = colnames(raw_data[-length(raw_data)])
+quant_vars = quant_vars[!quant_vars %in% qual_vars]
+# transform qualitative variables in factors
+raw_data[, qual_vars] = lapply(raw_data[, qual_vars], factor)
+```
+
+**3.**  Perform the function `SelectFeats`, which removes from the dataset every variable presenting sensitivity index lower than the threshold defined by the global variable `sa_threshold`. This function takes as input the output of the code *[saltelli_sample.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/saltelli_sample.py)*.
+
+```R
+## functions
+# select features according to sobol analysis
+SelectFeats = function(data, sa_path, threshold) {
+  # define variables to be removed (low sensitivity)
+  unvar = sa_path %>% # define sensitivity analysis path
+    RJSONIO::fromJSON() %>% # load data (json is loaded as a list)
+    keep(names(.) %in% c('S1', 'ST')) %>% # keep only the total index
+    as.data.frame() %>% # transform list into a dataframe
+    mutate(var = colnames(data)[-length(data)]) %>% # create a column with variable names
+    filter(ST <= threshold) %>% # filter variables with sensitivity index lower than threshold
+    pull(var) # select the column with the names of the variables left
+  data = select(data, -all_of(unvar)) # remove variables with low sensitivity
+  return(data)
+}
+
+## main code
+# select features according to sensitivity analysis
+raw_data = SelectFeats(raw_data, sa_path, threshold)
+```
+
+**4.** Transform qualitative variables into dummy variables, through the function `CreateDummies`.
+
+```R
+# create dummy variables
+dummy_data = CreateDummies(raw_data)
+```
 
 ### Application
 
