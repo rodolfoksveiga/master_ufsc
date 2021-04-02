@@ -314,7 +314,6 @@ tune_grid = list(
   svm = expand.grid(.sigma = 0.01,
                     .C = 2^(1:8)),
   rf = expand.grid(.mtry = seq(5, 35, 5)),
-<<<<<<< HEAD
   xgbt = expand.grid(.nrounds = seq(200, 600, 100),
                      .max_depth = c(6, 8, 10),
                      .eta = c(0.3, 0.4),
@@ -322,12 +321,6 @@ tune_grid = list(
                      .colsample_bytree = c(0.6, 0.8),
                      .min_child_weight = 1,
                      .subsample = 1)
-=======
-  xgbt = expand.grid(.eta = c(0.3, 0.4),
-                     .depth = c(6, 8, 10),
-                     .ncols = c(0.6, 0.8),
-                     .ntrees = seq(200, 600, 100))
->>>>>>> 63a944db70b3071e4ef048b4ad4e4d855ffcc0be
 )
 # directory to write plots and tables
 pt_dir = '~/Documents/master/'
@@ -336,15 +329,9 @@ models_dir = '~/Documents/master/'
 # number of cores not to use
 cores_left = 0
 ```
-<<<<<<< HEAD
 
 **2.** Load dataset and transform qualitative variables in factors, so that it's possible to transform these variables into dummy variables.
 
-=======
-
-**2.** Load dataset and transform qualitative variables in factors, so that it's possible to transform these variables in dummy variables.
-
->>>>>>> 63a944db70b3071e4ef048b4ad4e4d855ffcc0be
 ```R
 ## main code
 # load data
@@ -385,7 +372,6 @@ raw_data = SelectFeats(raw_data, sa_path, threshold)
 **4.** Transform qualitative variables into dummy variables, through the function `CreateDummies`.
 
 ```R
-<<<<<<< HEAD
 ## functions
 # create dummy variables
 CreateDummies = function(data) {
@@ -482,11 +468,6 @@ saveRDS(models, file = paste0(models_dir, 'models_', suffix, '.rds'))
 ```
 
 ![perf_test](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/perf_test.png)
-=======
-# create dummy variables
-dummy_data = CreateDummies(raw_data)
-```
->>>>>>> 63a944db70b3071e4ef048b4ad4e4d855ffcc0be
 
 ### Application
 
