@@ -1,9 +1,9 @@
-# load libraries ####
+## load libraries
 pkgs = c('caret', 'data.table', 'dplyr', 'forcats', 'ggplot2',
          'jsonlite', 'purrr', 'RColorBrewer', 'reshape2', 'stringr')
 lapply(pkgs, library, character.only = TRUE)
 
-# base function ####
+## base functions
 # calculate difference between full building and simplified models
 CalcDiff = function(df1, df0, rel, hab) {
   label = sapply(df0, IsLabel)
@@ -134,7 +134,7 @@ RnmValues = function(df) {
   return(df)
 }
 
-# plot and table functions ####
+## plot and table functions
 # summarize results
 SummResults = function(df, output_dir) {
   df %>%
@@ -413,9 +413,6 @@ PlotQuantsDist = function(input_path, output_dir) {
 }
 # plot train accuracy
 PlotTrainAccuracy = function(input_path, output_dir) {
-  input_path = 'result/train_accuracy.csv'
-  output_dir = 'plot_table/'
-  
   plot = input_path %>%
     read.csv() %>%
     select(-'rsquared') %>%
@@ -499,7 +496,7 @@ WritePlot = function(plot, plot_name, output_dir, width = 18, height = 10) {
   dev.off()
 }
 
-# main functions ####
+## main functions
 # display statistics of the simplifications
 DisplayStats = function(input_path, output_dir) {
   # load and process data

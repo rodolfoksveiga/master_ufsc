@@ -3,7 +3,7 @@ invisible({
   pkgs = c('caret', 'doParallel', 'data.table', 'dplyr',
            'ggplot2', 'hydroGOF', 'Metrics', 'parallel', 'purrr')
   # required packages to fit models
-  # pkgs = c(pkgs, 'brnn', 'kernlab', 'plyr', 'xgboost')
+  # pkgs = c(pkgs, 'brnn', 'kernlab', 'plyr', 'randomForest', 'xgboost')
   lapply(pkgs, library, character.only = TRUE)
 })
 
@@ -25,46 +25,49 @@ SelectFeats = function(data, sa_path, threshold) {
 }
 # create dummy variables
 CreateDummies = function(data) {
+  # create a dummy model, considering "targ" as output
   dummy_model = dummyVars(targ ~ ., data = data)
+  # apply the model to the dataset
   dummy_data = data.frame(predict(dummy_model, newdata = data))
+  # attach the output to the dummy data
   dummy_data$targ = data$targ
   return(dummy_data)
 }
 # split data into train and test sets
 SplitData = function(train, data, train_prop, seed = 100) {
-  # reproduce
+  # assure reproducibility
   set.seed(seed)
+  # define a logical vector with train indexes
   train_part = createDataPartition(data$targ, p = train_prop, list = FALSE)
-  if(train) {
+  # select the train/test partitions
+  if(train) { # train partition
     data = data[train_part, ]
-  } else {
+  } else { # test partition
     data = data[-train_part, ]
   }
   return(data)
 }
-# fit
-FitModel = function(train_tech, tune_grid, samp_tech, nfolds, train_data,
-                    cores_left, tune_length, eval = 'RMSE', seed = 200) {
-  # run training in parallel
+# fit machine learning model
+FitModel = function(train_tech, tune_grid, nfolds, train_data,
+                    cores_left, eval = 'RMSE', seed = 200) {
+  # define number of cores
   cores = detectCores() - cores_left
+  # start parallel processing
   registerDoParallel(cores)
-  fit_ctrl = trainControl(samp_tech, nfolds, search = 'grid',
+  # define training properties
+  fit_ctrl = trainControl('cv', nfolds, search = 'grid',
                           returnData = FALSE, verboseIter = TRUE)
-  # reproduce results
+  # assure reproducibility
   set.seed(seed)
-  if (!is.null(tune_grid)) {
-    fit = train(targ ~ ., train_data, trControl = fit_ctrl, tuneGrid = tune_grid,
-                method = train_tech, metric = eval, preProcess = 'BoxCox')
-  } else {
-    fit = train(targ ~ ., train_data, trControl = fit_ctrl, tuneLength = tune_length,
-                method = train_tech, metric = eval, preProcess = 'BoxCox')
-  }
+  # train model
+  fit = train(targ ~ ., train_data, trControl = fit_ctrl, tuneLength = 2,
+              method = train_tech, metric = eval, preProcess = 'BoxCox')
+  # stop parallel processing
   registerDoSEQ()
+  # clean memory
   gc()
   return(fit)
 }
-
-# stats and plot functions ####
 # stats comparison between models
 CompModels = function(models) {
   comp = resamples(models)
@@ -90,7 +93,7 @@ PlotFit = function(model, train_tech, suffix, output_dir) {
               ylab = 'Validation RMSE (%)')
   SavePlot(plot, paste0('fit_', train_tech, '_', suffix), output_dir)
 }
-# plot predicted x real
+# plot predicted against real
 PlotPerf = function(train_tech, pred, targ, suffix, output_dir) {
   df = data.frame(pred, targ)
   plot = ggplot(df, aes(x = targ, y = pred)) +
@@ -116,7 +119,8 @@ PlotVarImp = function(train_tech, prediction, predictors, suffix, output_dir) {
   plot = ggplot(df, aes(x = reorder(rn, Overall), y = Overall)) +
     coord_flip() +
     geom_bar(stat = 'identity') +
-    labs(title = paste0('Simplified analysis of the variables influences\n', toupper(train_tech)),
+    labs(title = paste0('Simplified analysis of the variables influences\n',
+                        toupper(train_tech)),
          x = 'Variable', y = 'T-Value') +
     theme(plot.title = element_text(size = 19, hjust = 0.5),
           plot.subtitle = element_text(size = 18, face = 'bold', hjust = 0.5),
@@ -133,13 +137,6 @@ SavePlot = function(plot, plot_name, output_dir, lx = 33.8, ly = 19) {
   plot(plot)
   dev.off()
 }
-# create a summary table
-GenAccuracyTable = function(models, pred, targ, suffix, output_dir) {
-  table = SummAccuracy %>%
-    mapply(models, names(models), pred, MoreArgs = list(targ), SIMPLIFY = FALSE) %>%
-    bind_rows() %>% slice(2:n())
-  write.csv(table, paste0(output_dir, 'summ_table_', suffix, '.csv'), row.names = FALSE)
-}
 # summarize fitting results
 SummAccuracy = function(model, train_tech, pred, targ) {
   best_tune = model$bestTune
@@ -155,6 +152,13 @@ SummAccuracy = function(model, train_tech, pred, targ) {
   colnames(table)[5] = 'R²'
   table[1:2] = sapply(table[1:2], as.character)
   return(table)
+}
+# create a summary table
+GenAccuracyTable = function(models, pred, targ, suffix, output_dir) {
+  SummAccuracy %>%
+    mapply(models, names(models), pred, MoreArgs = list(targ), SIMPLIFY = FALSE) %>%
+    bind_rows() %>% slice(2:n()) %>%
+    write.csv(paste0(output_dir, 'summ_table_', suffix, '.csv'), row.names = FALSE)
 }
 # write results from hyperparameters search
 WriteSearchResults = function(model, tag, output_dir) {
@@ -178,15 +182,18 @@ tune_grid = list(
   svm = expand.grid(.sigma = 0.01,
                     .C = 2^(1:8)),
   rf = expand.grid(.mtry = seq(5, 35, 5)),
-  xgbt = expand.grid(.eta = c(0.3, 0.4),
-                     .depth = c(6, 8, 10),
-                     .ncols = c(0.6, 0.8),
-                     .ntrees = seq(200, 600, 100))
+  xgbt = expand.grid(.nrounds = seq(200, 600, 100),
+                     .max_depth = c(6, 8, 10),
+                     .eta = c(0.3, 0.4),
+                     .gamma = 0,
+                     .colsample_bytree = c(0.6, 0.8),
+                     .min_child_weight = 1,
+                     .subsample = 1)
 )
 # directory to write plots and tables
-pt_dir = '~/Documents/master/'
+pt_dir = 'plot_table/'
 # directory to write machine learning models
-models_dir = '~/Documents/master/'
+models_dir = 'result/'
 # number of cores not to use
 cores_left = 0
 
@@ -203,47 +210,30 @@ quant_vars = quant_vars[!quant_vars %in% qual_vars]
 raw_data[, qual_vars] = lapply(raw_data[, qual_vars], factor)
 # select features according to sensitivity analysis
 raw_data = SelectFeats(raw_data, sa_path, sa_threshold)
-# create dummy variables
+# create a dummy dataset with dummy variables
 dummy_data = CreateDummies(raw_data)
 # split data into train and test sets
-raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
-dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
-# train
-models_list = list(lm = 'lm', rf = 'rf', svm = 'svmRadial')
-models = mapply(FitModel, models_list, tune_grid, SIMPLIFY = FALSE,
-                MoreArgs = list('cv', nfolds, dummy_data$train, cores_left, tune_length))
-# test
+raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.005)
+dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.005)
+# train models
+models_list = list(lm = 'lm', ann = 'brnn')
+models = mapply(FitModel, models_list, list(NULL), SIMPLIFY = FALSE,
+                MoreArgs = list(nfolds, dummy_data$train, cores_left))
+# define suffix tag
+suffix = paste0('nvar', ncol(raw_data$train))
+# define a table with training performances
+models_comp = CompModels(models)
+models_summ = summary(models_comp)
+# plot comparison between models
+PlotComp(models_comp, suffix, pt_dir)
+# test models
 predictions = models %>%
   lapply(predict, newdata = dummy_data$test) %>%
   as.data.frame()
-# define suffix tag
-suffix = paste0('nvar', ncol(raw_data$train))
-# write statistical results
-if (save_stats) {
-  # write results from hyperparameters search
-  mapply(WriteSearchResults, models[-1], names(models)[-1], suffix, results_dir)
-  # generate accuracy table
-  GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, plots_dir)
-}
-# write plots
-if (save_plots) {
-  # stats comparison between models
-  models_comp = CompModels(models)
-  models_summ = summary(models_comp)
-  # plot comparison between models
-  PlotComp(models_comp, suffix, plots_dir)
-  # plot training process
-  mapply(PlotFit, models[-1], names(models[-1]), suffix, MoreArgs = list(plots_dir))
-  # plot model performance
-  mapply(PlotPerf, names(models), predictions,
-         MoreArgs = list(dummy_data$test$targ, suffix, plots_dir))
-  # plot variables importance
-  mapply(PlotVarImp, names(models), predictions,
-         MoreArgs = list(raw_data$test, suffix, plots_dir))
-}
-# write the full models
-if (save_models) {
-  saveRDS(models, file = paste0(results_dir, 'models_', suffix, '.rds'))
-} else {
-  return(models)
-}
+# generate accuracy table
+GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, pt_dir)
+# plot model performance
+mapply(PlotPerf, names(models), predictions,
+       MoreArgs = list(dummy_data$test$targ, suffix, pt_dir))
+# write models
+saveRDS(models, file = paste0(models_dir, 'models_', suffix, '.rds'))
