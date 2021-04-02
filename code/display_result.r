@@ -317,7 +317,8 @@ PlotInputHists = function(input_path, output_dir, sample) {
   train_part = createDataPartition(df$targ, p = 0.8, list = FALSE)
   df$targ = NULL
   mult = ifelse(sample == 'train', 1, -1)
-  psych::multi.hist(df[mult*train_part, ], density = FALSE, freq = TRUE)
+  psych::multi.hist(df[mult*train_part, ], density = FALSE, freq = TRUE,
+                    mar = c(2, 2, 1, 1))
 }
 # histograms of the datasets outputs
 PlotTargDist = function(input_path, output_dir) {
