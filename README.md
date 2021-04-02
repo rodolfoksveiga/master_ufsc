@@ -62,9 +62,9 @@ All the programming codes to run this project are located in the folder **[code]
 
 The *[main2.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* code samples and tidies the dataset and performs sensitivity analysis.
 
-After trying many frameworks to develop the predictive model, such as Tidymodels and Keras, [Caret](https://topepo.github.io/caret/) was the chosen one, since it's simple and could achieve the desired model. The *[fit_caret.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/fit_caret.r) code pre-processes the dataset and optimizes the predictive model.
+After trying many frameworks to develop the predictive model, such as Tidymodels and Keras, [Caret](https://topepo.github.io/caret/) was the chosen one, since it's simple and could achieve the desired model. The *[fit_caret.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/fit_caret.r)* code pre-processes the dataset and optimizes the predictive model.
 
-The *[display_results.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/display_result.r)* plots most of the graphs displayed in this **README** file. The graphs are all located in the folder **[plot_table](https://github.com/rodolfoksveiga/master_ufsc/tree/master/plot_table)**.
+The *[display_results.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/display_result.r)* code plots most of the graphs displayed in this **README** file. The graphs are all located in the folder **[plot_table](https://github.com/rodolfoksveiga/master_ufsc/tree/master/plot_table)**.
 
 ### Database sampling
 
@@ -115,7 +115,7 @@ sample_path = './result/sample.csv'
 cores_left = 0
 ```
 
-**2.** Execute *[saltelli_sample.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/saltelli_sample.py)*, which generates a numeric dataset using the Saltelli's Sequence. Saltelli's Sequence is an extension of the so-called Sobol's Sequence. The [Sensitivity Analysis Library in Python](https://salib.readthedocs.io/en/latest/) (SALib) was used to achieve sample the dataset.
+**2.** Execute *[saltelli_sample.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/saltelli_sample.py)*, which generates a numeric dataset using the Saltelli's Sequence. Saltelli's Sequence is an extension of the so-called Sobol's Sequence. The [Sensitivity Analysis Library in Python (SALib)](https://salib.readthedocs.io/en/latest/) was used to build the dataset.
 
 ```R
 ## main code
@@ -157,36 +157,17 @@ Ps.: for extra information about the dataset, I suggest reading either the short
 sample = TidySample(saltelli_path, seeds_dir, models_dir, epws_dir, inmet)
 ```
 
-The table bellow describes the shape of the tidy dataset.
+The histograms bellow describe the distribution of the variables in the tidy dataset.
 
-| Variable | Meaning | Data Type | Possible Values |
-|:-:|:-:|:-:|:-:|
-| seed | Typology | Factor | 1; 2; 3; 4 |
-| storey | Floor | Factor | 1; 2; 3 |
-| area | Total living room and bedroom net floor area (m²) | Numeric | 50 ~ 150 |
-| ratio | Width per length ratio | Numeric | 0.5 ~ 2.0 |
-| height | Ceiling height (m) | Numeric | 2.5 ~ 3.5 |
-| azimuth | Azimuth angle of the building (°) | Numeric | 0 ~ 360 |
-| shell_wall | Walls materials | Factor | 1; 2; 3; 4; 5; 6 |
-| abs_wall | Solar absorptance of external walls | Numeric | 0.2 ~ 0.8 |
-| shell_roof | Roof and ceiling materials | Factor | 1; 2; 3; 4 |
-| abs_roof | Solar absorptance of the roof | Numeric | 0.2 ~ 0.8 |
-| wwr_liv | Window to wall ratio on the living room (%) | Numeric | 0.2 ~ 0.8 |
-| wwr_dorm | Window to wall ratio on the dormitories (%) | Numeric | 0.2 ~ 0.8 |
-| u_window | Thermal transmittance of the windows (W/m².K) | Numeric | 2.8 ~ 5.7 |
-| shgc | Solar heat gain coefficient of the glasses | Numeric | 0.22 ~ 0.87 |
-| open_factor | Window opening factor | Numeric | 0.4 ~ 1 |
-| blind | Blind | Factor | 0; 1 |
-| balcony | Balcony depth (m²) | Numeric | 0; 0.5 ~ 2.5 |
-| facade | Position of the window on the bedroom | Factor | 1; 2 |
-| mirror | Building floor plan mirroring | Factor | 0; 1 |
-| dbt | Mean drybulb temperature (°C) | Numeric | 10.83 ~ 28.24 |
+![hist_inputs](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/hist_inputs.png)
 
-It's important to note that `TidySample` removes repeated rows from the dataset. These repeated rows appears after `TidySample` rounds the values of the factor variables. Therefore, the tidy dataset contains 109,276 rows.
+It's important to note that `TidySample` removes repeated rows from the dataset. These repeated rows appears because the function rounds the values of the factor (integer) variables. Therefore, the tidy dataset contains 109,276 rows.
 
-**4.** Apply the function `BuildModel`, from *[build_model.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/build_model.r)*, for each row of the tidy dataset. This function takes as arguments each of the variables in the dataset, except for the variable *dbt*, and builds EnergyPlus simulation files according to these variables values. Thus, after the execution of this function, 109,276 simulation files are generated.
+The factor variables are: `typology`, `floor`, `wall_shell`, `roof_shell`, `blind`, `facade`, and `mirror`.
 
-The EnergyPlus simulation files have *epJSON* extension, which corresponds to *JSON* files.
+**4.** Apply the function `BuildModel`, from *[build_model.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/build_model.r)*, for each row of the tidy dataset. This function takes as arguments each of the variables in the dataset, except for the variable `dbt`, and builds EnergyPlus simulation files according to these variables values. Thus, after the execution of this function, 109,276 simulation files are generated.
+
+The EnergyPlus simulation files have the *epJSON* extension, which corresponds to *JSON* formatted files.
 
 ```R
 ## main code
@@ -200,9 +181,9 @@ with(sample, mcmapply(BuildModel, seed_path, area, ratio, height, azimuth, shell
                       mc.cores = cores))
 ```
 
-**5.** Perform the function `MakeSlices`, from *[make_slices.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/make_slices.r)*, which defines a list of dataset slices. The number of slices is defined according to the value of the global variable `cores_left` and the number of rows of the tidy dataset.
+**5.** Perform the function `MakeSlices`, from *[make_slices.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/make_slices.r)*, which defines a list of dataset slices. The number of slices is defined according to the value of the global variable `cores_left` and also by the number of rows in the tidy dataset.
 
-After that, each dataset slice is processed by the function `ProcessSlices`. Firstly, this function runs the EnergyPlus simulations in parallel, thorough the function `ProcessEPSim`, from *[run_ep_sim.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/run_ep_sim.r)*. Then, it runs the function `ApplyCalcTarget`, from *[calc_target.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/calc_target.r)*, which calculates the targets and attach them to the correspondent dataset slice. Finally, it writes the dataset slice with the targets as a *csv* file, remove useless simulation outputs and compile the simulation errors in a single a file.
+After that, each dataset slice is processed by the function `ProcessSlices`. Firstly, this function runs the EnergyPlus simulations in parallel, thorough the function `ProcessEPSim`, from *[run_ep_sim.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/run_ep_sim.r)*. Then, it executes the function `ApplyCalcTarget`, from *[calc_target.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/calc_target.r)*, which calculates the targets and attach them to the correspondent dataset slice. Finally, it writes the dataset slice with the targets as a *csv* file, removes useless simulation outputs, and compiles the simulation errors in a single a file.
 
 ```R
 ## functions
@@ -277,6 +258,10 @@ JoinSamples(saltelli_path, sample_path)
 py_run_file('./code/saltelli_sample.py')
 ```
 
+The outputs of the sensitivity analysis are represent in the bar plot bellow. The first-order index corresponds to the importance of a determined input variable over the output variable, without the influence of the remaining input variables. The second-order index corresponds to the importance of a determined input variable over the output variable, while the effect of the remaining variables (higher-order effects) are also considered.
+
+![sobol_barplot_en](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/sobol_barplot_en.png)
+
 ### Metamodel training and testing
 
 The development of the predictive model lies on the optimization of the following 5 machine learning techniques:
@@ -330,7 +315,7 @@ models_dir = '~/Documents/master/'
 cores_left = 0
 ```
 
-**2.** Load dataset and transform qualitative variables in factors, so that it's possible to transform these variables into dummy variables.
+**2.** Load the tidy dataset (`raw_data`) and transform qualitative variables in factors, so that it's possible to transform these variables into dummy variables.
 
 ```R
 ## main code
@@ -369,6 +354,13 @@ SelectFeats = function(data, sa_path, threshold) {
 raw_data = SelectFeats(raw_data, sa_path, threshold)
 ```
 
+In this step, 3 values of total-order index were used as threshold to select the input variables: 0 (all {20} variables are considered), 0.005 (13 variables are considered), and 0.01 (10 variables are considered).
+
+According to the sensitivity analysis results showed before, the input variables in the datasets are defined bellow:
+* 20 variables: `dbt`, `blind`, `shgc`, `storey`, `abs_roof`, `abs_wall`, `wwr_dorm`, `shell_wall`, `shell_roof`, `open_factor`, `azimuth`, `seed`, `facade`, `mirror`, `height`, `ratio`, `area`, `wwr_liv`, `balcony`, `u_window`.
+* 13 variables: `dbt`, `blind`, `shgc`, `storey`, `abs_roof`, `abs_wall`, `wwr_dorm`, `shell_wall`, `shell_roof`, `open_factor`, `azimuth`, `seed`, `facade`.
+* 10 variables: `dbt`, `blind`, `shgc`, `storey`, `abs_roof`, `abs_wall`, `wwr_dorm`, `shell_wall`, `shell_roof`, `open_factor`.
+
 **4.** Transform qualitative variables into dummy variables, through the function `CreateDummies`.
 
 ```R
@@ -389,7 +381,7 @@ CreateDummies = function(data) {
 dummy_data = CreateDummies(raw_data)
 ```
 
-**5.** Execute the function `SplitData` to split the dataset into a list containing two datasets: training (80%) and testing (20%). In this step, both datasets (raw and dummy) were splitted, because the raw dataset will be used later to perform the predictions and calculate the accuracy metrics.
+**5.** Execute the function `SplitData` to split the dataset into a list containing two datasets: training (80%) and testing (20%). In this step, both datasets (raw and dummy) were splitted, because the `raw_dataset` (tidy dataset) will be used later to perform the predictions and calculate the accuracy metrics.
 
 ```R
 ## functions
@@ -413,6 +405,10 @@ SplitData = function(train, data, train_prop, seed = 100) {
 raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.01)
 dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.01)
 ```
+
+The distribution of the target within the dataset is represented in the plot bellow. This graph describes the relative probability to find the target values in the dataset. Since the data partition is based on the target (PHFT), naturally the distribution of the training and testing datasets is pretty similar.
+
+![targ_dist_en](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/targ_dist_en.png)
 
 **6.** Apply the function `FitModel` over each model and its respective hyperparameters grid, defined in the global variable `tune_grid` (training dataset). First, the function defines some training properties, such as the sampling technique (cross-validation) and the number of folders adopted in the cross-validation. After that, the model is trained considering the pre-defined grid.
 
@@ -451,6 +447,8 @@ models = mapply(FitModel, models_list, tune_grid, SIMPLIFY = FALSE,
                 MoreArgs = list('cv', nfolds, dummy_data$train, cores_left))
 ```
 
+![](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/.png)
+
 **7.** Evaluate the best model selected from each technique using the metrics MAE, RMSE and R² (testing dataset), write the summary as a *csv* file with training and testing performances, and write the models as a *rds* files.
 
 ```R
@@ -467,7 +465,7 @@ GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, pt_dir)
 saveRDS(models, file = paste0(models_dir, 'models_', suffix, '.rds'))
 ```
 
-![perf_test](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/perf_test.png)
+![](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/.png)
 
 ### Application
 
