@@ -8,7 +8,7 @@ A shorter version of the thesis was submitted, in English, to the [Building Simu
 
 ## Objective
 
-The Brazilian standard for the thermal performance of residential buildings (NBR 15.575) offers a simulation-based method. However, building energy simulations (BES) are complex, time-consuming, and recquire qualified professionals. Data-driven models are an alternative to BES, since they significantly reduce the number of input parameters and can achieve high accuracy. Therefore, the objective of this project was to develop a predictive model to estimate the thermal performance of naturally ventilated apartments.
+The Brazilian standard for the thermal performance of residential buildings (NBR 15.575) offers a simulation-based method. However, building energy simulations (BES) are complex, time-consuming, and require qualified professionals. Data-driven models are an alternative to BES, since they significantly reduce the number of input parameters and can achieve high accuracy. Therefore, the objective of this project was to develop a predictive model to estimate the thermal performance of naturally ventilated apartments.
 
 ### Partnership
 
@@ -29,6 +29,7 @@ The project was financed by the Brazilian National Council for Scientific and Te
     * data.table 1.14.0
     * doParallel 1.0.16
     * dplyr 1.0.5
+    * forcats 0.5.1
     * ggplot2 3.3.3
     * hydroGOF 0.4-0
     * jsonlite 1.7.2
@@ -37,6 +38,8 @@ The project was financed by the Brazilian National Council for Scientific and Te
     * parallel 4.0.4
     * plyr 1.8.6
     * purrr 0.3.4
+    * RColorBrewer 1.1-2
+    * reshape2 1.4.4
     * reticulate 1.18
     * RJSONIO 1.3-1.4
     * stringr 1.4.0
@@ -60,6 +63,8 @@ All the programming codes to run this project are located in the folder **[code]
 The *[main2.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* code samples and tidies the dataset and performs sensitivity analysis.
 
 After trying many frameworks to develop the predictive model, such as Tidymodels and Keras, [Caret](https://topepo.github.io/caret/) was the chosen one, since it's simple and could achieve the desired model. The *[fit_caret.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/fit_caret.r) code pre-processes the dataset and optimizes the predictive model.
+
+The *[display_results.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/display_result.r)* plots most of the graphs displayed in this **README** file. The graphs are all located in the folder **[plot_table](https://github.com/rodolfoksveiga/master_ufsc/tree/master/plot_table)**.
 
 ### Database sampling
 
@@ -124,7 +129,7 @@ The dataset contains 17 variables and 126,000 instances. The variables ranges we
 |:-:|:-:|:-:|
 | seed | Typology | 1 ~ 5 |
 | storey | Floor | 1 ~ 4 |
-| area | Total living room and beroom net floor area (m²) | 50 ~ 150 |
+| area | Total living room and bedroom net floor area (m²) | 50 ~ 150 |
 | ratio | Width per length ratio | 0.5 ~ 2 |
 | height | Ceiling height (m) | 2.5 ~ 3.5 |
 | azimuth | Azimuth angle of the building (°) | 0 ~ 360 |
@@ -152,13 +157,13 @@ Ps.: for extra information about the dataset, I suggest reading either the short
 sample = TidySample(saltelli_path, seeds_dir, models_dir, epws_dir, inmet)
 ```
 
-The table bellow decribes the shape of the tidy dataset.
+The table bellow describes the shape of the tidy dataset.
 
 | Variable | Meaning | Data Type | Possible Values |
 |:-:|:-:|:-:|:-:|
 | seed | Typology | Factor | 1; 2; 3; 4 |
 | storey | Floor | Factor | 1; 2; 3 |
-| area | Total living room and beroom net floor area (m²) | Numeric | 50 ~ 150 |
+| area | Total living room and bedroom net floor area (m²) | Numeric | 50 ~ 150 |
 | ratio | Width per length ratio | Numeric | 0.5 ~ 2.0 |
 | height | Ceiling height (m) | Numeric | 2.5 ~ 3.5 |
 | azimuth | Azimuth angle of the building (°) | Numeric | 0 ~ 360 |
@@ -262,7 +267,7 @@ The final dataset contain 109,276 rows and 21 columns, corresponding to the vari
 
 To perform the sensitivity analysis, *[main2.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/main2.r)* executes the code chunk below.
 
-First, it runs the function `JoinSamples`, from *[tidy_sample.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/tidy_sample.r), which join the tidy dataset (with targets) with the original numeric dataset (without targets). After that, it executes *[sobol_analysis.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/sobol_analysis.py), which perfmorms the Sobol's Sensitivity Analysis over the joined dataset. SALib was used to compute the sensitivity analysis.
+First, it runs the function `JoinSamples`, from *[tidy_sample.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/tidy_sample.r)*, which join the tidy dataset (with targets) with the original numeric dataset (without targets). After that, it executes *[sobol_analysis.py](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/sobol_analysis.py)*, which perfmorms the Sobol's Sensitivity Analysis over the joined dataset. SALib was used to compute the sensitivity analysis.
 
 ```R
 ## main code
@@ -309,10 +314,20 @@ tune_grid = list(
   svm = expand.grid(.sigma = 0.01,
                     .C = 2^(1:8)),
   rf = expand.grid(.mtry = seq(5, 35, 5)),
+<<<<<<< HEAD
+  xgbt = expand.grid(.nrounds = seq(200, 600, 100),
+                     .max_depth = c(6, 8, 10),
+                     .eta = c(0.3, 0.4),
+                     .gamma = 0,
+                     .colsample_bytree = c(0.6, 0.8),
+                     .min_child_weight = 1,
+                     .subsample = 1)
+=======
   xgbt = expand.grid(.eta = c(0.3, 0.4),
                      .depth = c(6, 8, 10),
                      .ncols = c(0.6, 0.8),
                      .ntrees = seq(200, 600, 100))
+>>>>>>> 63a944db70b3071e4ef048b4ad4e4d855ffcc0be
 )
 # directory to write plots and tables
 pt_dir = '~/Documents/master/'
@@ -321,9 +336,15 @@ models_dir = '~/Documents/master/'
 # number of cores not to use
 cores_left = 0
 ```
+<<<<<<< HEAD
+
+**2.** Load dataset and transform qualitative variables in factors, so that it's possible to transform these variables into dummy variables.
+
+=======
 
 **2.** Load dataset and transform qualitative variables in factors, so that it's possible to transform these variables in dummy variables.
 
+>>>>>>> 63a944db70b3071e4ef048b4ad4e4d855ffcc0be
 ```R
 ## main code
 # load data
@@ -364,9 +385,108 @@ raw_data = SelectFeats(raw_data, sa_path, threshold)
 **4.** Transform qualitative variables into dummy variables, through the function `CreateDummies`.
 
 ```R
+<<<<<<< HEAD
+## functions
+# create dummy variables
+CreateDummies = function(data) {
+  # create a dummy model, considering "targ" as output
+  dummy_model = dummyVars(targ ~ ., data = data)
+  # apply the model to the dataset
+  dummy_data = data.frame(predict(dummy_model, newdata = data))
+  # attach the output to the dummy data
+  dummy_data$targ = data$targ
+  return(dummy_data)
+}
+
+## main code
+# create a dummy dataset with dummy variables
+dummy_data = CreateDummies(raw_data)
+```
+
+**5.** Execute the function `SplitData` to split the dataset into a list containing two datasets: training (80%) and testing (20%). In this step, both datasets (raw and dummy) were splitted, because the raw dataset will be used later to perform the predictions and calculate the accuracy metrics.
+
+```R
+## functions
+# split data into train and test sets
+SplitData = function(train, data, train_prop, seed = 100) {
+  # assure reproducibility
+  set.seed(seed)
+  # define a logical vector with train indexes
+  train_part = createDataPartition(data$targ, p = train_prop, list = FALSE)
+  # select the train/test partitions
+  if(train) { # train partition
+    data = data[train_part, ]
+  } else { # test partition
+    data = data[-train_part, ]
+  }
+  return(data)
+}
+
+## main code
+# split data into train and test sets
+raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.01)
+dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.01)
+```
+
+**6.** Apply the function `FitModel` over each model and its respective hyperparameters grid, defined in the global variable `tune_grid` (training dataset). First, the function defines some training properties, such as the sampling technique (cross-validation) and the number of folders adopted in the cross-validation. After that, the model is trained considering the pre-defined grid.
+
+During the execution of the function `train`, from Caret, a Box-Cox transformation is performed in order to pre-process the dataset. Still during the training, every model is evaluated according to the metric RMSE.
+
+All the processing is done in parallel and reproducibility is assured.
+
+```R
+## functions
+# fit machine learning model
+FitModel = function(train_tech, tune_grid, nfolds, train_data,
+                    cores_left, eval = 'RMSE', seed = 200) {
+  # define number of cores
+  cores = detectCores() - cores_left
+  # start parallel processing
+  registerDoParallel(cores)
+  # define training properties
+  fit_ctrl = trainControl('cv', nfolds, search = 'grid',
+                          returnData = FALSE, verboseIter = TRUE)
+  # assure reproducibility
+  set.seed(seed)
+  # train model
+  fit = train(targ ~ ., train_data, trControl = fit_ctrl, tuneGrid = tune_grid,
+              method = train_tech, metric = eval, preProcess = 'BoxCox')
+  # stop parallel processing
+  registerDoSEQ()
+  # clean memory
+  gc()
+  return(fit)
+}
+
+## main code
+# train models
+models_list = list(lm = 'lm', ann = 'brnn', svm = 'svmRadial', rf = 'rf', xgbt = 'xgbTree')
+models = mapply(FitModel, models_list, tune_grid, SIMPLIFY = FALSE,
+                MoreArgs = list('cv', nfolds, dummy_data$train, cores_left))
+```
+
+**7.** Evaluate the best model selected from each technique using the metrics MAE, RMSE and R² (testing dataset), write the summary as a *csv* file with training and testing performances, and write the models as a *rds* files.
+
+```R
+## main code
+# test models
+predictions = models %>%
+  lapply(predict, newdata = dummy_data$test) %>%
+  as.data.frame()
+# define suffix tag
+suffix = paste0('nvar', ncol(raw_data$train))
+# generate accuracy table
+GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, pt_dir)
+# write models
+saveRDS(models, file = paste0(models_dir, 'models_', suffix, '.rds'))
+```
+
+![perf_test](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/perf_test.png)
+=======
 # create dummy variables
 dummy_data = CreateDummies(raw_data)
 ```
+>>>>>>> 63a944db70b3071e4ef048b4ad4e4d855ffcc0be
 
 ### Application
 
