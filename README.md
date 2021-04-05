@@ -157,13 +157,13 @@ Ps.: for extra information about the dataset, I suggest reading either the short
 sample = TidySample(saltelli_path, seeds_dir, models_dir, epws_dir, inmet)
 ```
 
-The histograms bellow describe the distribution of the variables in the tidy dataset.
-
-![hist_inputs](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/hist_inputs.png)
-
 It's important to note that `TidySample` removes repeated rows from the dataset. These repeated rows appears because the function rounds the values of the factor (integer) variables. Therefore, the tidy dataset contains 109,276 rows.
 
 The factor variables are: `typology`, `floor`, `wall_shell`, `roof_shell`, `blind`, `facade`, and `mirror`.
+
+The histograms bellow describe the distribution of the variables in the tidy dataset.
+
+![hist_inputs](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/hist_inputs.png)
 
 **4.** Apply the function `BuildModel`, from *[build_model.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/build_model.r)*, for each row of the tidy dataset. This function takes as arguments each of the variables in the dataset, except for the variable `dbt`, and builds EnergyPlus simulation files according to these variables values. Thus, after the execution of this function, 109,276 simulation files are generated.
 
@@ -183,7 +183,7 @@ with(sample, mcmapply(BuildModel, seed_path, area, ratio, height, azimuth, shell
 
 **5.** Perform the function `MakeSlices`, from *[make_slices.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/make_slices.r)*, which defines a list of dataset slices. The number of slices is defined according to the value of the global variable `cores_left` and also by the number of rows in the tidy dataset.
 
-After that, each dataset slice is processed by the function `ProcessSlices`. Firstly, this function runs the EnergyPlus simulations in parallel, thorough the function `ProcessEPSim`, from *[run_ep_sim.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/run_ep_sim.r)*. Then, it executes the function `ApplyCalcTarget`, from *[calc_target.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/calc_target.r)*, which calculates the targets and attach them to the correspondent dataset slice. Finally, it writes the dataset slice with the targets as a *csv* file, removes useless simulation outputs, and compiles the simulation errors in a single a file.
+After that, each dataset slice is processed by the function `ProcessSlices`. Firstly, this function runs the EnergyPlus simulations in parallel, thorough the function `ProcessEPSim`, from *[run_ep_sim.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/run_ep_sim.r)*. Then, it executes the function `ApplyCalcTarget`, from *[calc_target.r](https://github.com/rodolfoksveiga/master_ufsc/blob/master/code/calc_target.r)*, which calculates the targets and attach them to the correspondent dataset slice is a new column called `targ`. Finally, it writes the dataset slice with the targets as a *csv* file, removes useless simulation outputs, and compiles the simulation errors in a single a file.
 
 ```R
 ## functions
@@ -214,7 +214,7 @@ slices = MakeSlices(sample, n, size, cores)
 mapply(ProcessSlices, slices, n, size)
 ```
 
-The target represents the thermal performance of the apartment, which is described by an index named PHFT. PHFT stands for the percentage of occupied hours within an operative temperature range. The index was defined in the NBR 15.575 and its fundaments were published in [this](https://www.researchgate.net/publication/345742006_Proposta_de_metodo_de_avaliacao_do_desempenho_termico_de_residencias_NBR_15575) research paper, available in Portuguese.
+The target (`targ`) represents the thermal performance of the apartment, which is described by an index named PHFT. PHFT stands for the percentage of occupied hours within an operative temperature range. The index was defined in the NBR 15.575 and its fundaments were published in [this](https://www.researchgate.net/publication/345742006_Proposta_de_metodo_de_avaliacao_do_desempenho_termico_de_residencias_NBR_15575) research paper, available in Portuguese.
 
 The following formula calculates the PHFT:
 
@@ -242,7 +242,7 @@ WriteSample('sample.csv', sample_path, result_dir)
 lapply(c('summary', 'description'), HandleSlices, result_dir)
 ```
 
-The final dataset contain 109,276 rows and 21 columns, corresponding to the variables: `seed`, `storey`, `area`, `ratio`, `height`, `azimuth`, `shell_wall`, `abs_wall`, `shell_roof`, `abs_roof`, `wwr_liv`, `wwr_dorm`, `u_window`, `shgc`, `open_factor`, `blind`, `balcony`, `facade`, `mirror`, `dbt`, `targ` (PHFT).
+The final dataset contain 109,276 rows and 21 columns, corresponding to the variables: `seed`, `storey`, `area`, `ratio`, `height`, `azimuth`, `shell_wall`, `abs_wall`, `shell_roof`, `abs_roof`, `wwr_liv`, `wwr_dorm`, `u_window`, `shgc`, `open_factor`, `blind`, `balcony`, `facade`, `mirror`, `dbt`, `targ`.
 
 ### Sobol's Sensitivity Analysis
 
@@ -258,7 +258,7 @@ JoinSamples(saltelli_path, sample_path)
 py_run_file('./code/saltelli_sample.py')
 ```
 
-The outputs of the sensitivity analysis are represent in the bar plot bellow. The first-order index corresponds to the importance of a determined input variable over the output variable, without the influence of the remaining input variables. The second-order index corresponds to the importance of a determined input variable over the output variable, while the effect of the remaining variables (higher-order effects) are also considered.
+The outputs of the sensitivity analysis are represented in the bar plot bellow. The first-order index corresponds to the importance of an input variable for the output variable, without considering the influence of the remaining input variables. The total-order index corresponds to the importance of an input variable for the output variable, while the effect of the remaining variables (higher-order effects) are also considered.
 
 ![sobol_barplot_en](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/sobol_barplot_en.png)
 
@@ -308,14 +308,14 @@ tune_grid = list(
                      .subsample = 1)
 )
 # directory to write plots and tables
-pt_dir = '~/Documents/master/'
+pt_dir = 'plot_table/'
 # directory to write machine learning models
-models_dir = '~/Documents/master/'
+models_dir = 'result/'
 # number of cores not to use
 cores_left = 0
 ```
 
-**2.** Load the tidy dataset (`raw_data`) and transform qualitative variables in factors, so that it's possible to transform these variables into dummy variables.
+**2.** Load the tidy dataset (`raw_data`) and transform qualitative variables into factors, so that it's possible to transform these variables into dummy variables.
 
 ```R
 ## main code
@@ -354,14 +354,14 @@ SelectFeats = function(data, sa_path, threshold) {
 raw_data = SelectFeats(raw_data, sa_path, threshold)
 ```
 
-In this step, 3 values of total-order index were used as threshold to select the input variables: 0 (all {20} variables are considered), 0.005 (13 variables are considered), and 0.01 (10 variables are considered).
+In this step, 3 values of total-order index were used as threshold to select the input variables: 0 (all, or 20, variables are considered), 0.01 (13 variables are considered), and 0.02 (10 variables are considered).
 
 According to the sensitivity analysis results showed before, the input variables in the datasets are defined bellow:
-* 20 variables: `dbt`, `blind`, `shgc`, `storey`, `abs_roof`, `abs_wall`, `wwr_dorm`, `shell_wall`, `shell_roof`, `open_factor`, `azimuth`, `seed`, `facade`, `mirror`, `height`, `ratio`, `area`, `wwr_liv`, `balcony`, `u_window`.
-* 13 variables: `dbt`, `blind`, `shgc`, `storey`, `abs_roof`, `abs_wall`, `wwr_dorm`, `shell_wall`, `shell_roof`, `open_factor`, `azimuth`, `seed`, `facade`.
-* 10 variables: `dbt`, `blind`, `shgc`, `storey`, `abs_roof`, `abs_wall`, `wwr_dorm`, `shell_wall`, `shell_roof`, `open_factor`.
+* **20 variables**: `dbt`, `blind`, `shgc`, `storey`, `abs_roof`, `abs_wall`, `wwr_dorm`, `shell_wall`, `shell_roof`, `open_factor`, `azimuth`, `seed`, `facade`, `mirror`, `height`, `ratio`, `area`, `wwr_liv`, `balcony`, `u_window`.
+* **13 variables**: `dbt`, `blind`, `shgc`, `storey`, `abs_roof`, `abs_wall`, `wwr_dorm`, `shell_wall`, `shell_roof`, `open_factor`, `azimuth`, `seed`, `facade`.
+* **10 variables**: `dbt`, `blind`, `shgc`, `storey`, `abs_roof`, `abs_wall`, `wwr_dorm`, `shell_wall`, `shell_roof`, `open_factor`.
 
-**4.** Transform qualitative variables into dummy variables, through the function `CreateDummies`.
+**4.** Transform qualitative variables (factors) into dummy variables, through the function `CreateDummies`.
 
 ```R
 ## functions
@@ -381,7 +381,7 @@ CreateDummies = function(data) {
 dummy_data = CreateDummies(raw_data)
 ```
 
-**5.** Execute the function `SplitData` to split the dataset into a list containing two datasets: training (80%) and testing (20%). In this step, both datasets (raw and dummy) were splitted, because the `raw_dataset` (tidy dataset) will be used later to perform the predictions and calculate the accuracy metrics.
+**5.** Execute the function `SplitData` to split the dataset into a list containing two datasets: training (80%) and testing (20%). In this step, both datasets (tidy and dummy) were splitted, because the training partition of the `raw_dataset` (tidy dataset) will be used later to perform the predictions and calculate the accuracy metrics.
 
 ```R
 ## functions
@@ -406,13 +406,13 @@ raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.0
 dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.01)
 ```
 
-The distribution of the target within the dataset is represented in the plot bellow. This graph describes the relative probability to find the target values in the dataset. Since the data partition is based on the target (PHFT), naturally the distribution of the training and testing datasets is pretty similar.
+The distribution of the target within the dataset is represented in the plot bellow. This graph describes the relative probability to find the target values in the dataset. The data partition is based on the target (PHFT), thus, the distribution of the training and testing datasets is pretty similar.
 
 ![targ_dist_en](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/targ_dist_en.png)
 
-**6.** Apply the function `FitModel` over each model and its respective hyperparameters grid, defined in the global variable `tune_grid` (training dataset). First, the function defines some training properties, such as the sampling technique (cross-validation) and the number of folders adopted in the cross-validation. After that, the model is trained considering the pre-defined grid.
+**6.** Apply the function `FitModel` over each machine learning technique and its respective hyperparameters grid, defined in the global variable `tune_grid`. First, the function defines some training properties, such as the sampling technique (cross-validation) and the number of folders adopted in the cross-validation. Then, the model is trained considering the pre-defined grid.
 
-During the execution of the function `train`, from Caret, a Box-Cox transformation is performed in order to pre-process the dataset. Still during the training, every model is evaluated according to the metric RMSE.
+During the execution of the function `train`, from Caret, a Box-Cox transformation is performed, in order to pre-process the dataset. Still during the training, every model is evaluated according to the metric RMSE.
 
 All the processing is done in parallel and reproducibility is assured.
 
@@ -447,9 +447,11 @@ models = mapply(FitModel, models_list, tune_grid, SIMPLIFY = FALSE,
                 MoreArgs = list('cv', nfolds, dummy_data$train, cores_left))
 ```
 
-![](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/.png)
+The boxplots bellow shows the distributions of the metrics MAE and RMSE for achieved by each machine learning technique during the training. On each boxplot, the x-axis represents the statical index value, and the y-axis is the number of variables selected according to the sensitivity analysis index. The statistical index has the same unity as the PHFT (%). The MAE graphs were plotted on the left-hand side and the RMSE graphs on the right-hand side. The machine learning techniques were distributed vertically.
 
-**7.** Evaluate the best model selected from each technique using the metrics MAE, RMSE and R² (testing dataset), write the summary as a *csv* file with training and testing performances, and write the models as a *rds* files.
+![perf_train_en](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/perf_train_en.png)
+
+**7.** Evaluate the most accurate models selected from each technique using the metrics MAE and RMSE (testing dataset), write the summary as a *csv* file with training and testing performances, and write the models as a *rds* files.
 
 ```R
 ## main code
@@ -465,7 +467,15 @@ GenAccuracyTable(models, predictions, dummy_data$test$targ, suffix, pt_dir)
 saveRDS(models, file = paste0(models_dir, 'models_', suffix, '.rds'))
 ```
 
-![](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/.png)
+The accuracy of the testing dataset for the most accurate models is represented in the barplots bellow. On x-axis of each plot is the machine learning technique and on y-axis is the statistical index value. The number of variables selected were represented by bars with different colours.
+
+![perf_test_en](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/perf_test_en.png)
+
+From the graph above we can see that the most accurate model was the XGBoost (XGBT) considering 20 variables, which achieved MAE of 1.7% and RMSE of 2.5%. However, the second most accurate model was the XGBT considering 13 variables, which achieved MAE and RMSE of 1.8% and 2.7%, respectively. Removing 7 of the less important variables has a low impact on the models accuracy, therefore, the XGBT with 13 variables was considered the optimized model.
+
+The plot bellow shows the performance of the optimized machine learning model. On x-axis is the simulation PHFT (%) and on y-axis is the prediction PHFT (%). The diagonal red line represents the function `f(x) = x`. The closer a point is to the red line, the more accurate is its prediction.
+
+![perf_final_en](https://github.com/rodolfoksveiga/master_ufsc/blob/master/plot_table/perf_final_en.png)
 
 ### Application
 

@@ -213,8 +213,8 @@ raw_data = SelectFeats(raw_data, sa_path, sa_threshold)
 # create a dummy dataset with dummy variables
 dummy_data = CreateDummies(raw_data)
 # split data into train and test sets
-raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.005)
-dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.005)
+raw_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, raw_data, 0.8)
+dummy_data = lapply(list('train' = TRUE, 'test' = FALSE), SplitData, dummy_data, 0.8)
 # train models
 models_list = list(lm = 'lm', ann = 'brnn')
 models = mapply(FitModel, models_list, list(NULL), SIMPLIFY = FALSE,
